@@ -1,0 +1,6 @@
+hs-tui-launcher.exe
+*.test
+coverage.out
+dist/
+bin/
+.env

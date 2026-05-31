@@ -1,0 +1,28 @@
+title: HemSoft TUI Launcher
+shell: powershell.exe
+shell_args:
+  - -NoLogo
+  - -NoExit
+  - -Command
+items:
+  - name: Codex
+    description: Open the Codex CLI in PowerShell
+    command: codex
+    tags:
+      - ai
+      - openai
+      - cli
+  - name: GitHub Copilot
+    description: Open GitHub Copilot CLI suggestions
+    command: gh copilot suggest
+    tags:
+      - ai
+      - github
+      - cli
+  - name: Cursor
+    description: Open the Cursor CLI
+    command: cursor
+    tags:
+      - ai
+      - editor
+      - cli
