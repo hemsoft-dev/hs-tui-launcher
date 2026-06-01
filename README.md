@@ -4,7 +4,7 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, and Cursor. Each row shows the model and reasoning effort. The PowerShell wrapper exits the Go picker before handing off to the selected CLI in the same console.
+`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, Cursor, Claude Code, and OpenCode. Each row shows the model and reasoning effort. The PowerShell wrapper exits the Go picker before handing off to the selected CLI in the same console.
 
 ## Run
 
@@ -54,5 +54,5 @@ items:
 
 ## Keys
 
-- `1`, `2`, `3`: launch that numbered target
+- `1`, `2`, `3`, `4`, `5`: launch that numbered target
 - `q`, `esc`, `ctrl+c`: exit

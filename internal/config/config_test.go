@@ -20,8 +20,14 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if cfg.Title != "HemSoft TUI Launcher" {
 		t.Fatalf("Title = %q", cfg.Title)
 	}
-	if len(cfg.Items) != 3 {
-		t.Fatalf("len(Items) = %d, want 3", len(cfg.Items))
+	if len(cfg.Items) != 5 {
+		t.Fatalf("len(Items) = %d, want 5", len(cfg.Items))
+	}
+	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
+		t.Fatalf("Claude Code command = %q", got)
+	}
+	if got := cfg.Items[4].Command; got != "opencode --model opencode/minimax-m3-free" {
+		t.Fatalf("OpenCode MiniMax M3 Free command = %q", got)
 	}
 	for _, arg := range cfg.ShellArgs {
 		if arg == "-NoExit" {

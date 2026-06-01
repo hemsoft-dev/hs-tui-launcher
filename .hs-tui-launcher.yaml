@@ -31,3 +31,21 @@ items:
       - ai
       - editor
       - cli
+  - name: Claude Code
+    description: Open Claude Code CLI
+    command: claude --dangerously-skip-permissions
+    model: claude-opus-4.8
+    reasoning_effort: default
+    tags:
+      - ai
+      - anthropic
+      - cli
+  - name: OpenCode MiniMax M3 Free
+    description: Open OpenCode with MiniMax M3 Free
+    command: opencode --model opencode/minimax-m3-free
+    model: opencode/minimax-m3-free
+    reasoning_effort: default
+    tags:
+      - ai
+      - opencode
+      - cli

@@ -83,6 +83,22 @@ func Default() Config {
 				ReasoningEffort: "xhigh",
 				Tags:            []string{"ai", "editor", "cli"},
 			},
+			{
+				Name:            "Claude Code",
+				Description:     "Open Claude Code CLI",
+				Command:         "claude --dangerously-skip-permissions",
+				Model:           "claude-opus-4.8",
+				ReasoningEffort: "default",
+				Tags:            []string{"ai", "anthropic", "cli"},
+			},
+			{
+				Name:            "OpenCode MiniMax M3 Free",
+				Description:     "Open OpenCode with MiniMax M3 Free",
+				Command:         "opencode --model opencode/minimax-m3-free",
+				Model:           "opencode/minimax-m3-free",
+				ReasoningEffort: "default",
+				Tags:            []string{"ai", "opencode", "cli"},
+			},
 		},
 	}
 }
