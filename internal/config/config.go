@@ -62,7 +62,7 @@ func Default() Config {
 			{
 				Name:            "Codex",
 				Description:     "Open the Codex CLI",
-				Command:         "codex",
+				Command:         "codex -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'",
 				Model:           "gpt-5.5",
 				ReasoningEffort: "high",
 				Tags:            []string{"ai", "openai", "cli"},
@@ -78,7 +78,7 @@ func Default() Config {
 			{
 				Name:            "Cursor",
 				Description:     "Open the Cursor Agent CLI",
-				Command:         "cursor agent",
+				Command:         "cursor-agent",
 				Model:           "claude-opus-4-8",
 				ReasoningEffort: "xhigh",
 				Tags:            []string{"ai", "editor", "cli"},

@@ -4,7 +4,7 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, and Cursor. Each row shows the model and reasoning effort before launching the selected target in the same console.
+`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, and Cursor. Each row shows the model and reasoning effort. The PowerShell wrapper exits the Go picker before handing off to the selected CLI in the same console.
 
 ## Run
 
@@ -12,7 +12,7 @@ Terminal launcher overlay for local AI command-line tools.
 .\run.ps1
 ```
 
-Direct Go execution opens the same terminal picker:
+Direct Go execution opens the picker without the PowerShell handoff:
 
 ```powershell
 go run .
@@ -43,7 +43,7 @@ shell_args:
 items:
   - name: Codex
     description: Open the Codex CLI
-    command: codex
+    command: codex -c 'service_tier="default"' -c 'model_reasoning_effort="high"'
     model: gpt-5.5
     reasoning_effort: high
     tags:

@@ -2,8 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -31,11 +29,7 @@ type Model struct {
 	cfg          config.Config
 	status       string
 	lastLaunched string
-}
-
-type launchedMsg struct {
-	name string
-	err  error
+	selected     *config.LaunchItem
 }
 
 func New(cfg config.Config, source string) Model {
@@ -58,14 +52,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			selected, ok := m.launchItemForKey(msg.String())
 			if ok {
-				return m.launchSelected(selected)
+				return m.selectItem(selected)
 			}
-		}
-	case launchedMsg:
-		if msg.err != nil {
-			m.status = fmt.Sprintf("%s exited with error: %v", msg.name, msg.err)
-		} else {
-			m.status = fmt.Sprintf("%s exited. Select another target or press q.", msg.name)
 		}
 	}
 
@@ -83,7 +71,7 @@ func (m Model) View() tea.View {
 		Padding(0, 1).
 		Render(content)
 
-	view := tea.NewView(frame)
+	view := tea.NewView(frame + "\n")
 	view.AltScreen = false
 	return view
 }
@@ -111,27 +99,20 @@ func (m Model) launchItemForKey(key string) (launchItem, bool) {
 	}, true
 }
 
-func (m Model) launchSelected(item launchItem) (tea.Model, tea.Cmd) {
-	m.status = fmt.Sprintf("Launching %s with %s...", item.Name, m.cfg.Shell)
+func (m Model) selectItem(item launchItem) (tea.Model, tea.Cmd) {
+	selected := item.LaunchItem
+	m.selected = &selected
+	m.status = fmt.Sprintf("Selected %s.", item.Name)
 	m.lastLaunched = item.Name
-	return m, m.launch(item)
+	return m, tea.Quit
 }
 
-func (m Model) launch(item launchItem) tea.Cmd {
-	args := append([]string{}, m.cfg.ShellArgs...)
-	args = append(args, item.Command)
-
-	cmd := exec.Command(m.cfg.Shell, args...)
-	if strings.TrimSpace(item.WorkingDir) != "" {
-		cmd.Dir = item.WorkingDir
-	}
-	if len(item.Env) > 0 {
-		cmd.Env = append(os.Environ(), item.Env...)
+func (m Model) SelectedItem() (config.LaunchItem, bool) {
+	if m.selected == nil {
+		return config.LaunchItem{}, false
 	}
 
-	return tea.ExecProcess(cmd, func(err error) tea.Msg {
-		return launchedMsg{name: item.Name, err: err}
-	})
+	return *m.selected, true
 }
 
 func numberRange(itemCount int) string {

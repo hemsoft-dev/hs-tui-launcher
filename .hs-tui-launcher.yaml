@@ -6,7 +6,7 @@ shell_args:
 items:
   - name: Codex
     description: Open the Codex CLI
-    command: codex
+    command: codex -c 'service_tier="default"' -c 'model_reasoning_effort="high"'
     model: gpt-5.5
     reasoning_effort: high
     tags:
@@ -24,7 +24,7 @@ items:
       - cli
   - name: Cursor
     description: Open the Cursor Agent CLI
-    command: cursor agent
+    command: cursor-agent
     model: claude-opus-4-8
     reasoning_effort: xhigh
     tags:
