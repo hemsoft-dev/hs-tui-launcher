@@ -21,12 +21,14 @@ type Config struct {
 }
 
 type LaunchItem struct {
-	Name        string   `yaml:"name"`
-	Description string   `yaml:"description"`
-	Command     string   `yaml:"command"`
-	WorkingDir  string   `yaml:"working_dir,omitempty"`
-	Env         []string `yaml:"env,omitempty"`
-	Tags        []string `yaml:"tags,omitempty"`
+	Name            string   `yaml:"name"`
+	Description     string   `yaml:"description"`
+	Command         string   `yaml:"command"`
+	Model           string   `yaml:"model,omitempty"`
+	ReasoningEffort string   `yaml:"reasoning_effort,omitempty"`
+	WorkingDir      string   `yaml:"working_dir,omitempty"`
+	Env             []string `yaml:"env,omitempty"`
+	Tags            []string `yaml:"tags,omitempty"`
 }
 
 func Load(path string) (Config, string, error) {
@@ -55,25 +57,31 @@ func Default() Config {
 	return Config{
 		Title:     "HemSoft TUI Launcher",
 		Shell:     shell,
-		ShellArgs: []string{"-NoLogo", "-NoExit", "-Command"},
+		ShellArgs: []string{"-NoLogo", "-Command"},
 		Items: []LaunchItem{
 			{
-				Name:        "Codex",
-				Description: "Open the Codex CLI in PowerShell",
-				Command:     "codex",
-				Tags:        []string{"ai", "openai", "cli"},
+				Name:            "Codex",
+				Description:     "Open the Codex CLI",
+				Command:         "codex",
+				Model:           "gpt-5.5",
+				ReasoningEffort: "high",
+				Tags:            []string{"ai", "openai", "cli"},
 			},
 			{
-				Name:        "GitHub Copilot",
-				Description: "Open GitHub Copilot CLI suggestions",
-				Command:     "gh copilot suggest",
-				Tags:        []string{"ai", "github", "cli"},
+				Name:            "GitHub Copilot",
+				Description:     "Open GitHub Copilot CLI",
+				Command:         "gh copilot",
+				Model:           "claude-opus-4.8",
+				ReasoningEffort: "default",
+				Tags:            []string{"ai", "github", "cli"},
 			},
 			{
-				Name:        "Cursor",
-				Description: "Open the Cursor CLI",
-				Command:     "cursor",
-				Tags:        []string{"ai", "editor", "cli"},
+				Name:            "Cursor",
+				Description:     "Open the Cursor Agent CLI",
+				Command:         "cursor agent",
+				Model:           "claude-opus-4-8",
+				ReasoningEffort: "xhigh",
+				Tags:            []string{"ai", "editor", "cli"},
 			},
 		},
 	}

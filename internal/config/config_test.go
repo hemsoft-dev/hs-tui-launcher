@@ -23,6 +23,11 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if len(cfg.Items) != 3 {
 		t.Fatalf("len(Items) = %d, want 3", len(cfg.Items))
 	}
+	for _, arg := range cfg.ShellArgs {
+		if arg == "-NoExit" {
+			t.Fatal("default ShellArgs must not keep a nested shell open")
+		}
+	}
 }
 
 func TestLoadMergesFileWithDefaults(t *testing.T) {

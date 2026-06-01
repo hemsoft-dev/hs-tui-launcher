@@ -4,9 +4,15 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a filterable terminal menu and launches selected entries through PowerShell. The initial menu targets Codex, GitHub Copilot, and Cursor CLI commands.
+`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, and Cursor. Each row shows the model and reasoning effort before launching the selected target in the same console.
 
 ## Run
+
+```powershell
+.\run.ps1
+```
+
+Direct Go execution opens the same terminal picker:
 
 ```powershell
 go run .
@@ -33,12 +39,13 @@ title: HemSoft TUI Launcher
 shell: powershell.exe
 shell_args:
   - -NoLogo
-  - -NoExit
   - -Command
 items:
   - name: Codex
-    description: Open the Codex CLI in PowerShell
+    description: Open the Codex CLI
     command: codex
+    model: gpt-5.5
+    reasoning_effort: high
     tags:
       - ai
       - openai
@@ -47,7 +54,5 @@ items:
 
 ## Keys
 
-- `up` / `down`: move selection
-- type text: filter
-- `enter`: launch selected command
+- `1`, `2`, `3`: launch that numbered target
 - `q`, `esc`, `ctrl+c`: exit

@@ -16,8 +16,10 @@ func main() {
 	var printConfig bool
 
 	rootCmd := &cobra.Command{
-		Use:   "hs-tui-launcher",
-		Short: "Terminal launcher overlay for local AI CLIs",
+		Use:           "hs-tui-launcher",
+		Short:         "Terminal launcher overlay for local AI CLIs",
+		SilenceErrors: true,
+		SilenceUsage:  true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, source, err := config.Load(configPath)
 			if err != nil {
@@ -33,6 +35,10 @@ func main() {
 				return nil
 			}
 
+			if !hasInteractiveTerminal() {
+				return fmt.Errorf("hs-tui-launcher requires an interactive terminal; run .\\run.ps1 from PowerShell or use --print-config")
+			}
+
 			model := tui.New(cfg, source)
 			_, err = tea.NewProgram(model).Run()
 			return err
@@ -46,4 +52,17 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func hasInteractiveTerminal() bool {
+	stdin, err := os.Stdin.Stat()
+	if err != nil {
+		return false
+	}
+	stdout, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+
+	return stdin.Mode()&os.ModeCharDevice != 0 && stdout.Mode()&os.ModeCharDevice != 0
 }

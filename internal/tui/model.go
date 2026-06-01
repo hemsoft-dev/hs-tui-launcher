@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
-	"charm.land/bubbles/v2/list"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/HemSoft/hs-tui-launcher/internal/config"
@@ -14,33 +14,21 @@ import (
 
 type launchItem struct {
 	config.LaunchItem
+	Number int
 }
 
-func (i launchItem) Title() string {
-	return i.Name
-}
-
-func (i launchItem) Description() string {
-	parts := []string{i.LaunchItem.Description}
-	if len(i.Tags) > 0 {
-		parts = append(parts, strings.Join(i.Tags, ", "))
-	}
-	return strings.Join(parts, " | ")
-}
-
-func (i launchItem) FilterValue() string {
-	return strings.Join([]string{
+func (i launchItem) Line() string {
+	return fmt.Sprintf(
+		"%d. %-15s  model: %-18s  effort: %s",
+		i.Number,
 		i.Name,
-		i.LaunchItem.Description,
-		i.Command,
-		strings.Join(i.Tags, " "),
-	}, " ")
+		valueOrDefault(i.Model, "default"),
+		valueOrDefault(i.ReasoningEffort, "default"),
+	)
 }
 
 type Model struct {
 	cfg          config.Config
-	source       string
-	list         list.Model
 	status       string
 	lastLaunched string
 }
@@ -50,39 +38,10 @@ type launchedMsg struct {
 	err  error
 }
 
-var (
-	titleStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color("#9AE6B4")).
-			Padding(0, 1)
-	statusStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FBD38D")).
-			Padding(0, 1)
-	footerStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#A0AEC0")).
-			Padding(0, 1)
-)
-
 func New(cfg config.Config, source string) Model {
-	items := make([]list.Item, 0, len(cfg.Items))
-	for _, entry := range cfg.Items {
-		items = append(items, launchItem{LaunchItem: entry})
-	}
-
-	delegate := list.NewDefaultDelegate()
-	delegate.ShowDescription = true
-
-	l := list.New(items, delegate, 80, 24)
-	l.Title = "Launch targets"
-	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(true)
-	l.SetShowHelp(true)
-
 	return Model{
 		cfg:    cfg,
-		source: source,
-		list:   l,
-		status: "Enter launches. Type to filter. q exits.",
+		status: fmt.Sprintf("Press %s.", numberRange(len(cfg.Items))),
 	}
 }
 
@@ -92,21 +51,15 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.list.SetSize(msg.Width, max(6, msg.Height-6))
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "q", "esc":
 			return m, tea.Quit
-		case "enter":
-			selected, ok := m.list.SelectedItem().(launchItem)
-			if !ok {
-				m.status = "No launch target selected."
-				return m, nil
+		default:
+			selected, ok := m.launchItemForKey(msg.String())
+			if ok {
+				return m.launchSelected(selected)
 			}
-			m.status = fmt.Sprintf("Launching %s with %s...", selected.Name, m.cfg.Shell)
-			m.lastLaunched = selected.Name
-			return m, m.launch(selected)
 		}
 	case launchedMsg:
 		if msg.err != nil {
@@ -116,27 +69,52 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
+	return m, nil
 }
 
 func (m Model) View() tea.View {
-	header := titleStyle.Render(m.cfg.Title)
-	status := statusStyle.Render(m.status)
-	source := footerStyle.Render("Config: " + m.source)
+	lines := m.menuLines()
 
-	content := strings.Join([]string{
-		header,
-		m.list.View(),
-		status,
-		source,
-	}, "\n")
+	content := strings.Join(lines, "\n")
 
-	view := tea.NewView(content)
-	view.AltScreen = true
-	view.WindowTitle = m.cfg.Title
+	frame := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#63B3ED")).
+		Padding(0, 1).
+		Render(content)
+
+	view := tea.NewView(frame)
+	view.AltScreen = false
 	return view
+}
+
+func (m Model) menuLines() []string {
+	lines := make([]string, 0, len(m.cfg.Items))
+	for index, item := range m.cfg.Items {
+		lines = append(lines, launchItem{
+			LaunchItem: item,
+			Number:     index + 1,
+		}.Line())
+	}
+	return lines
+}
+
+func (m Model) launchItemForKey(key string) (launchItem, bool) {
+	number, err := strconv.Atoi(key)
+	if err != nil || number < 1 || number > len(m.cfg.Items) || number > 9 {
+		return launchItem{}, false
+	}
+
+	return launchItem{
+		LaunchItem: m.cfg.Items[number-1],
+		Number:     number,
+	}, true
+}
+
+func (m Model) launchSelected(item launchItem) (tea.Model, tea.Cmd) {
+	m.status = fmt.Sprintf("Launching %s with %s...", item.Name, m.cfg.Shell)
+	m.lastLaunched = item.Name
+	return m, m.launch(item)
 }
 
 func (m Model) launch(item launchItem) tea.Cmd {
@@ -154,4 +132,23 @@ func (m Model) launch(item launchItem) tea.Cmd {
 	return tea.ExecProcess(cmd, func(err error) tea.Msg {
 		return launchedMsg{name: item.Name, err: err}
 	})
+}
+
+func numberRange(itemCount int) string {
+	if itemCount <= 0 {
+		return "a number"
+	}
+	if itemCount == 1 {
+		return "1"
+	}
+
+	return fmt.Sprintf("1-%d", min(itemCount, 9))
+}
+
+func valueOrDefault(value string, fallback string) string {
+	if strings.TrimSpace(value) == "" {
+		return fallback
+	}
+
+	return value
 }
