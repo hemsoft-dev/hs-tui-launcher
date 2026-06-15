@@ -23,11 +23,41 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if len(cfg.Items) != 5 {
 		t.Fatalf("len(Items) = %d, want 5", len(cfg.Items))
 	}
+	if got := cfg.Items[0].Command; got != "" {
+		t.Fatalf("Codex command = %q", got)
+	}
+	if len(cfg.Items[0].Choices) != 3 {
+		t.Fatalf("Codex choices = %d, want 3", len(cfg.Items[0].Choices))
+	}
+	if got := cfg.Items[0].Choices[0].Command; got != codexFreshCommand {
+		t.Fatalf("Codex fresh command = %q", got)
+	}
+	if got := cfg.Items[0].Choices[1].Command; got != codexResumeCommand {
+		t.Fatalf("Codex resume command = %q", got)
+	}
+	if got := cfg.Items[0].Choices[2].Command; got != codexResumePickerCommand {
+		t.Fatalf("Codex resume picker command = %q", got)
+	}
+	if got := cfg.Items[1].Command; got != "gh copilot --allow-all" {
+		t.Fatalf("GitHub Copilot command = %q", got)
+	}
+	if got := cfg.Items[1].Model; got != "gpt-5.5" {
+		t.Fatalf("GitHub Copilot model = %q", got)
+	}
+	if got := cfg.Items[1].ReasoningEffort; got != "high" {
+		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
+	}
 	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
 		t.Fatalf("Claude Code command = %q", got)
 	}
-	if got := cfg.Items[4].Command; got != "opencode --model opencode/minimax-m3-free" {
-		t.Fatalf("OpenCode MiniMax M3 Free command = %q", got)
+	if got := cfg.Items[4].Command; got != "opencode --model opencode-go/kimi-k2.7-code" {
+		t.Fatalf("OpenCode Kimi K2.7 Code command = %q", got)
+	}
+	if got := cfg.Items[4].Model; got != "opencode-go/kimi-k2.7-code" {
+		t.Fatalf("OpenCode Kimi K2.7 Code model = %q", got)
+	}
+	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+		t.Fatalf("OpenCode Kimi K2.7 Code env = %#v", got)
 	}
 	for _, arg := range cfg.ShellArgs {
 		if arg == "-NoExit" {
@@ -69,7 +99,16 @@ items:
 
 func TestValidateRejectsMissingCommand(t *testing.T) {
 	cfg := Default()
-	cfg.Items[0].Command = ""
+	cfg.Items[1].Command = ""
+
+	if err := cfg.Validate(); err == nil {
+		t.Fatal("Validate returned nil, want error")
+	}
+}
+
+func TestValidateRejectsMissingChoiceCommand(t *testing.T) {
+	cfg := Default()
+	cfg.Items[0].Choices[0].Command = ""
 
 	if err := cfg.Validate(); err == nil {
 		t.Fatal("Validate returned nil, want error")

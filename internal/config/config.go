@@ -11,7 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const defaultConfigFile = ".hs-tui-launcher.yaml"
+const (
+	defaultConfigFile        = ".hs-tui-launcher.yaml"
+	codexFreshCommand        = "codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
+	codexResumeCommand       = "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
+	codexResumePickerCommand = "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
+)
 
 type Config struct {
 	Title     string       `yaml:"title"`
@@ -21,14 +26,21 @@ type Config struct {
 }
 
 type LaunchItem struct {
-	Name            string   `yaml:"name"`
-	Description     string   `yaml:"description"`
-	Command         string   `yaml:"command"`
-	Model           string   `yaml:"model,omitempty"`
-	ReasoningEffort string   `yaml:"reasoning_effort,omitempty"`
-	WorkingDir      string   `yaml:"working_dir,omitempty"`
-	Env             []string `yaml:"env,omitempty"`
-	Tags            []string `yaml:"tags,omitempty"`
+	Name            string         `yaml:"name"`
+	Description     string         `yaml:"description"`
+	Command         string         `yaml:"command,omitempty"`
+	Model           string         `yaml:"model,omitempty"`
+	ReasoningEffort string         `yaml:"reasoning_effort,omitempty"`
+	WorkingDir      string         `yaml:"working_dir,omitempty"`
+	Env             []string       `yaml:"env,omitempty"`
+	Tags            []string       `yaml:"tags,omitempty"`
+	Choices         []LaunchChoice `yaml:"choices,omitempty"`
+}
+
+type LaunchChoice struct {
+	Name        string `yaml:"name"`
+	Description string `yaml:"description,omitempty"`
+	Command     string `yaml:"command"`
 }
 
 func Load(path string) (Config, string, error) {
@@ -62,17 +74,33 @@ func Default() Config {
 			{
 				Name:            "Codex",
 				Description:     "Open the Codex CLI",
-				Command:         "codex -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'",
 				Model:           "gpt-5.5",
 				ReasoningEffort: "high",
 				Tags:            []string{"ai", "openai", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "Start fresh",
+						Description: "Open a new Codex CLI session",
+						Command:     codexFreshCommand,
+					},
+					{
+						Name:        "Resume last",
+						Description: "Resume the last Codex CLI session",
+						Command:     codexResumeCommand,
+					},
+					{
+						Name:        "Resume picker",
+						Description: "Choose a Codex CLI session to resume",
+						Command:     codexResumePickerCommand,
+					},
+				},
 			},
 			{
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
-				Command:         "gh copilot",
-				Model:           "claude-opus-4.8",
-				ReasoningEffort: "default",
+				Command:         "gh copilot --allow-all",
+				Model:           "gpt-5.5",
+				ReasoningEffort: "high",
 				Tags:            []string{"ai", "github", "cli"},
 			},
 			{
@@ -92,11 +120,12 @@ func Default() Config {
 				Tags:            []string{"ai", "anthropic", "cli"},
 			},
 			{
-				Name:            "OpenCode MiniMax M3 Free",
-				Description:     "Open OpenCode with MiniMax M3 Free",
-				Command:         "opencode --model opencode/minimax-m3-free",
-				Model:           "opencode/minimax-m3-free",
+				Name:            "OpenCode Kimi K2.7 Code",
+				Description:     "Open OpenCode with Kimi K2.7 Code",
+				Command:         "opencode --model opencode-go/kimi-k2.7-code",
+				Model:           "opencode-go/kimi-k2.7-code",
 				ReasoningEffort: "default",
+				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
 				Tags:            []string{"ai", "opencode", "cli"},
 			},
 		},
@@ -134,8 +163,18 @@ func (c Config) Validate() error {
 		if strings.TrimSpace(item.Name) == "" {
 			return fmt.Errorf("items[%d].name is required", idx)
 		}
-		if strings.TrimSpace(item.Command) == "" {
-			return fmt.Errorf("items[%d].command is required", idx)
+		hasCommand := strings.TrimSpace(item.Command) != ""
+		hasChoices := len(item.Choices) > 0
+		if !hasCommand && !hasChoices {
+			return fmt.Errorf("items[%d].command or choices are required", idx)
+		}
+		for choiceIdx, choice := range item.Choices {
+			if strings.TrimSpace(choice.Name) == "" {
+				return fmt.Errorf("items[%d].choices[%d].name is required", idx, choiceIdx)
+			}
+			if strings.TrimSpace(choice.Command) == "" {
+				return fmt.Errorf("items[%d].choices[%d].command is required", idx, choiceIdx)
+			}
 		}
 	}
 	return nil

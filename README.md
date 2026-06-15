@@ -4,7 +4,10 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot, Cursor, Claude Code, and OpenCode. Each row shows the model and reasoning effort. The PowerShell wrapper exits the Go picker before handing off to the selected CLI in the same console.
+`hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot,
+Cursor, Claude Code, and OpenCode. Each row shows the model and reasoning
+effort. The PowerShell wrapper exits the Go picker before handing off to the
+selected CLI in the same console.
 
 ## Run
 
@@ -32,7 +35,8 @@ go run . --config .\.hs-tui-launcher.yaml
 
 ## Configure
 
-The app loads `.hs-tui-launcher.yaml` from the current directory when present, otherwise it falls back to built-in defaults.
+The app loads `.hs-tui-launcher.yaml` from the current directory when present,
+otherwise it falls back to built-in defaults.
 
 ```yaml
 title: HemSoft TUI Launcher
@@ -43,14 +47,40 @@ shell_args:
 items:
   - name: Codex
     description: Open the Codex CLI
-    command: codex -c 'service_tier="default"' -c 'model_reasoning_effort="high"'
     model: gpt-5.5
     reasoning_effort: high
     tags:
       - ai
       - openai
       - cli
+    choices:
+      - name: Start fresh
+        description: Open a new Codex CLI session
+        command: >-
+          codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.5
+          -c 'service_tier="default"'
+          -c 'model_reasoning_effort="high"'
+      - name: Resume last
+        description: Resume the last Codex CLI session
+        command: >-
+          codex resume --last --dangerously-bypass-approvals-and-sandbox
+          -m gpt-5.5
+          -c 'service_tier="default"'
+          -c 'model_reasoning_effort="high"'
+      - name: Resume picker
+        description: Choose a Codex CLI session to resume
+        command: >-
+          codex resume --dangerously-bypass-approvals-and-sandbox
+          -m gpt-5.5
+          -c 'service_tier="default"'
+          -c 'model_reasoning_effort="high"'
 ```
+
+The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
+`~/.codex/agents/anvil.toml`; launcher flags can start a fresh session, resume
+the last session, or open the resume picker with sandbox bypass, model, service
+tier, and reasoning effort. Codex starts in the directory where `l` or `run.ps1`
+was invoked.
 
 ## Keys
 
