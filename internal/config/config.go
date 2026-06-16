@@ -16,6 +16,7 @@ const (
 	codexFreshCommand        = "codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
 	codexResumeCommand       = "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
 	codexResumePickerCommand = "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
+	copilotCommand           = "copilot --allow-all"
 )
 
 type Config struct {
@@ -98,7 +99,7 @@ func Default() Config {
 			{
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
-				Command:         "gh copilot --allow-all",
+				Command:         copilotCommand,
 				Model:           "gpt-5.5",
 				ReasoningEffort: "high",
 				Tags:            []string{"ai", "github", "cli"},

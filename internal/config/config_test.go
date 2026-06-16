@@ -38,7 +38,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[0].Choices[2].Command; got != codexResumePickerCommand {
 		t.Fatalf("Codex resume picker command = %q", got)
 	}
-	if got := cfg.Items[1].Command; got != "gh copilot --allow-all" {
+	if got := cfg.Items[1].Command; got != copilotCommand {
 		t.Fatalf("GitHub Copilot command = %q", got)
 	}
 	if got := cfg.Items[1].Model; got != "gpt-5.5" {
