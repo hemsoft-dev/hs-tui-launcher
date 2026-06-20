@@ -49,10 +49,9 @@ items:
       - ai
       - anthropic
       - cli
-  - name: OpenCode Kimi K2.7 Code
-    description: Open OpenCode with Kimi K2.7 Code
-    command: opencode --model opencode-go/kimi-k2.7-code
-    model: opencode-go/kimi-k2.7-code
+  - name: OpenCode
+    description: Open OpenCode
+    model: select model
     reasoning_effort: default
     env:
       - 'OPENCODE_PERMISSION={"*":"allow"}'
@@ -60,3 +59,25 @@ items:
       - ai
       - opencode
       - cli
+    choices:
+      - name: Kimi K2.7 Code
+        description: opencode/kimi-k2.7-code
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider opencode -Model kimi-k2.7-code'
+  - name: OpenRouter
+    description: Open OpenCode with OpenRouter
+    model: select model
+    reasoning_effort: default
+    env:
+      - 'OPENCODE_PERMISSION={"*":"allow"}'
+    tags:
+      - ai
+      - openrouter
+      - opencode
+      - cli
+    choices:
+      - name: GLM 5.2
+        description: openrouter/z-ai/glm-5.2
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider openrouter -Model z-ai/glm-5.2'
+      - name: Fusion
+        description: openrouter/fusion
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider openrouter -Model fusion'

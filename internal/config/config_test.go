@@ -20,8 +20,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if cfg.Title != "HemSoft TUI Launcher" {
 		t.Fatalf("Title = %q", cfg.Title)
 	}
-	if len(cfg.Items) != 5 {
-		t.Fatalf("len(Items) = %d, want 5", len(cfg.Items))
+	if len(cfg.Items) != 6 {
+		t.Fatalf("len(Items) = %d, want 6", len(cfg.Items))
 	}
 	if got := cfg.Items[0].Command; got != "" {
 		t.Fatalf("Codex command = %q", got)
@@ -50,14 +50,74 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
 		t.Fatalf("Claude Code command = %q", got)
 	}
-	if got := cfg.Items[4].Command; got != "opencode --model opencode-go/kimi-k2.7-code" {
-		t.Fatalf("OpenCode Kimi K2.7 Code command = %q", got)
+	if got := cfg.Items[4].Command; got != "" {
+		t.Fatalf("OpenCode command = %q", got)
 	}
-	if got := cfg.Items[4].Model; got != "opencode-go/kimi-k2.7-code" {
-		t.Fatalf("OpenCode Kimi K2.7 Code model = %q", got)
+	if got := cfg.Items[4].Name; got != "OpenCode" {
+		t.Fatalf("OpenCode name = %q", got)
+	}
+	if got := cfg.Items[4].Model; got != "select model" {
+		t.Fatalf("OpenCode model = %q", got)
 	}
 	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
-		t.Fatalf("OpenCode Kimi K2.7 Code env = %#v", got)
+		t.Fatalf("OpenCode env = %#v", got)
+	}
+	if got := len(cfg.Items[4].Choices); got != 1 {
+		t.Fatalf("OpenCode choices = %d, want 1", got)
+	}
+	opencodeChoices := []struct {
+		name        string
+		description string
+		command     string
+	}{
+		{"Kimi K2.7 Code", "opencode/kimi-k2.7-code", opencodeKimiCommand},
+	}
+	for index, want := range opencodeChoices {
+		choice := cfg.Items[4].Choices[index]
+		if choice.Name != want.name {
+			t.Fatalf("OpenCode choice %d name = %q", index, choice.Name)
+		}
+		if choice.Description != want.description {
+			t.Fatalf("OpenCode choice %d description = %q", index, choice.Description)
+		}
+		if choice.Command != want.command {
+			t.Fatalf("OpenCode choice %d command = %q", index, choice.Command)
+		}
+	}
+	if got := cfg.Items[5].Name; got != "OpenRouter" {
+		t.Fatalf("OpenRouter name = %q", got)
+	}
+	if got := cfg.Items[5].Command; got != "" {
+		t.Fatalf("OpenRouter command = %q", got)
+	}
+	if got := cfg.Items[5].Model; got != "select model" {
+		t.Fatalf("OpenRouter model = %q", got)
+	}
+	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+		t.Fatalf("OpenRouter env = %#v", got)
+	}
+	if got := len(cfg.Items[5].Choices); got != 2 {
+		t.Fatalf("OpenRouter choices = %d, want 2", got)
+	}
+	openrouterChoice := cfg.Items[5].Choices[0]
+	if openrouterChoice.Name != "GLM 5.2" {
+		t.Fatalf("OpenRouter choice name = %q", openrouterChoice.Name)
+	}
+	if openrouterChoice.Description != "openrouter/z-ai/glm-5.2" {
+		t.Fatalf("OpenRouter choice description = %q", openrouterChoice.Description)
+	}
+	if openrouterChoice.Command != openrouterGLMCommand {
+		t.Fatalf("OpenRouter choice command = %q", openrouterChoice.Command)
+	}
+	fusionChoice := cfg.Items[5].Choices[1]
+	if fusionChoice.Name != "Fusion" {
+		t.Fatalf("OpenRouter fusion choice name = %q", fusionChoice.Name)
+	}
+	if fusionChoice.Description != "openrouter/fusion" {
+		t.Fatalf("OpenRouter fusion choice description = %q", fusionChoice.Description)
+	}
+	if fusionChoice.Command != openrouterFusionCommand {
+		t.Fatalf("OpenRouter fusion choice command = %q", fusionChoice.Command)
 	}
 	for _, arg := range cfg.ShellArgs {
 		if arg == "-NoExit" {

@@ -80,9 +80,12 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 `~/.codex/agents/anvil.toml`; launcher flags can start a fresh session, resume
 the last session, or open the resume picker with sandbox bypass, model, service
 tier, and reasoning effort. Codex starts in the directory where `l` or `run.ps1`
-was invoked.
+was invoked. OpenCode opens a model submenu for OpenCode Zen models. OpenRouter
+opens a separate model submenu, with GLM 5.2 as the first choice. The wrapper
+updates OpenCode's persisted TUI model before launch so the selected model is
+active immediately.
 
 ## Keys
 
-- `1`, `2`, `3`, `4`, `5`: launch that numbered target
+- `1`, `2`, `3`, `4`, `5`, `6`: launch that numbered target
 - `q`, `esc`, `ctrl+c`: exit

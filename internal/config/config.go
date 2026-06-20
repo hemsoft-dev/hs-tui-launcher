@@ -17,6 +17,9 @@ const (
 	codexResumeCommand       = "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
 	codexResumePickerCommand = "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
 	copilotCommand           = "copilot --allow-all"
+	opencodeKimiCommand      = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider opencode -Model kimi-k2.7-code"
+	openrouterGLMCommand     = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider openrouter -Model z-ai/glm-5.2"
+	openrouterFusionCommand  = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider openrouter -Model fusion"
 )
 
 type Config struct {
@@ -121,13 +124,39 @@ func Default() Config {
 				Tags:            []string{"ai", "anthropic", "cli"},
 			},
 			{
-				Name:            "OpenCode Kimi K2.7 Code",
-				Description:     "Open OpenCode with Kimi K2.7 Code",
-				Command:         "opencode --model opencode-go/kimi-k2.7-code",
-				Model:           "opencode-go/kimi-k2.7-code",
+				Name:            "OpenCode",
+				Description:     "Open OpenCode",
+				Model:           "select model",
 				ReasoningEffort: "default",
 				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
 				Tags:            []string{"ai", "opencode", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "Kimi K2.7 Code",
+						Description: "opencode/kimi-k2.7-code",
+						Command:     opencodeKimiCommand,
+					},
+				},
+			},
+			{
+				Name:            "OpenRouter",
+				Description:     "Open OpenCode with OpenRouter",
+				Model:           "select model",
+				ReasoningEffort: "default",
+				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
+				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "GLM 5.2",
+						Description: "openrouter/z-ai/glm-5.2",
+						Command:     openrouterGLMCommand,
+					},
+					{
+						Name:        "Fusion",
+						Description: "openrouter/fusion",
+						Command:     openrouterFusionCommand,
+					},
+				},
 			},
 		},
 	}

@@ -92,6 +92,24 @@ func TestSelectingCodexResumePickerChoiceReturnsResumePickerCommand(t *testing.T
 	}
 }
 
+func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("1"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter GLM 5.2" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider openrouter -Model z-ai/glm-5.2` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+	if len(item.Env) != 1 || item.Env[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+		t.Fatalf("Env = %#v", item.Env)
+	}
+}
+
 func TestEscapeFromChoiceMenuReturnsToMainMenu(t *testing.T) {
 	model := New(config.Default(), "test")
 
@@ -113,6 +131,16 @@ func chooseCodex(t *testing.T, choice tea.KeyPressMsg) Model {
 
 	model := New(config.Default(), "test")
 	updated, _ := model.Update(key("1"))
+	model = updated.(Model)
+	updated, _ = model.Update(choice)
+	return updated.(Model)
+}
+
+func chooseOpenRouter(t *testing.T, choice tea.KeyPressMsg) Model {
+	t.Helper()
+
+	model := New(config.Default(), "test")
+	updated, _ := model.Update(key("6"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
