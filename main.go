@@ -82,12 +82,18 @@ func main() {
 
 type selectionOutput struct {
 	Name       string   `json:"name"`
-	Command    string   `json:"command"`
+	Executable string   `json:"executable"`
+	Args       []string `json:"args,omitempty"`
 	WorkingDir string   `json:"working_dir,omitempty"`
 	Env        []string `json:"env,omitempty"`
 }
 
 func writeSelection(path string, item config.LaunchItem) error {
+	invocation, err := parseSelectionCommand(item.Command)
+	if err != nil {
+		return err
+	}
+
 	file, err := os.Create(filepath.Clean(path))
 	if err != nil {
 		return fmt.Errorf("create selection file: %w", err)
@@ -96,10 +102,122 @@ func writeSelection(path string, item config.LaunchItem) error {
 
 	return json.NewEncoder(file).Encode(selectionOutput{
 		Name:       item.Name,
-		Command:    item.Command,
+		Executable: invocation.executable,
+		Args:       invocation.args,
 		WorkingDir: item.WorkingDir,
 		Env:        item.Env,
 	})
+}
+
+type selectionInvocation struct {
+	executable string
+	args       []string
+}
+
+func parseSelectionCommand(command string) (selectionInvocation, error) {
+	tokens, err := tokenizeSelectionCommand(command)
+	if err != nil {
+		return selectionInvocation{}, err
+	}
+	if len(tokens) == 0 {
+		return selectionInvocation{}, fmt.Errorf("selection command is required")
+	}
+	if tokens[0] == "&" {
+		tokens = tokens[1:]
+	}
+	if len(tokens) == 0 {
+		return selectionInvocation{}, fmt.Errorf("selection command executable is required")
+	}
+	if tokens[0] == "&" {
+		return selectionInvocation{}, fmt.Errorf("selection command executable cannot be the call operator")
+	}
+
+	executable, err := resolveSelectionExecutable(tokens[0])
+	if err != nil {
+		return selectionInvocation{}, err
+	}
+
+	return selectionInvocation{
+		executable: executable,
+		args:       append([]string(nil), tokens[1:]...),
+	}, nil
+}
+
+func tokenizeSelectionCommand(command string) ([]string, error) {
+	var tokens []string
+	var token strings.Builder
+	var quote rune
+	tokenStarted := false
+	leadingToken := true
+
+	flushToken := func() {
+		if tokenStarted {
+			tokens = append(tokens, token.String())
+			token.Reset()
+			tokenStarted = false
+			leadingToken = false
+		}
+	}
+
+	for _, char := range command {
+		if quote != 0 {
+			if char == quote {
+				quote = 0
+				continue
+			}
+			token.WriteRune(char)
+			tokenStarted = true
+			continue
+		}
+
+		switch {
+		case char == '\'' || char == '"':
+			quote = char
+			tokenStarted = true
+		case char == ' ' || char == '\t' || char == '\r' || char == '\n':
+			flushToken()
+		case strings.ContainsRune(";|<>`", char):
+			return nil, fmt.Errorf("selection command contains unsupported PowerShell metacharacter %q", char)
+		case char == '&':
+			if leadingToken && !tokenStarted {
+				tokens = append(tokens, "&")
+				leadingToken = false
+				continue
+			}
+			return nil, fmt.Errorf("selection command contains unsupported PowerShell metacharacter %q", char)
+		default:
+			token.WriteRune(char)
+			tokenStarted = true
+		}
+	}
+	if quote != 0 {
+		return nil, fmt.Errorf("selection command contains an unterminated quote")
+	}
+	flushToken()
+
+	return tokens, nil
+}
+
+func resolveSelectionExecutable(executable string) (string, error) {
+	const repoRootVariable = "$repoRoot"
+	if executable != repoRootVariable &&
+		!strings.HasPrefix(executable, repoRootVariable+`\`) &&
+		!strings.HasPrefix(executable, repoRootVariable+"/") {
+		return executable, nil
+	}
+
+	suffix := strings.TrimPrefix(executable, repoRootVariable)
+	suffix = strings.TrimLeft(suffix, `\/`)
+	if strings.TrimSpace(suffix) == "" {
+		return "", fmt.Errorf("selection command executable cannot be only %s", repoRootVariable)
+	}
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("resolve repository root: %w", err)
+	}
+
+	return filepath.Join(workingDir, filepath.FromSlash(strings.ReplaceAll(suffix, `\`, `/`))), nil
 }
 
 func hasInteractiveTerminal() bool {
