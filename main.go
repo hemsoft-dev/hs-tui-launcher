@@ -89,6 +89,8 @@ type selectionOutput struct {
 }
 
 func writeSelection(path string, item config.LaunchItem) error {
+	// run.ps1 owns process launch after Bubble Tea restores the terminal; the Go side writes
+	// a structured selection so the child process does not inherit the TUI's terminal state.
 	invocation, err := parseSelectionCommand(item.Command)
 	if err != nil {
 		return err
