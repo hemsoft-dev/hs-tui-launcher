@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -160,22 +161,156 @@ items:
 	}
 }
 
+func TestLoadAllowsFullFileOverride(t *testing.T) {
+	dir := t.TempDir()
+	chdir(t, dir)
+
+	path := filepath.Join(dir, "custom.yaml")
+	writeFile(t, path, `
+title: Fully Custom
+shell: pwsh
+shell_args:
+  - -NoProfile
+  - -Command
+items:
+  - name: Custom Tool
+    description: Custom description
+    command: custom-tool --flag
+    model: custom-model
+    reasoning_effort: low
+    working_dir: C:\tools
+    env:
+      - CUSTOM_ENV=1
+    tags:
+      - custom
+`)
+
+	cfg, source, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+
+	if source != path {
+		t.Fatalf("source = %q, want %q", source, path)
+	}
+	if cfg.Title != "Fully Custom" {
+		t.Fatalf("Title = %q", cfg.Title)
+	}
+	if cfg.Shell != "pwsh" {
+		t.Fatalf("Shell = %q", cfg.Shell)
+	}
+	if len(cfg.ShellArgs) != 2 || cfg.ShellArgs[0] != "-NoProfile" || cfg.ShellArgs[1] != "-Command" {
+		t.Fatalf("ShellArgs = %#v", cfg.ShellArgs)
+	}
+	if len(cfg.Items) != 1 {
+		t.Fatalf("len(Items) = %d, want 1", len(cfg.Items))
+	}
+	item := cfg.Items[0]
+	if item.Name != "Custom Tool" || item.Command != "custom-tool --flag" || item.Model != "custom-model" {
+		t.Fatalf("Item = %#v", item)
+	}
+	if item.WorkingDir != `C:\tools` {
+		t.Fatalf("WorkingDir = %q", item.WorkingDir)
+	}
+	if len(item.Env) != 1 || item.Env[0] != "CUSTOM_ENV=1" {
+		t.Fatalf("Env = %#v", item.Env)
+	}
+}
+
+func TestLoadMergesPartialFileWithDefaults(t *testing.T) {
+	dir := t.TempDir()
+	chdir(t, dir)
+
+	path := filepath.Join(dir, defaultConfigFile)
+	writeFile(t, path, `
+title: Partial Launcher
+`)
+
+	cfg, source, err := Load("")
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+
+	if source != defaultConfigFile {
+		t.Fatalf("source = %q, want %q", source, defaultConfigFile)
+	}
+	if cfg.Title != "Partial Launcher" {
+		t.Fatalf("Title = %q", cfg.Title)
+	}
+	if cfg.Shell == "" {
+		t.Fatal("Shell was not preserved from defaults")
+	}
+	if len(cfg.Items) != len(Default().Items) {
+		t.Fatalf("len(Items) = %d, want %d", len(cfg.Items), len(Default().Items))
+	}
+	if cfg.Items[0].Name != Default().Items[0].Name {
+		t.Fatalf("First item name = %q", cfg.Items[0].Name)
+	}
+}
+
+func TestLoadWrapsMalformedYAMLError(t *testing.T) {
+	dir := t.TempDir()
+	chdir(t, dir)
+
+	path := filepath.Join(dir, defaultConfigFile)
+	writeFile(t, path, `
+title: Broken
+items:
+  - name: Test
+    command: echo test
+    bad: [unterminated
+`)
+
+	_, _, err := Load("")
+	assertErrorContains(t, err, `parse config ".hs-tui-launcher.yaml"`)
+}
+
+func TestLoadWrapsValidationError(t *testing.T) {
+	dir := t.TempDir()
+	chdir(t, dir)
+
+	path := filepath.Join(dir, defaultConfigFile)
+	writeFile(t, path, `
+title: Invalid
+items:
+  - name: Missing Command
+`)
+
+	_, _, err := Load("")
+	assertErrorContains(t, err, `validate config ".hs-tui-launcher.yaml"`)
+	assertErrorContains(t, err, "items[0].command or choices are required")
+}
+
+func TestValidateRejectsEmptyItems(t *testing.T) {
+	cfg := Default()
+	cfg.Items = nil
+
+	err := cfg.Validate()
+	assertErrorContains(t, err, "at least one launcher item is required")
+}
+
+func TestValidateRejectsMissingName(t *testing.T) {
+	cfg := Default()
+	cfg.Items[0].Name = " "
+
+	err := cfg.Validate()
+	assertErrorContains(t, err, "items[0].name is required")
+}
+
 func TestValidateRejectsMissingCommand(t *testing.T) {
 	cfg := Default()
 	cfg.Items[1].Command = ""
 
-	if err := cfg.Validate(); err == nil {
-		t.Fatal("Validate returned nil, want error")
-	}
+	err := cfg.Validate()
+	assertErrorContains(t, err, "items[1].command or choices are required")
 }
 
 func TestValidateRejectsMissingChoiceCommand(t *testing.T) {
 	cfg := Default()
 	cfg.Items[0].Choices[0].Command = ""
 
-	if err := cfg.Validate(); err == nil {
-		t.Fatal("Validate returned nil, want error")
-	}
+	err := cfg.Validate()
+	assertErrorContains(t, err, "items[0].choices[0].command is required")
 }
 
 func chdir(t *testing.T, dir string) {
@@ -200,5 +335,16 @@ func writeFile(t *testing.T, path string, content string) {
 
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("WriteFile: %v", err)
+	}
+}
+
+func assertErrorContains(t *testing.T, err error, want string) {
+	t.Helper()
+
+	if err == nil {
+		t.Fatalf("error = nil, want %q", want)
+	}
+	if !strings.Contains(err.Error(), want) {
+		t.Fatalf("error = %q, want substring %q", err, want)
 	}
 }
