@@ -49,7 +49,9 @@ type Model struct {
 	lastLaunched string
 	choiceParent *launchItem
 	selected     *config.LaunchItem
+	cursor       int
 	width        int
+	height       int
 }
 
 func New(cfg config.Config, source string) Model {
@@ -67,6 +69,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
+		m.height = msg.Height
 		return m, nil
 	case tea.KeyPressMsg:
 		switch msg.String() {
@@ -74,11 +77,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "esc":
 			if m.choiceParent != nil {
+				m.cursor = clampCursor(m.choiceParent.Number-1, len(m.cfg.Items))
 				m.choiceParent = nil
 				m.status = fmt.Sprintf("Press %s.", numberRange(len(m.cfg.Items)))
 				return m, nil
 			}
 			return m, tea.Quit
+		case "up", "k":
+			m.moveCursor(-1)
+			return m, nil
+		case "down", "j":
+			m.moveCursor(1)
+			return m, nil
+		case "enter":
+			return m.selectCursor()
 		default:
 			if m.choiceParent != nil {
 				selected, ok := m.launchChoiceForKey(msg.String())
@@ -99,9 +111,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() tea.View {
-	lines := m.menuLines()
+	lines := m.displayLines()
 
 	content := strings.Join(lines, "\n")
+
+	if m.height > 0 && m.height < 3 {
+		view := tea.NewView(content + "\n")
+		view.AltScreen = false
+		return view
+	}
 
 	frame := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
@@ -112,6 +130,73 @@ func (m Model) View() tea.View {
 	view := tea.NewView(frame + "\n")
 	view.AltScreen = false
 	return view
+}
+
+func (m Model) displayLines() []string {
+	lines := m.menuLines()
+	if len(lines) == 0 {
+		return lines
+	}
+
+	selectableOffset := 0
+	selectableCount := len(m.cfg.Items)
+	if m.choiceParent != nil {
+		selectableOffset = 1
+		selectableCount = len(m.choiceParent.Choices)
+	}
+
+	cursorLine := -1
+	if selectableCount > 0 {
+		cursor := clampCursor(m.cursor, selectableCount)
+		cursorLine = selectableOffset + cursor
+		lines = prefixCursor(lines, selectableOffset, selectableCount, cursorLine)
+	}
+
+	return m.fitLines(lines, cursorLine)
+}
+
+func prefixCursor(lines []string, selectableOffset int, selectableCount int, cursorLine int) []string {
+	prefixed := make([]string, len(lines))
+	copy(prefixed, lines)
+
+	for index := selectableOffset; index < selectableOffset+selectableCount && index < len(prefixed); index++ {
+		prefix := "  "
+		if index == cursorLine {
+			prefix = "> "
+		}
+		prefixed[index] = prefix + prefixed[index]
+	}
+
+	return prefixed
+}
+
+func (m Model) fitLines(lines []string, cursorLine int) []string {
+	maxLines := m.contentHeight()
+	if maxLines <= 0 || len(lines) <= maxLines {
+		return lines
+	}
+
+	start := 0
+	if cursorLine >= maxLines {
+		start = cursorLine - maxLines + 1
+	}
+	if start+maxLines > len(lines) {
+		start = len(lines) - maxLines
+	}
+
+	return lines[start : start+maxLines]
+}
+
+func (m Model) contentHeight() int {
+	if m.height <= 0 {
+		return 0
+	}
+
+	contentHeight := m.height - 2
+	if contentHeight < 1 {
+		return 1
+	}
+	return contentHeight
 }
 
 func (m Model) menuLines() []string {
@@ -138,7 +223,7 @@ func (m Model) choiceLines() []string {
 			LaunchChoice: choice,
 			Number:       index + 1,
 		}.Line()
-		if m.width > 0 && len(line)+4 > m.width {
+		if m.width > 0 && len(line)+6 > m.width {
 			line = fmt.Sprintf("%d. %s", index+1, choice.Name)
 		}
 		lines = append(lines, line)
@@ -149,7 +234,7 @@ func (m Model) choiceLines() []string {
 
 func (m Model) launchItemForKey(key string) (launchItem, bool) {
 	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.cfg.Items) || number > 9 {
+	if err != nil || number < 1 || number > len(m.cfg.Items) {
 		return launchItem{}, false
 	}
 
@@ -165,7 +250,7 @@ func (m Model) launchChoiceForKey(key string) (launchChoice, bool) {
 	}
 
 	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.choiceParent.Choices) || number > 9 {
+	if err != nil || number < 1 || number > len(m.choiceParent.Choices) {
 		return launchChoice{}, false
 	}
 
@@ -179,6 +264,7 @@ func (m Model) selectItem(item launchItem) (tea.Model, tea.Cmd) {
 	if len(item.Choices) > 0 {
 		selected := item
 		m.choiceParent = &selected
+		m.cursor = 0
 		m.status = fmt.Sprintf("Select %s mode.", item.Name)
 		return m, nil
 	}
@@ -188,6 +274,45 @@ func (m Model) selectItem(item launchItem) (tea.Model, tea.Cmd) {
 	m.status = fmt.Sprintf("Selected %s.", item.Name)
 	m.lastLaunched = item.Name
 	return m, tea.Quit
+}
+
+func (m *Model) moveCursor(delta int) {
+	count := m.selectableCount()
+	if count == 0 {
+		m.cursor = 0
+		return
+	}
+
+	m.cursor = clampCursor(m.cursor+delta, count)
+}
+
+func (m Model) selectCursor() (tea.Model, tea.Cmd) {
+	if m.choiceParent != nil {
+		if len(m.choiceParent.Choices) == 0 {
+			return m, nil
+		}
+		cursor := clampCursor(m.cursor, len(m.choiceParent.Choices))
+		return m.selectChoice(launchChoice{
+			LaunchChoice: m.choiceParent.Choices[cursor],
+			Number:       cursor + 1,
+		})
+	}
+
+	if len(m.cfg.Items) == 0 {
+		return m, nil
+	}
+	cursor := clampCursor(m.cursor, len(m.cfg.Items))
+	return m.selectItem(launchItem{
+		LaunchItem: m.cfg.Items[cursor],
+		Number:     cursor + 1,
+	})
+}
+
+func (m Model) selectableCount() int {
+	if m.choiceParent != nil {
+		return len(m.choiceParent.Choices)
+	}
+	return len(m.cfg.Items)
 }
 
 func (m Model) selectChoice(choice launchChoice) (tea.Model, tea.Cmd) {
@@ -219,6 +344,16 @@ func numberRange(itemCount int) string {
 	}
 
 	return fmt.Sprintf("1-%d", min(itemCount, 9))
+}
+
+func clampCursor(cursor int, itemCount int) int {
+	if itemCount <= 0 || cursor < 0 {
+		return 0
+	}
+	if cursor >= itemCount {
+		return itemCount - 1
+	}
+	return cursor
 }
 
 func valueOrDefault(value string, fallback string) string {
