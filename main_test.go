@@ -95,6 +95,21 @@ func TestWriteSelectionRejectsUnquotedPowerShellMetacharacters(t *testing.T) {
 	}
 }
 
+func TestWriteSelectionRejectsEmptyQuotedExecutable(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "selection.json")
+	item := config.LaunchItem{
+		Name:    "Empty",
+		Command: `"" --flag`,
+	}
+
+	if err := writeSelection(path, item); err == nil {
+		t.Fatal("writeSelection returned nil, want error")
+	}
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		t.Fatalf("selection file exists after rejected command: %v", err)
+	}
+}
+
 func TestDefaultCommandsParseAsStructuredInvocations(t *testing.T) {
 	cfg := config.Default()
 

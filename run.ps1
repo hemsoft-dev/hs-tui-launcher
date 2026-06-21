@@ -99,7 +99,7 @@ function Assert-SelectionShape {
         throw 'Selection file has invalid shape: working_dir must be a string.'
     }
 
-    if ($propertyNames -contains 'args' -and $null -ne $Selection.args -and $Selection.args -isnot [array]) {
+    if ($propertyNames -contains 'args' -and $null -ne $Selection.args -and $Selection.args -isnot [array] -and $Selection.args -isnot [string]) {
         throw 'Selection file has invalid shape: args must be a JSON array of strings.'
     }
 
@@ -111,7 +111,7 @@ function Assert-SelectionShape {
         }
     }
 
-    if ($propertyNames -contains 'env' -and $null -ne $Selection.env -and $Selection.env -isnot [array]) {
+    if ($propertyNames -contains 'env' -and $null -ne $Selection.env -and $Selection.env -isnot [array] -and $Selection.env -isnot [string]) {
         throw 'Selection file has invalid shape: env must be a JSON array of strings.'
     }
 

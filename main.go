@@ -136,6 +136,9 @@ func parseSelectionCommand(command string) (selectionInvocation, error) {
 	if err != nil {
 		return selectionInvocation{}, err
 	}
+	if strings.TrimSpace(executable) == "" {
+		return selectionInvocation{}, fmt.Errorf("selection command executable cannot be empty")
+	}
 
 	return selectionInvocation{
 		executable: executable,
