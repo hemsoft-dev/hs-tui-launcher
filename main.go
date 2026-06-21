@@ -25,7 +25,7 @@ func main() {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, source, err := config.Load(configPath)
+			cfg, _, err := config.Load(configPath)
 			if err != nil {
 				return err
 			}
@@ -43,7 +43,7 @@ func main() {
 				return fmt.Errorf("hs-tui-launcher requires an interactive terminal; run .\\run.ps1 from PowerShell or use --print-config")
 			}
 
-			model := tui.New(cfg, source)
+			model := tui.New(cfg)
 			finalModel, err := tea.NewProgram(model).Run()
 			if err != nil {
 				return err

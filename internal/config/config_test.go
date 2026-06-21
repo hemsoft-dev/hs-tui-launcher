@@ -47,6 +47,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[1].ReasoningEffort; got != "high" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
 	}
+	if got := cfg.Items[2].Model; got != "claude-opus-4.8" {
+		t.Fatalf("Cursor model = %q", got)
+	}
 	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
 		t.Fatalf("Claude Code command = %q", got)
 	}

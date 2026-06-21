@@ -34,7 +34,7 @@ items:
   - name: Cursor
     description: Open the Cursor Agent CLI
     command: cursor-agent
-    model: claude-opus-4-8
+    model: claude-opus-4.8
     reasoning_effort: xhigh
     tags:
       - ai

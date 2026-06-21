@@ -111,7 +111,7 @@ func Default() Config {
 				Name:            "Cursor",
 				Description:     "Open the Cursor Agent CLI",
 				Command:         "cursor-agent",
-				Model:           "claude-opus-4-8",
+				Model:           "claude-opus-4.8",
 				ReasoningEffort: "xhigh",
 				Tags:            []string{"ai", "editor", "cli"},
 			},
