@@ -173,18 +173,25 @@ func TestJKCursorMovementSelectsVisibleItem(t *testing.T) {
 	}
 }
 
-func TestMultiDigitNumberCanSelectItemBeyondNine(t *testing.T) {
+func TestNumberKeyAcceleratorsStopAtNine(t *testing.T) {
 	model := New(configWithItems(10), "test")
 
-	updated, _ := model.Update(key("10"))
+	updated, _ := model.Update(key("9"))
 	model = updated.(Model)
 
 	item, ok := model.SelectedItem()
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "Item 10" {
+	if item.Name != "Item 9" {
 		t.Fatalf("Name = %q", item.Name)
+	}
+
+	model = New(configWithItems(10), "test")
+	updated, _ = model.Update(key("10"))
+	model = updated.(Model)
+	if _, ok := model.SelectedItem(); ok {
+		t.Fatal("Synthetic multi-digit key unexpectedly selected an item")
 	}
 }
 

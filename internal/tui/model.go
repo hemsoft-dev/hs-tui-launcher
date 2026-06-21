@@ -234,7 +234,7 @@ func (m Model) choiceLines() []string {
 
 func (m Model) launchItemForKey(key string) (launchItem, bool) {
 	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.cfg.Items) {
+	if err != nil || number < 1 || number > len(m.cfg.Items) || number > 9 {
 		return launchItem{}, false
 	}
 
@@ -250,7 +250,7 @@ func (m Model) launchChoiceForKey(key string) (launchChoice, bool) {
 	}
 
 	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.choiceParent.Choices) {
+	if err != nil || number < 1 || number > len(m.choiceParent.Choices) || number > 9 {
 		return launchChoice{}, false
 	}
 
