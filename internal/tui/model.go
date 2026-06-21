@@ -45,8 +45,6 @@ func (c launchChoice) Line() string {
 
 type Model struct {
 	cfg          config.Config
-	status       string
-	lastLaunched string
 	choiceParent *launchItem
 	selected     *config.LaunchItem
 	cursor       int
@@ -54,10 +52,9 @@ type Model struct {
 	height       int
 }
 
-func New(cfg config.Config, source string) Model {
+func New(cfg config.Config) Model {
 	return Model{
-		cfg:    cfg,
-		status: fmt.Sprintf("Press %s.", numberRange(len(cfg.Items))),
+		cfg: cfg,
 	}
 }
 
@@ -79,7 +76,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.choiceParent != nil {
 				m.cursor = clampCursor(m.choiceParent.Number-1, len(m.cfg.Items))
 				m.choiceParent = nil
-				m.status = fmt.Sprintf("Press %s.", numberRange(len(m.cfg.Items)))
 				return m, nil
 			}
 			return m, tea.Quit
@@ -265,14 +261,11 @@ func (m Model) selectItem(item launchItem) (tea.Model, tea.Cmd) {
 		selected := item
 		m.choiceParent = &selected
 		m.cursor = 0
-		m.status = fmt.Sprintf("Select %s mode.", item.Name)
 		return m, nil
 	}
 
 	selected := item.LaunchItem
 	m.selected = &selected
-	m.status = fmt.Sprintf("Selected %s.", item.Name)
-	m.lastLaunched = item.Name
 	return m, tea.Quit
 }
 
@@ -322,8 +315,6 @@ func (m Model) selectChoice(choice launchChoice) (tea.Model, tea.Cmd) {
 	selected.Command = choice.Command
 	selected.Choices = nil
 	m.selected = &selected
-	m.status = fmt.Sprintf("Selected %s.", selected.Name)
-	m.lastLaunched = selected.Name
 	return m, tea.Quit
 }
 
@@ -333,17 +324,6 @@ func (m Model) SelectedItem() (config.LaunchItem, bool) {
 	}
 
 	return *m.selected, true
-}
-
-func numberRange(itemCount int) string {
-	if itemCount <= 0 {
-		return "a number"
-	}
-	if itemCount == 1 {
-		return "1"
-	}
-
-	return fmt.Sprintf("1-%d", min(itemCount, 9))
 }
 
 func clampCursor(cursor int, itemCount int) int {

@@ -10,7 +10,7 @@ import (
 )
 
 func TestSelectingItemWithChoicesWaitsForChoice(t *testing.T) {
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 
 	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
@@ -24,7 +24,7 @@ func TestSelectingItemWithChoicesWaitsForChoice(t *testing.T) {
 }
 
 func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 
 	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
@@ -36,7 +36,7 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 }
 
 func TestChoiceMenuFallsBackToNamesForNarrowWidth(t *testing.T) {
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 
 	updated, _ := model.Update(tea.WindowSizeMsg{Width: 45})
 	model = updated.(Model)
@@ -113,7 +113,7 @@ func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
 }
 
 func TestEscapeFromChoiceMenuReturnsToMainMenu(t *testing.T) {
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 
 	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
@@ -129,7 +129,7 @@ func TestEscapeFromChoiceMenuReturnsToMainMenu(t *testing.T) {
 }
 
 func TestArrowCursorCanSelectTenthItem(t *testing.T) {
-	model := New(configWithItems(10), "test")
+	model := New(configWithItems(10))
 
 	for range 9 {
 		updated, _ := model.Update(specialKey(tea.KeyDown))
@@ -148,7 +148,7 @@ func TestArrowCursorCanSelectTenthItem(t *testing.T) {
 }
 
 func TestJKCursorMovementSelectsVisibleItem(t *testing.T) {
-	model := New(configWithItems(3), "test")
+	model := New(configWithItems(3))
 
 	updated, _ := model.Update(key("j"))
 	model = updated.(Model)
@@ -174,7 +174,7 @@ func TestJKCursorMovementSelectsVisibleItem(t *testing.T) {
 }
 
 func TestNumberKeyAcceleratorsStopAtNine(t *testing.T) {
-	model := New(configWithItems(10), "test")
+	model := New(configWithItems(10))
 
 	updated, _ := model.Update(key("9"))
 	model = updated.(Model)
@@ -187,7 +187,7 @@ func TestNumberKeyAcceleratorsStopAtNine(t *testing.T) {
 		t.Fatalf("Name = %q", item.Name)
 	}
 
-	model = New(configWithItems(10), "test")
+	model = New(configWithItems(10))
 	updated, _ = model.Update(key("10"))
 	model = updated.(Model)
 	if _, ok := model.SelectedItem(); ok {
@@ -196,7 +196,7 @@ func TestNumberKeyAcceleratorsStopAtNine(t *testing.T) {
 }
 
 func TestLongMenuDoesNotRenderPastTerminalHeight(t *testing.T) {
-	model := New(configWithItems(20), "test")
+	model := New(configWithItems(20))
 
 	updated, _ := model.Update(tea.WindowSizeMsg{Width: 80, Height: 5})
 	model = updated.(Model)
@@ -216,7 +216,7 @@ func TestLongMenuDoesNotRenderPastTerminalHeight(t *testing.T) {
 }
 
 func TestVeryShortTerminalUsesBoundedUnframedView(t *testing.T) {
-	model := New(configWithItems(5), "test")
+	model := New(configWithItems(5))
 
 	updated, _ := model.Update(tea.WindowSizeMsg{Width: 80, Height: 2})
 	model = updated.(Model)
@@ -234,7 +234,7 @@ func TestVeryShortTerminalUsesBoundedUnframedView(t *testing.T) {
 func chooseCodex(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
@@ -244,7 +244,7 @@ func chooseCodex(t *testing.T, choice tea.KeyPressMsg) Model {
 func chooseOpenRouter(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
-	model := New(config.Default(), "test")
+	model := New(config.Default())
 	updated, _ := model.Update(key("6"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
