@@ -12,14 +12,34 @@ import (
 )
 
 const (
-	defaultConfigFile        = ".hs-tui-launcher.yaml"
-	codexFreshCommand        = "codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
-	codexResumeCommand       = "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
-	codexResumePickerCommand = "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.5 -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'"
-	copilotCommand           = "copilot --allow-all"
-	opencodeKimiCommand      = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider opencode -Model kimi-k2.7-code"
-	openrouterGLMCommand     = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider openrouter -Model z-ai/glm-5.2"
-	openrouterFusionCommand  = "& \"$repoRoot\\scripts\\Start-OpenCode.ps1\" -Provider openrouter -Model fusion"
+	defaultConfigFile = ".hs-tui-launcher.yaml"
+	copilotCommand    = "copilot --allow-all"
+
+	codexModel         = "gpt-5.5"
+	claudeModel        = "claude-opus-4.8"
+	selectModel        = "select model"
+	highReasoning      = "high"
+	xhighReasoning     = "xhigh"
+	defaultReasoning   = "default"
+	opencodeProvider   = "opencode"
+	openrouterProvider = "openrouter"
+	kimiModel          = "kimi-k2.7-code"
+	glmModel           = "z-ai/glm-5.2"
+	fusionModel        = "fusion"
+)
+
+var (
+	codexPreset      = modelPreset{Model: codexModel, ReasoningEffort: highReasoning}
+	cursorPreset     = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
+	claudeCodePreset = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
+	modelMenuPreset  = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
+
+	codexFreshCommand        = codexCommand("")
+	codexResumeCommand       = codexCommand("resume --last")
+	codexResumePickerCommand = codexCommand("resume")
+	opencodeKimiCommand      = openCodeCommand(opencodeProvider, kimiModel)
+	openrouterGLMCommand     = openCodeCommand(openrouterProvider, glmModel)
+	openrouterFusionCommand  = openCodeCommand(openrouterProvider, fusionModel)
 )
 
 type Config struct {
@@ -45,6 +65,11 @@ type LaunchChoice struct {
 	Name        string `yaml:"name"`
 	Description string `yaml:"description,omitempty"`
 	Command     string `yaml:"command"`
+}
+
+type modelPreset struct {
+	Model           string
+	ReasoningEffort string
 }
 
 func Load(path string) (Config, string, error) {
@@ -78,8 +103,8 @@ func Default() Config {
 			{
 				Name:            "Codex",
 				Description:     "Open the Codex CLI",
-				Model:           "gpt-5.5",
-				ReasoningEffort: "high",
+				Model:           codexPreset.Model,
+				ReasoningEffort: codexPreset.ReasoningEffort,
 				Tags:            []string{"ai", "openai", "cli"},
 				Choices: []LaunchChoice{
 					{
@@ -103,37 +128,37 @@ func Default() Config {
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
 				Command:         copilotCommand,
-				Model:           "gpt-5.5",
-				ReasoningEffort: "high",
+				Model:           codexPreset.Model,
+				ReasoningEffort: codexPreset.ReasoningEffort,
 				Tags:            []string{"ai", "github", "cli"},
 			},
 			{
 				Name:            "Cursor",
 				Description:     "Open the Cursor Agent CLI",
 				Command:         "cursor-agent",
-				Model:           "claude-opus-4.8",
-				ReasoningEffort: "xhigh",
+				Model:           cursorPreset.Model,
+				ReasoningEffort: cursorPreset.ReasoningEffort,
 				Tags:            []string{"ai", "editor", "cli"},
 			},
 			{
 				Name:            "Claude Code",
 				Description:     "Open Claude Code CLI",
 				Command:         "claude --dangerously-skip-permissions",
-				Model:           "claude-opus-4.8",
-				ReasoningEffort: "default",
+				Model:           claudeCodePreset.Model,
+				ReasoningEffort: claudeCodePreset.ReasoningEffort,
 				Tags:            []string{"ai", "anthropic", "cli"},
 			},
 			{
 				Name:            "OpenCode",
 				Description:     "Open OpenCode",
-				Model:           "select model",
-				ReasoningEffort: "default",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
 				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
 				Tags:            []string{"ai", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "Kimi K2.7 Code",
-						Description: "opencode/kimi-k2.7-code",
+						Description: modelDescription(opencodeProvider, kimiModel),
 						Command:     opencodeKimiCommand,
 					},
 				},
@@ -141,25 +166,47 @@ func Default() Config {
 			{
 				Name:            "OpenRouter",
 				Description:     "Open OpenCode with OpenRouter",
-				Model:           "select model",
-				ReasoningEffort: "default",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
 				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "GLM 5.2",
-						Description: "openrouter/z-ai/glm-5.2",
+						Description: modelDescription(openrouterProvider, glmModel),
 						Command:     openrouterGLMCommand,
 					},
 					{
 						Name:        "Fusion",
-						Description: "openrouter/fusion",
+						Description: modelDescription(openrouterProvider, fusionModel),
 						Command:     openrouterFusionCommand,
 					},
 				},
 			},
 		},
 	}
+}
+
+func codexCommand(subcommand string) string {
+	parts := []string{"codex"}
+	if strings.TrimSpace(subcommand) != "" {
+		parts = append(parts, strings.Fields(subcommand)...)
+	}
+	parts = append(parts,
+		"--dangerously-bypass-approvals-and-sandbox",
+		"-m", codexPreset.Model,
+		"-c", `'service_tier="default"'`,
+		"-c", fmt.Sprintf(`'model_reasoning_effort="%s"'`, codexPreset.ReasoningEffort),
+	)
+	return strings.Join(parts, " ")
+}
+
+func openCodeCommand(provider string, model string) string {
+	return fmt.Sprintf(`& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider %s -Model %s`, provider, model)
+}
+
+func modelDescription(provider string, model string) string {
+	return provider + "/" + model
 }
 
 func loadFile(path string) (Config, error) {

@@ -174,6 +174,8 @@ try {
         $exitCode = $LASTEXITCODE
     }
     else {
+        # The Go TUI writes the selected command here and exits before PowerShell launches it.
+        # Keeping launch ownership in this wrapper avoids child processes inheriting TUI terminal state.
         $selectionFile = New-TemporaryFile
         & $goCommand.Source run . --selection-file $selectionFile.FullName @AppArgs
         $exitCode = $LASTEXITCODE

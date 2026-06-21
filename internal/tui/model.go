@@ -10,6 +10,11 @@ import (
 	"github.com/HemSoft/hs-tui-launcher/internal/config"
 )
 
+var launcherFrameStyle = lipgloss.NewStyle().
+	Border(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("#63B3ED")).
+	Padding(0, 1)
+
 type launchItem struct {
 	config.LaunchItem
 	Number int
@@ -117,11 +122,7 @@ func (m Model) View() tea.View {
 		return view
 	}
 
-	frame := lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#63B3ED")).
-		Padding(0, 1).
-		Render(content)
+	frame := launcherFrameStyle.Render(content)
 
 	view := tea.NewView(frame + "\n")
 	view.AltScreen = false
