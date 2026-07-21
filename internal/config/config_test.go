@@ -27,6 +27,12 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[0].Command; got != "" {
 		t.Fatalf("Codex command = %q", got)
 	}
+	if got := cfg.Items[0].Model; got != "gpt-5.6-sol" {
+		t.Fatalf("Codex model = %q", got)
+	}
+	if got := cfg.Items[0].ReasoningEffort; got != "high" {
+		t.Fatalf("Codex reasoning effort = %q", got)
+	}
 	if len(cfg.Items[0].Choices) != 3 {
 		t.Fatalf("Codex choices = %d, want 3", len(cfg.Items[0].Choices))
 	}

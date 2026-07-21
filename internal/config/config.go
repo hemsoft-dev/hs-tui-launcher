@@ -15,7 +15,8 @@ const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 	copilotCommand    = "copilot --allow-all"
 
-	codexModel         = "gpt-5.5"
+	codexModel         = "gpt-5.6-sol"
+	copilotModel       = "gpt-5.5"
 	claudeModel        = "claude-opus-4.8"
 	selectModel        = "select model"
 	highReasoning      = "high"
@@ -30,6 +31,7 @@ const (
 
 var (
 	codexPreset      = modelPreset{Model: codexModel, ReasoningEffort: highReasoning}
+	copilotPreset    = modelPreset{Model: copilotModel, ReasoningEffort: highReasoning}
 	cursorPreset     = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
 	claudeCodePreset = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
 	modelMenuPreset  = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
@@ -128,8 +130,8 @@ func Default() Config {
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
 				Command:         copilotCommand,
-				Model:           codexPreset.Model,
-				ReasoningEffort: codexPreset.ReasoningEffort,
+				Model:           copilotPreset.Model,
+				ReasoningEffort: copilotPreset.ReasoningEffort,
 				Tags:            []string{"ai", "github", "cli"},
 			},
 			{
