@@ -74,16 +74,35 @@ items:
           -m gpt-5.6-sol
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
+  - name: GitHub Copilot
+    description: Open GitHub Copilot CLI
+    model: select model
+    reasoning_effort: default
+    tags:
+      - ai
+      - github
+      - cli
+    choices:
+      - name: GPT-5.5
+        description: Use GPT-5.5 with high reasoning effort
+        command: >-
+          copilot --allow-all --model gpt-5.5 --reasoning-effort high
+      - name: GPT-5.6 Sol
+        description: Use GPT-5.6 Sol with high reasoning effort
+        command: >-
+          copilot --allow-all --model gpt-5.6-sol --reasoning-effort high
 ```
 
 The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 `~/.codex/agents/anvil.toml`; launcher flags can start a fresh session, resume
 the last session, or open the resume picker with sandbox bypass, model, service
 tier, and reasoning effort. Codex starts in the directory where `l` or `run.ps1`
-was invoked. OpenCode opens a model submenu for OpenCode Zen models. OpenRouter
-opens a separate model submenu, with GLM 5.2 as the first choice. The wrapper
-updates OpenCode's persisted TUI model before launch so the selected model is
-active immediately.
+was invoked. GitHub Copilot opens a model submenu with GPT-5.5 first and GPT-5.6
+Sol second, and passes the selected model and reasoning effort to the CLI.
+OpenCode opens a model submenu for OpenCode Zen models. OpenRouter opens a
+separate model submenu, with GLM 5.2 as the first choice. The wrapper updates
+OpenCode's persisted TUI model before launch so the selected model is active
+immediately.
 
 ## Keys
 

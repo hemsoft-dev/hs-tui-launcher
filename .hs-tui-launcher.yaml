@@ -24,13 +24,19 @@ items:
         command: codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="default"' -c 'model_reasoning_effort="high"'
   - name: GitHub Copilot
     description: Open GitHub Copilot CLI
-    command: copilot --allow-all
-    model: gpt-5.5
-    reasoning_effort: high
+    model: select model
+    reasoning_effort: default
     tags:
       - ai
       - github
       - cli
+    choices:
+      - name: GPT-5.5
+        description: Use GPT-5.5 with high reasoning effort
+        command: copilot --allow-all --model gpt-5.5 --reasoning-effort high
+      - name: GPT-5.6 Sol
+        description: Use GPT-5.6 Sol with high reasoning effort
+        command: copilot --allow-all --model gpt-5.6-sol --reasoning-effort high
   - name: Cursor
     description: Open the Cursor Agent CLI
     command: cursor-agent

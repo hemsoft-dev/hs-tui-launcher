@@ -45,14 +45,37 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[0].Choices[2].Command; got != codexResumePickerCommand {
 		t.Fatalf("Codex resume picker command = %q", got)
 	}
-	if got := cfg.Items[1].Command; got != copilotCommand {
+	if got := cfg.Items[1].Command; got != "" {
 		t.Fatalf("GitHub Copilot command = %q", got)
 	}
-	if got := cfg.Items[1].Model; got != "gpt-5.5" {
+	if got := cfg.Items[1].Model; got != "select model" {
 		t.Fatalf("GitHub Copilot model = %q", got)
 	}
-	if got := cfg.Items[1].ReasoningEffort; got != "high" {
+	if got := cfg.Items[1].ReasoningEffort; got != "default" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
+	}
+	if got := len(cfg.Items[1].Choices); got != 2 {
+		t.Fatalf("GitHub Copilot choices = %d, want 2", got)
+	}
+	copilotGPT55Choice := cfg.Items[1].Choices[0]
+	if copilotGPT55Choice.Name != "GPT-5.5" {
+		t.Fatalf("GitHub Copilot first choice name = %q", copilotGPT55Choice.Name)
+	}
+	if copilotGPT55Choice.Description != "Use GPT-5.5 with high reasoning effort" {
+		t.Fatalf("GitHub Copilot first choice description = %q", copilotGPT55Choice.Description)
+	}
+	if copilotGPT55Choice.Command != copilotGPT55Command {
+		t.Fatalf("GitHub Copilot first choice command = %q", copilotGPT55Choice.Command)
+	}
+	copilotGPT56SolChoice := cfg.Items[1].Choices[1]
+	if copilotGPT56SolChoice.Name != "GPT-5.6 Sol" {
+		t.Fatalf("GitHub Copilot second choice name = %q", copilotGPT56SolChoice.Name)
+	}
+	if copilotGPT56SolChoice.Description != "Use GPT-5.6 Sol with high reasoning effort" {
+		t.Fatalf("GitHub Copilot second choice description = %q", copilotGPT56SolChoice.Description)
+	}
+	if copilotGPT56SolChoice.Command != copilotGPT56SolCommand {
+		t.Fatalf("GitHub Copilot second choice command = %q", copilotGPT56SolChoice.Command)
 	}
 	if got := cfg.Items[2].Model; got != "claude-opus-4.8" {
 		t.Fatalf("Cursor model = %q", got)
@@ -305,10 +328,10 @@ func TestValidateRejectsMissingName(t *testing.T) {
 
 func TestValidateRejectsMissingCommand(t *testing.T) {
 	cfg := Default()
-	cfg.Items[1].Command = ""
+	cfg.Items[2].Command = ""
 
 	err := cfg.Validate()
-	assertErrorContains(t, err, "items[1].command or choices are required")
+	assertErrorContains(t, err, "items[2].command or choices are required")
 }
 
 func TestValidateRejectsMissingChoiceCommand(t *testing.T) {

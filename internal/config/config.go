@@ -13,10 +13,9 @@ import (
 
 const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
-	copilotCommand    = "copilot --allow-all"
 
-	codexModel         = "gpt-5.6-sol"
-	copilotModel       = "gpt-5.5"
+	gpt56SolModel      = "gpt-5.6-sol"
+	copilotGPT55Model  = "gpt-5.5"
 	claudeModel        = "claude-opus-4.8"
 	selectModel        = "select model"
 	highReasoning      = "high"
@@ -30,15 +29,18 @@ const (
 )
 
 var (
-	codexPreset      = modelPreset{Model: codexModel, ReasoningEffort: highReasoning}
-	copilotPreset    = modelPreset{Model: copilotModel, ReasoningEffort: highReasoning}
-	cursorPreset     = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
-	claudeCodePreset = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
-	modelMenuPreset  = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
+	codexPreset           = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
+	copilotGPT55Preset    = modelPreset{Model: copilotGPT55Model, ReasoningEffort: highReasoning}
+	copilotGPT56SolPreset = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
+	cursorPreset          = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
+	claudeCodePreset      = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
+	modelMenuPreset       = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
 
 	codexFreshCommand        = codexCommand("")
 	codexResumeCommand       = codexCommand("resume --last")
 	codexResumePickerCommand = codexCommand("resume")
+	copilotGPT55Command      = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand   = copilotCommand(copilotGPT56SolPreset)
 	opencodeKimiCommand      = openCodeCommand(opencodeProvider, kimiModel)
 	openrouterGLMCommand     = openCodeCommand(openrouterProvider, glmModel)
 	openrouterFusionCommand  = openCodeCommand(openrouterProvider, fusionModel)
@@ -129,10 +131,21 @@ func Default() Config {
 			{
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
-				Command:         copilotCommand,
-				Model:           copilotPreset.Model,
-				ReasoningEffort: copilotPreset.ReasoningEffort,
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
 				Tags:            []string{"ai", "github", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "GPT-5.5",
+						Description: "Use GPT-5.5 with high reasoning effort",
+						Command:     copilotGPT55Command,
+					},
+					{
+						Name:        "GPT-5.6 Sol",
+						Description: "Use GPT-5.6 Sol with high reasoning effort",
+						Command:     copilotGPT56SolCommand,
+					},
+				},
 			},
 			{
 				Name:            "Cursor",
@@ -201,6 +214,15 @@ func codexCommand(subcommand string) string {
 		"-c", fmt.Sprintf(`'model_reasoning_effort="%s"'`, codexPreset.ReasoningEffort),
 	)
 	return strings.Join(parts, " ")
+}
+
+func copilotCommand(preset modelPreset) string {
+	return strings.Join([]string{
+		"copilot",
+		"--allow-all",
+		"--model", preset.Model,
+		"--reasoning-effort", preset.ReasoningEffort,
+	}, " ")
 }
 
 func openCodeCommand(provider string, model string) string {

@@ -94,6 +94,36 @@ func TestSelectingCodexResumePickerChoiceReturnsResumePickerCommand(t *testing.T
 	}
 }
 
+func TestSelectingCopilotGPT55ChoiceReturnsExplicitModelCommand(t *testing.T) {
+	model := chooseCopilot(t, key("1"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "GitHub Copilot GPT-5.5" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != "copilot --allow-all --model gpt-5.5 --reasoning-effort high" {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingCopilotGPT56SolChoiceReturnsExplicitModelCommand(t *testing.T) {
+	model := chooseCopilot(t, key("2"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "GitHub Copilot GPT-5.6 Sol" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != "copilot --allow-all --model gpt-5.6-sol --reasoning-effort high" {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
 func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
 	model := chooseOpenRouter(t, key("1"))
 
@@ -236,6 +266,16 @@ func chooseCodex(t *testing.T, choice tea.KeyPressMsg) Model {
 
 	model := New(config.Default())
 	updated, _ := model.Update(key("1"))
+	model = updated.(Model)
+	updated, _ = model.Update(choice)
+	return updated.(Model)
+}
+
+func chooseCopilot(t *testing.T, choice tea.KeyPressMsg) Model {
+	t.Helper()
+
+	model := New(config.Default())
+	updated, _ := model.Update(key("2"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
