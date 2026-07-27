@@ -8,11 +8,12 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $repoRoot = Split-Path -Parent $PSCommandPath
-$goCommand = Get-Command go.exe -CommandType Application -ErrorAction SilentlyContinue |
+$goCommand = @('go.exe', 'go') |
+    ForEach-Object { Get-Command $_ -CommandType Application -ErrorAction SilentlyContinue } |
     Select-Object -First 1
 
 if (-not $goCommand) {
-    throw 'Go is required to run hs-tui-launcher, but go.exe was not found on PATH.'
+    throw 'Go is required to run hs-tui-launcher, but no Go executable was found on PATH.'
 }
 
 function Test-NonInteractiveRequest {
