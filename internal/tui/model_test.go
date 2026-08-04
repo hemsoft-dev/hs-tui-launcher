@@ -215,17 +215,32 @@ func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	}
 }
 
-func TestSelectingOpenCodeKimiK27ChoiceReturnsKimiK27Command(t *testing.T) {
+func TestSelectingOpenCodeQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("2"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenCode Kimi K2.7 Code" {
+	if item.Name != "OpenCode Qwen 3.8 Max" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k2.7-code` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go qwen3.8-max` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeGLM52ChoiceReturnsGLM52Command(t *testing.T) {
+	model := chooseOpenCode(t, key("3"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode GLM 5.2" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.2` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }

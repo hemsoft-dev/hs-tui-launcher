@@ -14,23 +14,24 @@ import (
 const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
-	gpt56SolModel      = "gpt-5.6-sol"
-	copilotGPT55Model  = "gpt-5.5"
-	claudeModel        = "claude-opus-4.8"
-	copilotOpus5Model  = "claude-opus-5"
-	selectModel        = "select model"
-	highReasoning      = "high"
-	xhighReasoning     = "xhigh"
-	defaultReasoning   = "default"
-	cursorAgentCommand = "cursor-agent --disable-auto-update"
-	opencodeGoProvider = "opencode-go"
-	openrouterProvider = "openrouter"
-	kimiK3Model        = "kimi-k3"
-	kimiK27Model       = "kimi-k2.7-code"
-	openrouterKimiK3   = "moonshotai/kimi-k3"
-	qwen38MaxModel     = "qwen/qwen3.8-max"
-	glmModel           = "z-ai/glm-5.2"
-	fusionModel        = "openrouter/fusion"
+	gpt56SolModel       = "gpt-5.6-sol"
+	copilotGPT55Model   = "gpt-5.5"
+	claudeModel         = "claude-opus-4.8"
+	copilotOpus5Model   = "claude-opus-5"
+	selectModel         = "select model"
+	highReasoning       = "high"
+	xhighReasoning      = "xhigh"
+	defaultReasoning    = "default"
+	cursorAgentCommand  = "cursor-agent --disable-auto-update"
+	opencodeGoProvider  = "opencode-go"
+	openrouterProvider  = "openrouter"
+	kimiK3Model         = "kimi-k3"
+	opencodeQwen38Model = "qwen3.8-max"
+	opencodeGLM52Model  = "glm-5.2"
+	openrouterKimiK3    = "moonshotai/kimi-k3"
+	qwen38MaxModel      = "qwen/qwen3.8-max"
+	glmModel            = "z-ai/glm-5.2"
+	fusionModel         = "openrouter/fusion"
 )
 
 var (
@@ -49,7 +50,8 @@ var (
 	copilotGPT56SolCommand   = copilotCommand(copilotGPT56SolPreset)
 	copilotOpus5Command      = copilotCommand(copilotOpus5Preset)
 	opencodeKimiK3Command    = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeKimiK27Command   = openCodeCommand(opencodeGoProvider, kimiK27Model)
+	opencodeQwen38Command    = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM52Command     = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
 	openrouterKimiK3Command  = openCodeCommand(openrouterProvider, openrouterKimiK3)
 	openrouterQwen38Command  = openCodeCommand(openrouterProvider, qwen38MaxModel)
 	openrouterGLMCommand     = openCodeCommand(openrouterProvider, glmModel)
@@ -192,9 +194,14 @@ func Default() Config {
 						Command:     opencodeKimiK3Command,
 					},
 					{
-						Name:        "Kimi K2.7 Code",
-						Description: modelDescription(opencodeGoProvider, kimiK27Model),
-						Command:     opencodeKimiK27Command,
+						Name:        "Qwen 3.8 Max",
+						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
+						Command:     opencodeQwen38Command,
+					},
+					{
+						Name:        "GLM 5.2",
+						Description: modelDescription(opencodeGoProvider, opencodeGLM52Model),
+						Command:     opencodeGLM52Command,
 					},
 				},
 			},

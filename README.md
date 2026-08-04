@@ -107,12 +107,12 @@ CLI.
 Cursor starts with automatic CLI updates disabled to avoid PowerShell download
 progress corrupting the launcher handoff; run `cursor-agent update` explicitly
 when an update is wanted.
-OpenCode opens an OpenCode Go model submenu with Kimi K3 first and Kimi K2.7
-Code second. OpenRouter opens a separate model submenu ordered as Kimi K3,
-Qwen 3.8 Max, GLM 5.2, and Fusion. Parenthesized prices list input/output cost
-per million tokens; Fusion is variable because it bills the underlying panel
-and judge calls. The wrapper updates OpenCode's persisted TUI model before
-launch so the selected model is active immediately.
+OpenCode opens an OpenCode Go model submenu ordered as Kimi K3, Qwen 3.8 Max,
+and GLM 5.2. OpenRouter opens a separate model submenu ordered as Kimi K3, Qwen
+3.8 Max, GLM 5.2, and Fusion. Parenthesized prices list input/output cost per
+million tokens; Fusion is variable because it bills the underlying panel and
+judge calls. The wrapper updates OpenCode's persisted TUI model before launch
+so the selected model is active immediately.
 
 ## Keys
 

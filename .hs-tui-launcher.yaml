@@ -72,9 +72,12 @@ items:
       - name: Kimi K3
         description: opencode-go/kimi-k3
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k3'
-      - name: Kimi K2.7 Code
-        description: opencode-go/kimi-k2.7-code
-        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k2.7-code'
+      - name: Qwen 3.8 Max
+        description: opencode-go/qwen3.8-max
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go qwen3.8-max'
+      - name: GLM 5.2
+        description: opencode-go/glm-5.2
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.2'
   - name: OpenRouter
     description: Open OpenCode with OpenRouter
     model: select model

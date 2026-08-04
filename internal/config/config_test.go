@@ -108,8 +108,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[4].Choices); got != 2 {
-		t.Fatalf("OpenCode choices = %d, want 2", got)
+	if got := len(cfg.Items[4].Choices); got != 3 {
+		t.Fatalf("OpenCode choices = %d, want 3", got)
 	}
 	opencodeChoices := []struct {
 		name        string
@@ -117,7 +117,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		command     string
 	}{
 		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
-		{"Kimi K2.7 Code", "opencode-go/kimi-k2.7-code", opencodeKimiK27Command},
+		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
+		{"GLM 5.2", "opencode-go/glm-5.2", opencodeGLM52Command},
 	}
 	for index, want := range opencodeChoices {
 		choice := cfg.Items[4].Choices[index]
