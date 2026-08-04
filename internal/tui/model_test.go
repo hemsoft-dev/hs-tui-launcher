@@ -35,6 +35,49 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 	}
 }
 
+func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
+	model := New(config.Default())
+
+	updated, _ := model.Update(key("6"))
+	model = updated.(Model)
+
+	lines := model.choiceLines()
+	details := []string{
+		"($3/$15)",
+		"($2/$6)",
+		"($0.76/$2.42)",
+		"(variable/variable)",
+	}
+	descriptions := []string{
+		"openrouter/moonshotai/kimi-k3",
+		"openrouter/qwen/qwen3.8-max",
+		"openrouter/z-ai/glm-5.2",
+		"openrouter/openrouter/fusion",
+	}
+	wantDetailColumn := -1
+	wantDescriptionColumn := -1
+	for index, description := range descriptions {
+		detailColumn := strings.Index(lines[index+1], details[index])
+		if detailColumn < 0 {
+			t.Fatalf("choice %d line = %q, missing detail", index, lines[index+1])
+		}
+		descriptionColumn := strings.Index(lines[index+1], description)
+		if descriptionColumn < 0 {
+			t.Fatalf("choice %d line = %q, missing description", index, lines[index+1])
+		}
+		if wantDetailColumn < 0 {
+			wantDetailColumn = detailColumn
+			wantDescriptionColumn = descriptionColumn
+		}
+		if detailColumn != wantDetailColumn {
+			t.Fatalf("choice %d detail column = %d, want %d", index, detailColumn, wantDetailColumn)
+		}
+		if descriptionColumn != wantDescriptionColumn {
+			t.Fatalf("choice %d description column = %d, want %d", index, descriptionColumn, wantDescriptionColumn)
+		}
+	}
+}
+
 func TestChoiceMenuFallsBackToNamesForNarrowWidth(t *testing.T) {
 	model := New(config.Default())
 
@@ -194,7 +237,7 @@ func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter Kimi K3 ($3/$15 per 1M)" {
+	if item.Name != "OpenRouter Kimi K3 ($3/$15)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3` {
@@ -212,7 +255,7 @@ func TestSelectingOpenRouterQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T)
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter Qwen 3.8 Max ($2/$6 per 1M)" {
+	if item.Name != "OpenRouter Qwen 3.8 Max ($2/$6)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max` {
@@ -227,7 +270,7 @@ func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM 5.2 ($0.76/$2.42 per 1M)" {
+	if item.Name != "OpenRouter GLM 5.2 ($0.76/$2.42)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2` {

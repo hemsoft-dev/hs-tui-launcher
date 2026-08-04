@@ -151,9 +151,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"Kimi K3 ($3/$15 per 1M)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
-		{"Qwen 3.8 Max ($2/$6 per 1M)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
-		{"GLM 5.2 ($0.76/$2.42 per 1M)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
+		{"Kimi K3 ($3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Qwen 3.8 Max ($2/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
+		{"GLM 5.2 ($0.76/$2.42)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 	}
 	for index, want := range openrouterChoices {

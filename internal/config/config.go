@@ -207,17 +207,17 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "Kimi K3 ($3/$15 per 1M)",
+						Name:        "Kimi K3 ($3/$15)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
 					{
-						Name:        "Qwen 3.8 Max ($2/$6 per 1M)",
+						Name:        "Qwen 3.8 Max ($2/$6)",
 						Description: modelDescription(openrouterProvider, qwen38MaxModel),
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM 5.2 ($0.76/$2.42 per 1M)",
+						Name:        "GLM 5.2 ($0.76/$2.42)",
 						Description: modelDescription(openrouterProvider, glmModel),
 						Command:     openrouterGLMCommand,
 					},

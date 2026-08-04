@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -35,17 +36,42 @@ type launchChoice struct {
 	Number int
 }
 
-func (c launchChoice) Line() string {
+func (c launchChoice) Line(nameWidth int, detailWidth int) string {
+	name, detail := splitChoiceName(c.Name)
 	if strings.TrimSpace(c.Description) == "" {
+		if detailWidth > 0 {
+			return fmt.Sprintf("%d. %-*s  %s", c.Number, nameWidth, name, detail)
+		}
 		return fmt.Sprintf("%d. %s", c.Number, c.Name)
 	}
 
+	if detailWidth == 0 {
+		return fmt.Sprintf(
+			"%d. %-*s  %s",
+			c.Number,
+			nameWidth,
+			name,
+			c.Description,
+		)
+	}
+
 	return fmt.Sprintf(
-		"%d. %s  %s",
+		"%d. %-*s  %-*s  %s",
 		c.Number,
-		c.Name,
+		nameWidth,
+		name,
+		detailWidth,
+		detail,
 		c.Description,
 	)
+}
+
+func splitChoiceName(name string) (string, string) {
+	detailStart := strings.LastIndex(name, " (")
+	if detailStart < 0 || !strings.HasSuffix(name, ")") {
+		return name, ""
+	}
+	return name[:detailStart], name[detailStart+1:]
 }
 
 type Model struct {
@@ -215,11 +241,18 @@ func (m Model) choiceLines() []string {
 	parent := *m.choiceParent
 	lines := make([]string, 0, len(parent.Choices)+2)
 	lines = append(lines, fmt.Sprintf("%s:", parent.Name))
+	nameWidth := 0
+	detailWidth := 0
+	for _, choice := range parent.Choices {
+		name, detail := splitChoiceName(choice.Name)
+		nameWidth = max(nameWidth, utf8.RuneCountInString(name))
+		detailWidth = max(detailWidth, utf8.RuneCountInString(detail))
+	}
 	for index, choice := range parent.Choices {
 		line := launchChoice{
 			LaunchChoice: choice,
 			Number:       index + 1,
-		}.Line()
+		}.Line(nameWidth, detailWidth)
 		if m.width > 0 && len(line)+6 > m.width {
 			line = fmt.Sprintf("%d. %s", index+1, choice.Name)
 		}

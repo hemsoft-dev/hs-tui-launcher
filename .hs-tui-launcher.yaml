@@ -87,13 +87,13 @@ items:
       - opencode
       - cli
     choices:
-      - name: Kimi K3 ($3/$15 per 1M)
+      - name: Kimi K3 ($3/$15)
         description: openrouter/moonshotai/kimi-k3
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3'
-      - name: Qwen 3.8 Max ($2/$6 per 1M)
+      - name: Qwen 3.8 Max ($2/$6)
         description: openrouter/qwen/qwen3.8-max
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max'
-      - name: GLM 5.2 ($0.76/$2.42 per 1M)
+      - name: GLM 5.2 ($0.76/$2.42)
         description: openrouter/z-ai/glm-5.2
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2'
       - name: Fusion (variable/variable)
