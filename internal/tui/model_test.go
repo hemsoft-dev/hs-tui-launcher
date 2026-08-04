@@ -47,12 +47,14 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($2/$6)",
 		"($0.76/$2.42)",
 		"(variable/variable)",
+		"($0.09/$0.18)",
 	}
 	descriptions := []string{
 		"openrouter/moonshotai/kimi-k3",
 		"openrouter/qwen/qwen3.8-max",
 		"openrouter/z-ai/glm-5.2",
 		"openrouter/openrouter/fusion",
+		"openrouter/deepseek/deepseek-v4-flash",
 	}
 	wantDetailColumn := -1
 	wantDescriptionColumn := -1
@@ -245,6 +247,21 @@ func TestSelectingOpenCodeGLM52ChoiceReturnsGLM52Command(t *testing.T) {
 	}
 }
 
+func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *testing.T) {
+	model := chooseOpenCode(t, key("4"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode DeepSeek V4 Flash" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go deepseek-v4-flash` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
 func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	model := chooseOpenRouter(t, key("1"))
 
@@ -304,6 +321,21 @@ func TestSelectingOpenRouterFusionChoiceReturnsFusionCommand(t *testing.T) {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter openrouter/fusion` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("5"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter DeepSeek V4 Flash ($0.09/$0.18)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }

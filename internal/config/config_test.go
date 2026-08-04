@@ -108,8 +108,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[4].Choices); got != 3 {
-		t.Fatalf("OpenCode choices = %d, want 3", got)
+	if got := len(cfg.Items[4].Choices); got != 4 {
+		t.Fatalf("OpenCode choices = %d, want 4", got)
 	}
 	opencodeChoices := []struct {
 		name        string
@@ -119,6 +119,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
 		{"GLM 5.2", "opencode-go/glm-5.2", opencodeGLM52Command},
+		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
 	}
 	for index, want := range opencodeChoices {
 		choice := cfg.Items[4].Choices[index]
@@ -144,8 +145,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 4 {
-		t.Fatalf("OpenRouter choices = %d, want 4", got)
+	if got := len(cfg.Items[5].Choices); got != 5 {
+		t.Fatalf("OpenRouter choices = %d, want 5", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -156,6 +157,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Qwen 3.8 Max ($2/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
 		{"GLM 5.2 ($0.76/$2.42)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
+		{"DeepSeek V4 Flash ($0.09/$0.18)", "openrouter/deepseek/deepseek-v4-flash", openrouterDeepSeekCommand},
 	}
 	for index, want := range openrouterChoices {
 		choice := cfg.Items[5].Choices[index]

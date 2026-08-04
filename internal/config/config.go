@@ -14,24 +14,26 @@ import (
 const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
-	gpt56SolModel       = "gpt-5.6-sol"
-	copilotGPT55Model   = "gpt-5.5"
-	claudeModel         = "claude-opus-4.8"
-	copilotOpus5Model   = "claude-opus-5"
-	selectModel         = "select model"
-	highReasoning       = "high"
-	xhighReasoning      = "xhigh"
-	defaultReasoning    = "default"
-	cursorAgentCommand  = "cursor-agent --disable-auto-update"
-	opencodeGoProvider  = "opencode-go"
-	openrouterProvider  = "openrouter"
-	kimiK3Model         = "kimi-k3"
-	opencodeQwen38Model = "qwen3.8-max"
-	opencodeGLM52Model  = "glm-5.2"
-	openrouterKimiK3    = "moonshotai/kimi-k3"
-	qwen38MaxModel      = "qwen/qwen3.8-max"
-	glmModel            = "z-ai/glm-5.2"
-	fusionModel         = "openrouter/fusion"
+	gpt56SolModel                  = "gpt-5.6-sol"
+	copilotGPT55Model              = "gpt-5.5"
+	claudeModel                    = "claude-opus-4.8"
+	copilotOpus5Model              = "claude-opus-5"
+	selectModel                    = "select model"
+	highReasoning                  = "high"
+	xhighReasoning                 = "xhigh"
+	defaultReasoning               = "default"
+	cursorAgentCommand             = "cursor-agent --disable-auto-update"
+	opencodeGoProvider             = "opencode-go"
+	openrouterProvider             = "openrouter"
+	kimiK3Model                    = "kimi-k3"
+	opencodeQwen38Model            = "qwen3.8-max"
+	opencodeGLM52Model             = "glm-5.2"
+	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
+	openrouterKimiK3               = "moonshotai/kimi-k3"
+	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash"
+	qwen38MaxModel                 = "qwen/qwen3.8-max"
+	glmModel                       = "z-ai/glm-5.2"
+	fusionModel                    = "openrouter/fusion"
 )
 
 var (
@@ -43,19 +45,21 @@ var (
 	claudeCodePreset      = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
 	modelMenuPreset       = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
 
-	codexFreshCommand        = codexCommand("")
-	codexResumeCommand       = codexCommand("resume --last")
-	codexResumePickerCommand = codexCommand("resume")
-	copilotGPT55Command      = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand   = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command      = copilotCommand(copilotOpus5Preset)
-	opencodeKimiK3Command    = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command    = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM52Command     = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
-	openrouterKimiK3Command  = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command  = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLMCommand     = openCodeCommand(openrouterProvider, glmModel)
-	openrouterFusionCommand  = openCodeCommand(openrouterProvider, fusionModel)
+	codexFreshCommand         = codexCommand("")
+	codexResumeCommand        = codexCommand("resume --last")
+	codexResumePickerCommand  = codexCommand("resume")
+	copilotGPT55Command       = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand    = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command       = copilotCommand(copilotOpus5Preset)
+	opencodeKimiK3Command     = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command     = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM52Command      = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
+	opencodeDeepSeekCommand   = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	openrouterKimiK3Command   = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command   = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLMCommand      = openCodeCommand(openrouterProvider, glmModel)
+	openrouterFusionCommand   = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekCommand = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
 )
 
 type Config struct {
@@ -203,6 +207,11 @@ func Default() Config {
 						Description: modelDescription(opencodeGoProvider, opencodeGLM52Model),
 						Command:     opencodeGLM52Command,
 					},
+					{
+						Name:        "DeepSeek V4 Flash",
+						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
+						Command:     opencodeDeepSeekCommand,
+					},
 				},
 			},
 			{
@@ -232,6 +241,11 @@ func Default() Config {
 						Name:        "Fusion (variable/variable)",
 						Description: modelDescription(openrouterProvider, fusionModel),
 						Command:     openrouterFusionCommand,
+					},
+					{
+						Name:        "DeepSeek V4 Flash ($0.09/$0.18)",
+						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
+						Command:     openrouterDeepSeekCommand,
 					},
 				},
 			},
