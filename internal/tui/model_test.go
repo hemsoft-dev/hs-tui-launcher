@@ -49,6 +49,24 @@ func TestChoiceMenuFallsBackToNamesForNarrowWidth(t *testing.T) {
 	}
 }
 
+func TestSelectingCursorDisablesAutoUpdate(t *testing.T) {
+	model := New(config.Default())
+
+	updated, _ := model.Update(key("3"))
+	model = updated.(Model)
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "Cursor" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != "cursor-agent --disable-auto-update" {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
 func TestSelectingCodexFreshChoiceReturnsFreshCommand(t *testing.T) {
 	model := chooseCodex(t, key("1"))
 
@@ -124,21 +142,111 @@ func TestSelectingCopilotGPT56SolChoiceReturnsExplicitModelCommand(t *testing.T)
 	}
 }
 
-func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
+func TestSelectingCopilotOpus5ChoiceReturnsExplicitModelCommand(t *testing.T) {
+	model := chooseCopilot(t, key("3"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "GitHub Copilot Claude Opus 5" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != "copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh" {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
+	model := chooseOpenCode(t, key("1"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode Kimi K3" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k3` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeKimiK27ChoiceReturnsKimiK27Command(t *testing.T) {
+	model := chooseOpenCode(t, key("2"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode Kimi K2.7 Code" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k2.7-code` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	model := chooseOpenRouter(t, key("1"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM 5.2" {
+	if item.Name != "OpenRouter Kimi K3 ($3/$15 per 1M)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider openrouter -Model z-ai/glm-5.2` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 	if len(item.Env) != 1 || item.Env[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("Env = %#v", item.Env)
+	}
+}
+
+func TestSelectingOpenRouterQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("2"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Qwen 3.8 Max ($2/$6 per 1M)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("3"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter GLM 5.2 ($0.76/$2.42 per 1M)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterFusionChoiceReturnsFusionCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("4"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Fusion (variable/variable)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter openrouter/fusion` {
+		t.Fatalf("Command = %q", item.Command)
 	}
 }
 
@@ -276,6 +384,16 @@ func chooseCopilot(t *testing.T, choice tea.KeyPressMsg) Model {
 
 	model := New(config.Default())
 	updated, _ := model.Update(key("2"))
+	model = updated.(Model)
+	updated, _ = model.Update(choice)
+	return updated.(Model)
+}
+
+func chooseOpenCode(t *testing.T, choice tea.KeyPressMsg) Model {
+	t.Helper()
+
+	model := New(config.Default())
+	updated, _ := model.Update(key("5"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)

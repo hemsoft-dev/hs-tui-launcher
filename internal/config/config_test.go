@@ -54,8 +54,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[1].ReasoningEffort; got != "default" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
 	}
-	if got := len(cfg.Items[1].Choices); got != 2 {
-		t.Fatalf("GitHub Copilot choices = %d, want 2", got)
+	if got := len(cfg.Items[1].Choices); got != 3 {
+		t.Fatalf("GitHub Copilot choices = %d, want 3", got)
 	}
 	copilotGPT55Choice := cfg.Items[1].Choices[0]
 	if copilotGPT55Choice.Name != "GPT-5.5" {
@@ -77,8 +77,21 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if copilotGPT56SolChoice.Command != copilotGPT56SolCommand {
 		t.Fatalf("GitHub Copilot second choice command = %q", copilotGPT56SolChoice.Command)
 	}
+	copilotOpus5Choice := cfg.Items[1].Choices[2]
+	if copilotOpus5Choice.Name != "Claude Opus 5" {
+		t.Fatalf("GitHub Copilot third choice name = %q", copilotOpus5Choice.Name)
+	}
+	if copilotOpus5Choice.Description != "Use Claude Opus 5 with xhigh reasoning effort" {
+		t.Fatalf("GitHub Copilot third choice description = %q", copilotOpus5Choice.Description)
+	}
+	if copilotOpus5Choice.Command != copilotOpus5Command {
+		t.Fatalf("GitHub Copilot third choice command = %q", copilotOpus5Choice.Command)
+	}
 	if got := cfg.Items[2].Model; got != "claude-opus-4.8" {
 		t.Fatalf("Cursor model = %q", got)
+	}
+	if got := cfg.Items[2].Command; got != "cursor-agent --disable-auto-update" {
+		t.Fatalf("Cursor command = %q", got)
 	}
 	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
 		t.Fatalf("Claude Code command = %q", got)
@@ -95,15 +108,16 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[4].Choices); got != 1 {
-		t.Fatalf("OpenCode choices = %d, want 1", got)
+	if got := len(cfg.Items[4].Choices); got != 2 {
+		t.Fatalf("OpenCode choices = %d, want 2", got)
 	}
 	opencodeChoices := []struct {
 		name        string
 		description string
 		command     string
 	}{
-		{"Kimi K2.7 Code", "opencode/kimi-k2.7-code", opencodeKimiCommand},
+		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
+		{"Kimi K2.7 Code", "opencode-go/kimi-k2.7-code", opencodeKimiK27Command},
 	}
 	for index, want := range opencodeChoices {
 		choice := cfg.Items[4].Choices[index]
@@ -129,28 +143,30 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 2 {
-		t.Fatalf("OpenRouter choices = %d, want 2", got)
+	if got := len(cfg.Items[5].Choices); got != 4 {
+		t.Fatalf("OpenRouter choices = %d, want 4", got)
 	}
-	openrouterChoice := cfg.Items[5].Choices[0]
-	if openrouterChoice.Name != "GLM 5.2" {
-		t.Fatalf("OpenRouter choice name = %q", openrouterChoice.Name)
+	openrouterChoices := []struct {
+		name        string
+		description string
+		command     string
+	}{
+		{"Kimi K3 ($3/$15 per 1M)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Qwen 3.8 Max ($2/$6 per 1M)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
+		{"GLM 5.2 ($0.76/$2.42 per 1M)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
+		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 	}
-	if openrouterChoice.Description != "openrouter/z-ai/glm-5.2" {
-		t.Fatalf("OpenRouter choice description = %q", openrouterChoice.Description)
-	}
-	if openrouterChoice.Command != openrouterGLMCommand {
-		t.Fatalf("OpenRouter choice command = %q", openrouterChoice.Command)
-	}
-	fusionChoice := cfg.Items[5].Choices[1]
-	if fusionChoice.Name != "Fusion" {
-		t.Fatalf("OpenRouter fusion choice name = %q", fusionChoice.Name)
-	}
-	if fusionChoice.Description != "openrouter/fusion" {
-		t.Fatalf("OpenRouter fusion choice description = %q", fusionChoice.Description)
-	}
-	if fusionChoice.Command != openrouterFusionCommand {
-		t.Fatalf("OpenRouter fusion choice command = %q", fusionChoice.Command)
+	for index, want := range openrouterChoices {
+		choice := cfg.Items[5].Choices[index]
+		if choice.Name != want.name {
+			t.Fatalf("OpenRouter choice %d name = %q", index, choice.Name)
+		}
+		if choice.Description != want.description {
+			t.Fatalf("OpenRouter choice %d description = %q", index, choice.Description)
+		}
+		if choice.Command != want.command {
+			t.Fatalf("OpenRouter choice %d command = %q", index, choice.Command)
+		}
 	}
 	for _, arg := range cfg.ShellArgs {
 		if arg == "-NoExit" {

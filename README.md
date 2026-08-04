@@ -91,18 +91,28 @@ items:
         description: Use GPT-5.6 Sol with high reasoning effort
         command: >-
           copilot --allow-all --model gpt-5.6-sol --reasoning-effort high
+      - name: Claude Opus 5
+        description: Use Claude Opus 5 with xhigh reasoning effort
+        command: >-
+          copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh
 ```
 
 The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 `~/.codex/agents/anvil.toml`; launcher flags can start a fresh session, resume
 the last session, or open the resume picker with sandbox bypass, model, service
 tier, and reasoning effort. Codex starts in the directory where `l` or `run.ps1`
-was invoked. GitHub Copilot opens a model submenu with GPT-5.5 first and GPT-5.6
-Sol second, and passes the selected model and reasoning effort to the CLI.
-OpenCode opens a model submenu for OpenCode Zen models. OpenRouter opens a
-separate model submenu, with GLM 5.2 as the first choice. The wrapper updates
-OpenCode's persisted TUI model before launch so the selected model is active
-immediately.
+was invoked. GitHub Copilot opens a model submenu with GPT-5.5, GPT-5.6 Sol,
+and Claude Opus 5, and passes the selected model and reasoning effort to the
+CLI.
+Cursor starts with automatic CLI updates disabled to avoid PowerShell download
+progress corrupting the launcher handoff; run `cursor-agent update` explicitly
+when an update is wanted.
+OpenCode opens an OpenCode Go model submenu with Kimi K3 first and Kimi K2.7
+Code second. OpenRouter opens a separate model submenu ordered as Kimi K3,
+Qwen 3.8 Max, GLM 5.2, and Fusion. Parenthesized prices list input/output cost
+per million tokens; Fusion is variable because it bills the underlying panel
+and judge calls. The wrapper updates OpenCode's persisted TUI model before
+launch so the selected model is active immediately.
 
 ## Keys
 

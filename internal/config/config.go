@@ -17,21 +17,27 @@ const (
 	gpt56SolModel      = "gpt-5.6-sol"
 	copilotGPT55Model  = "gpt-5.5"
 	claudeModel        = "claude-opus-4.8"
+	copilotOpus5Model  = "claude-opus-5"
 	selectModel        = "select model"
 	highReasoning      = "high"
 	xhighReasoning     = "xhigh"
 	defaultReasoning   = "default"
-	opencodeProvider   = "opencode"
+	cursorAgentCommand = "cursor-agent --disable-auto-update"
+	opencodeGoProvider = "opencode-go"
 	openrouterProvider = "openrouter"
-	kimiModel          = "kimi-k2.7-code"
+	kimiK3Model        = "kimi-k3"
+	kimiK27Model       = "kimi-k2.7-code"
+	openrouterKimiK3   = "moonshotai/kimi-k3"
+	qwen38MaxModel     = "qwen/qwen3.8-max"
 	glmModel           = "z-ai/glm-5.2"
-	fusionModel        = "fusion"
+	fusionModel        = "openrouter/fusion"
 )
 
 var (
 	codexPreset           = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
 	copilotGPT55Preset    = modelPreset{Model: copilotGPT55Model, ReasoningEffort: highReasoning}
 	copilotGPT56SolPreset = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
+	copilotOpus5Preset    = modelPreset{Model: copilotOpus5Model, ReasoningEffort: xhighReasoning}
 	cursorPreset          = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
 	claudeCodePreset      = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
 	modelMenuPreset       = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
@@ -41,7 +47,11 @@ var (
 	codexResumePickerCommand = codexCommand("resume")
 	copilotGPT55Command      = copilotCommand(copilotGPT55Preset)
 	copilotGPT56SolCommand   = copilotCommand(copilotGPT56SolPreset)
-	opencodeKimiCommand      = openCodeCommand(opencodeProvider, kimiModel)
+	copilotOpus5Command      = copilotCommand(copilotOpus5Preset)
+	opencodeKimiK3Command    = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeKimiK27Command   = openCodeCommand(opencodeGoProvider, kimiK27Model)
+	openrouterKimiK3Command  = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command  = openCodeCommand(openrouterProvider, qwen38MaxModel)
 	openrouterGLMCommand     = openCodeCommand(openrouterProvider, glmModel)
 	openrouterFusionCommand  = openCodeCommand(openrouterProvider, fusionModel)
 )
@@ -145,12 +155,17 @@ func Default() Config {
 						Description: "Use GPT-5.6 Sol with high reasoning effort",
 						Command:     copilotGPT56SolCommand,
 					},
+					{
+						Name:        "Claude Opus 5",
+						Description: "Use Claude Opus 5 with xhigh reasoning effort",
+						Command:     copilotOpus5Command,
+					},
 				},
 			},
 			{
 				Name:            "Cursor",
 				Description:     "Open the Cursor Agent CLI",
-				Command:         "cursor-agent",
+				Command:         cursorAgentCommand,
 				Model:           cursorPreset.Model,
 				ReasoningEffort: cursorPreset.ReasoningEffort,
 				Tags:            []string{"ai", "editor", "cli"},
@@ -172,9 +187,14 @@ func Default() Config {
 				Tags:            []string{"ai", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
+						Name:        "Kimi K3",
+						Description: modelDescription(opencodeGoProvider, kimiK3Model),
+						Command:     opencodeKimiK3Command,
+					},
+					{
 						Name:        "Kimi K2.7 Code",
-						Description: modelDescription(opencodeProvider, kimiModel),
-						Command:     opencodeKimiCommand,
+						Description: modelDescription(opencodeGoProvider, kimiK27Model),
+						Command:     opencodeKimiK27Command,
 					},
 				},
 			},
@@ -187,12 +207,22 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "GLM 5.2",
+						Name:        "Kimi K3 ($3/$15 per 1M)",
+						Description: modelDescription(openrouterProvider, openrouterKimiK3),
+						Command:     openrouterKimiK3Command,
+					},
+					{
+						Name:        "Qwen 3.8 Max ($2/$6 per 1M)",
+						Description: modelDescription(openrouterProvider, qwen38MaxModel),
+						Command:     openrouterQwen38Command,
+					},
+					{
+						Name:        "GLM 5.2 ($0.76/$2.42 per 1M)",
 						Description: modelDescription(openrouterProvider, glmModel),
 						Command:     openrouterGLMCommand,
 					},
 					{
-						Name:        "Fusion",
+						Name:        "Fusion (variable/variable)",
 						Description: modelDescription(openrouterProvider, fusionModel),
 						Command:     openrouterFusionCommand,
 					},
@@ -226,7 +256,10 @@ func copilotCommand(preset modelPreset) string {
 }
 
 func openCodeCommand(provider string, model string) string {
-	return fmt.Sprintf(`& "$repoRoot\scripts\Start-OpenCode.ps1" -Provider %s -Model %s`, provider, model)
+	// run.ps1 launches structured arguments through PowerShell array splatting.
+	// Use positional script arguments because parameter-name strings in an array
+	// are bound as values instead of named parameters.
+	return fmt.Sprintf(`& "$repoRoot\scripts\Start-OpenCode.ps1" %s %s`, provider, model)
 }
 
 func modelDescription(provider string, model string) string {
