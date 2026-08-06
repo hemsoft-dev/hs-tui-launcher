@@ -48,6 +48,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($0.76/$2.42)",
 		"(variable/variable)",
 		"($0.09/$0.18)",
+		"($1.25/$4.25)",
 	}
 	descriptions := []string{
 		"openrouter/moonshotai/kimi-k3",
@@ -55,6 +56,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/z-ai/glm-5.2",
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash",
+		"openrouter/meta/muse-spark-1.2",
 	}
 	wantDetailColumn := -1
 	wantDescriptionColumn := -1
@@ -336,6 +338,21 @@ func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *testing.T) {
+	model := chooseOpenRouter(t, key("6"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Muse Spark V1.2 ($1.25/$4.25)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter meta/muse-spark-1.2` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }

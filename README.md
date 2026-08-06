@@ -109,7 +109,8 @@ progress corrupting the launcher handoff; run `cursor-agent update` explicitly
 when an update is wanted.
 OpenCode opens an OpenCode Go model submenu ordered as Kimi K3, Qwen 3.8 Max,
 GLM 5.2, and DeepSeek V4 Flash. OpenRouter opens a separate model submenu
-ordered as Kimi K3, Qwen 3.8 Max, GLM 5.2, Fusion, and DeepSeek V4 Flash.
+ordered as Kimi K3, Qwen 3.8 Max, GLM 5.2, Fusion, DeepSeek V4 Flash, and Muse
+Spark V1.2.
 Parenthesized prices list input/output cost per million tokens; Fusion is
 variable because it bills the underlying panel and judge calls. The wrapper
 updates OpenCode's persisted TUI model before launch so the selected model is

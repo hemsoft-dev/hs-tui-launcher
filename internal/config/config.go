@@ -31,6 +31,7 @@ const (
 	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
 	openrouterKimiK3               = "moonshotai/kimi-k3"
 	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash"
+	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
 	qwen38MaxModel                 = "qwen/qwen3.8-max"
 	glmModel                       = "z-ai/glm-5.2"
 	fusionModel                    = "openrouter/fusion"
@@ -45,21 +46,22 @@ var (
 	claudeCodePreset      = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
 	modelMenuPreset       = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
 
-	codexFreshCommand         = codexCommand("")
-	codexResumeCommand        = codexCommand("resume --last")
-	codexResumePickerCommand  = codexCommand("resume")
-	copilotGPT55Command       = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand    = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command       = copilotCommand(copilotOpus5Preset)
-	opencodeKimiK3Command     = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command     = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM52Command      = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
-	opencodeDeepSeekCommand   = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
-	openrouterKimiK3Command   = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command   = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLMCommand      = openCodeCommand(openrouterProvider, glmModel)
-	openrouterFusionCommand   = openCodeCommand(openrouterProvider, fusionModel)
-	openrouterDeepSeekCommand = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
+	codexFreshCommand          = codexCommand("")
+	codexResumeCommand         = codexCommand("resume --last")
+	codexResumePickerCommand   = codexCommand("resume")
+	copilotGPT55Command        = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand     = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command        = copilotCommand(copilotOpus5Preset)
+	opencodeKimiK3Command      = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command      = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM52Command       = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
+	opencodeDeepSeekCommand    = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	openrouterKimiK3Command    = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command    = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLMCommand       = openCodeCommand(openrouterProvider, glmModel)
+	openrouterFusionCommand    = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekCommand  = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
+	openrouterMuseSparkCommand = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
 )
 
 type Config struct {
@@ -246,6 +248,11 @@ func Default() Config {
 						Name:        "DeepSeek V4 Flash ($0.09/$0.18)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
 						Command:     openrouterDeepSeekCommand,
+					},
+					{
+						Name:        "Muse Spark V1.2 ($1.25/$4.25)",
+						Description: modelDescription(openrouterProvider, openrouterMuseSpark12Model),
+						Command:     openrouterMuseSparkCommand,
 					},
 				},
 			},

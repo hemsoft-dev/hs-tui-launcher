@@ -108,3 +108,6 @@ items:
       - name: DeepSeek V4 Flash ($0.09/$0.18)
         description: openrouter/deepseek/deepseek-v4-flash
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash'
+      - name: Muse Spark V1.2 ($1.25/$4.25)
+        description: openrouter/meta/muse-spark-1.2
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter meta/muse-spark-1.2'

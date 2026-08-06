@@ -145,8 +145,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 5 {
-		t.Fatalf("OpenRouter choices = %d, want 5", got)
+	if got := len(cfg.Items[5].Choices); got != 6 {
+		t.Fatalf("OpenRouter choices = %d, want 6", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -158,6 +158,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GLM 5.2 ($0.76/$2.42)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash ($0.09/$0.18)", "openrouter/deepseek/deepseek-v4-flash", openrouterDeepSeekCommand},
+		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSparkCommand},
 	}
 	for index, want := range openrouterChoices {
 		choice := cfg.Items[5].Choices[index]
