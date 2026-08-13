@@ -25,16 +25,18 @@ const (
 	cursorAgentCommand             = "cursor-agent --disable-auto-update"
 	opencodeGoProvider             = "opencode-go"
 	openrouterProvider             = "openrouter"
+	moonshotProvider               = "moonshot"
 	kimiK3Model                    = "kimi-k3"
 	opencodeQwen38Model            = "qwen3.8-max"
 	opencodeGLM52Model             = "glm-5.2"
 	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
 	openrouterKimiK3               = "moonshotai/kimi-k3"
-	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash"
+	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash-0731"
 	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
 	qwen38MaxModel                 = "qwen/qwen3.8-max"
 	glmModel                       = "z-ai/glm-5.2"
 	fusionModel                    = "openrouter/fusion"
+	moonshotLauncherCommand        = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
 )
 
 var (
@@ -187,6 +189,14 @@ func Default() Config {
 				Tags:            []string{"ai", "anthropic", "cli"},
 			},
 			{
+				Name:            "Moonshot AI",
+				Description:     "Open Kimi K3 with Moonshot AI credits",
+				Command:         moonshotLauncherCommand,
+				Model:           modelDescription(moonshotProvider, kimiK3Model),
+				ReasoningEffort: defaultReasoning,
+				Tags:            []string{"ai", "moonshot", "kimi", "opencode", "cli"},
+			},
+			{
 				Name:            "OpenCode",
 				Description:     "Open OpenCode",
 				Model:           modelMenuPreset.Model,
@@ -235,7 +245,7 @@ func Default() Config {
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM 5.2 ($0.76/$2.42)",
+						Name:        "GLM 5.2 ($0.50/$3.15)",
 						Description: modelDescription(openrouterProvider, glmModel),
 						Command:     openrouterGLMCommand,
 					},
@@ -245,7 +255,7 @@ func Default() Config {
 						Command:     openrouterFusionCommand,
 					},
 					{
-						Name:        "DeepSeek V4 Flash ($0.09/$0.18)",
+						Name:        "DeepSeek V4 Flash 0731 ($0.08/$0.18)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
 						Command:     openrouterDeepSeekCommand,
 					},

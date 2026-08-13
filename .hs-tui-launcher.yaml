@@ -58,6 +58,17 @@ items:
       - ai
       - anthropic
       - cli
+  - name: Moonshot AI
+    description: Open Kimi K3 with Moonshot AI credits
+    command: '& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3'
+    model: moonshot/kimi-k3
+    reasoning_effort: default
+    tags:
+      - ai
+      - moonshot
+      - kimi
+      - opencode
+      - cli
   - name: OpenCode
     description: Open OpenCode
     model: select model
@@ -99,15 +110,15 @@ items:
       - name: Qwen 3.8 Max ($2/$6)
         description: openrouter/qwen/qwen3.8-max
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max'
-      - name: GLM 5.2 ($0.76/$2.42)
+      - name: GLM 5.2 ($0.50/$3.15)
         description: openrouter/z-ai/glm-5.2
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2'
       - name: Fusion (variable/variable)
         description: openrouter/openrouter/fusion
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter openrouter/fusion'
-      - name: DeepSeek V4 Flash ($0.09/$0.18)
-        description: openrouter/deepseek/deepseek-v4-flash
-        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash'
+      - name: DeepSeek V4 Flash 0731 ($0.08/$0.18)
+        description: openrouter/deepseek/deepseek-v4-flash-0731
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash-0731'
       - name: Muse Spark V1.2 ($1.25/$4.25)
         description: openrouter/meta/muse-spark-1.2
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter meta/muse-spark-1.2'

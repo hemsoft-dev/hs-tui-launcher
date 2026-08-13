@@ -38,16 +38,16 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("6"))
+	updated, _ := model.Update(key("7"))
 	model = updated.(Model)
 
 	lines := model.choiceLines()
 	details := []string{
 		"($3/$15)",
 		"($2/$6)",
-		"($0.76/$2.42)",
+		"($0.50/$3.15)",
 		"(variable/variable)",
-		"($0.09/$0.18)",
+		"($0.08/$0.18)",
 		"($1.25/$4.25)",
 	}
 	descriptions := []string{
@@ -55,7 +55,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/qwen/qwen3.8-max",
 		"openrouter/z-ai/glm-5.2",
 		"openrouter/openrouter/fusion",
-		"openrouter/deepseek/deepseek-v4-flash",
+		"openrouter/deepseek/deepseek-v4-flash-0731",
 		"openrouter/meta/muse-spark-1.2",
 	}
 	wantDetailColumn := -1
@@ -219,6 +219,30 @@ func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	}
 }
 
+func TestSelectingMoonshotAIReturnsDirectKimiK3Command(t *testing.T) {
+	model := New(config.Default())
+
+	updated, _ := model.Update(key("5"))
+	model = updated.(Model)
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "Moonshot AI" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+	if item.Model != "moonshot/kimi-k3" {
+		t.Fatalf("Model = %q", item.Model)
+	}
+	if len(item.Env) != 0 {
+		t.Fatalf("Env = %#v", item.Env)
+	}
+}
+
 func TestSelectingOpenCodeQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("2"))
 
@@ -304,7 +328,7 @@ func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM 5.2 ($0.76/$2.42)" {
+	if item.Name != "OpenRouter GLM 5.2 ($0.50/$3.15)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2` {
@@ -334,10 +358,10 @@ func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter DeepSeek V4 Flash ($0.09/$0.18)" {
+	if item.Name != "OpenRouter DeepSeek V4 Flash 0731 ($0.08/$0.18)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash-0731` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }
@@ -500,7 +524,7 @@ func chooseOpenCode(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("5"))
+	updated, _ := model.Update(key("6"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -510,7 +534,7 @@ func chooseOpenRouter(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("6"))
+	updated, _ := model.Update(key("7"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)

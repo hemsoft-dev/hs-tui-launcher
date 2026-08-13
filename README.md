@@ -5,7 +5,7 @@ Terminal launcher overlay for local AI command-line tools.
 ## What it does
 
 `hs-tui-launcher` opens a compact numbered menu for Codex, GitHub Copilot,
-Cursor, Claude Code, and OpenCode. Each row shows the model and reasoning
+Cursor, Claude Code, Moonshot AI, and OpenCode. Each row shows the model and reasoning
 effort. The PowerShell wrapper exits the Go picker before handing off to the
 selected CLI in the same console.
 
@@ -107,16 +107,21 @@ CLI.
 Cursor starts with automatic CLI updates disabled to avoid PowerShell download
 progress corrupting the launcher handoff; run `cursor-agent update` explicitly
 when an update is wanted.
+Moonshot AI launches Kimi K3 through OpenCode against `https://api.moonshot.ai/v1`
+and charges the associated Moonshot API credits. It reads the API key from
+`KIMI_K3_API_KEY` and injects only an inline OpenCode provider definition; it
+does not write the key or modify the global OpenCode configuration.
 OpenCode opens an OpenCode Go model submenu ordered as Kimi K3, Qwen 3.8 Max,
 GLM 5.2, and DeepSeek V4 Flash. OpenRouter opens a separate model submenu
-ordered as Kimi K3, Qwen 3.8 Max, GLM 5.2, Fusion, DeepSeek V4 Flash, and Muse
-Spark V1.2.
-Parenthesized prices list input/output cost per million tokens; Fusion is
-variable because it bills the underlying panel and judge calls. The wrapper
-updates OpenCode's persisted TUI model before launch so the selected model is
-active immediately.
+ordered as Kimi K3, Qwen 3.8 Max, GLM 5.2, Fusion, DeepSeek V4 Flash 0731,
+and Muse Spark V1.2.
+Parenthesized prices list the current OpenRouter catalog input/output rate per
+million tokens. OpenRouter can route multi-provider models to endpoints with
+different rates, so actual charges may differ. Fusion is variable because it
+bills the underlying panel and judge calls. The wrapper updates OpenCode's
+persisted TUI model before launch so the selected model is active immediately.
 
 ## Keys
 
-- `1`, `2`, `3`, `4`, `5`, `6`: launch that numbered target
+- `1`, `2`, `3`, `4`, `5`, `6`, `7`: launch that numbered target
 - `q`, `esc`, `ctrl+c`: exit

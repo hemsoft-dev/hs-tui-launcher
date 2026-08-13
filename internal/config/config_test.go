@@ -21,8 +21,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if cfg.Title != "HemSoft TUI Launcher" {
 		t.Fatalf("Title = %q", cfg.Title)
 	}
-	if len(cfg.Items) != 6 {
-		t.Fatalf("len(Items) = %d, want 6", len(cfg.Items))
+	if len(cfg.Items) != 7 {
+		t.Fatalf("len(Items) = %d, want 7", len(cfg.Items))
 	}
 	if got := cfg.Items[0].Command; got != "" {
 		t.Fatalf("Codex command = %q", got)
@@ -96,19 +96,35 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[3].Command; got != "claude --dangerously-skip-permissions" {
 		t.Fatalf("Claude Code command = %q", got)
 	}
-	if got := cfg.Items[4].Command; got != "" {
+	moonshot := cfg.Items[4]
+	if moonshot.Name != "Moonshot AI" {
+		t.Fatalf("Moonshot AI name = %q", moonshot.Name)
+	}
+	if moonshot.Description != "Open Kimi K3 with Moonshot AI credits" {
+		t.Fatalf("Moonshot AI description = %q", moonshot.Description)
+	}
+	if moonshot.Command != moonshotLauncherCommand {
+		t.Fatalf("Moonshot AI command = %q", moonshot.Command)
+	}
+	if moonshot.Model != "moonshot/kimi-k3" {
+		t.Fatalf("Moonshot AI model = %q", moonshot.Model)
+	}
+	if len(moonshot.Env) != 0 {
+		t.Fatalf("Moonshot AI env = %#v", moonshot.Env)
+	}
+	if got := cfg.Items[5].Command; got != "" {
 		t.Fatalf("OpenCode command = %q", got)
 	}
-	if got := cfg.Items[4].Name; got != "OpenCode" {
+	if got := cfg.Items[5].Name; got != "OpenCode" {
 		t.Fatalf("OpenCode name = %q", got)
 	}
-	if got := cfg.Items[4].Model; got != "select model" {
+	if got := cfg.Items[5].Model; got != "select model" {
 		t.Fatalf("OpenCode model = %q", got)
 	}
-	if got := cfg.Items[4].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[4].Choices); got != 4 {
+	if got := len(cfg.Items[5].Choices); got != 4 {
 		t.Fatalf("OpenCode choices = %d, want 4", got)
 	}
 	opencodeChoices := []struct {
@@ -122,7 +138,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
 	}
 	for index, want := range opencodeChoices {
-		choice := cfg.Items[4].Choices[index]
+		choice := cfg.Items[5].Choices[index]
 		if choice.Name != want.name {
 			t.Fatalf("OpenCode choice %d name = %q", index, choice.Name)
 		}
@@ -133,19 +149,19 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 			t.Fatalf("OpenCode choice %d command = %q", index, choice.Command)
 		}
 	}
-	if got := cfg.Items[5].Name; got != "OpenRouter" {
+	if got := cfg.Items[6].Name; got != "OpenRouter" {
 		t.Fatalf("OpenRouter name = %q", got)
 	}
-	if got := cfg.Items[5].Command; got != "" {
+	if got := cfg.Items[6].Command; got != "" {
 		t.Fatalf("OpenRouter command = %q", got)
 	}
-	if got := cfg.Items[5].Model; got != "select model" {
+	if got := cfg.Items[6].Model; got != "select model" {
 		t.Fatalf("OpenRouter model = %q", got)
 	}
-	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+	if got := cfg.Items[6].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 6 {
+	if got := len(cfg.Items[6].Choices); got != 6 {
 		t.Fatalf("OpenRouter choices = %d, want 6", got)
 	}
 	openrouterChoices := []struct {
@@ -155,13 +171,13 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	}{
 		{"Kimi K3 ($3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
 		{"Qwen 3.8 Max ($2/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
-		{"GLM 5.2 ($0.76/$2.42)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
+		{"GLM 5.2 ($0.50/$3.15)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
-		{"DeepSeek V4 Flash ($0.09/$0.18)", "openrouter/deepseek/deepseek-v4-flash", openrouterDeepSeekCommand},
+		{"DeepSeek V4 Flash 0731 ($0.08/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
 		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSparkCommand},
 	}
 	for index, want := range openrouterChoices {
-		choice := cfg.Items[5].Choices[index]
+		choice := cfg.Items[6].Choices[index]
 		if choice.Name != want.name {
 			t.Fatalf("OpenRouter choice %d name = %q", index, choice.Name)
 		}
