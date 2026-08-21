@@ -30,7 +30,7 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 	model = updated.(Model)
 
 	lines := model.choiceLines()
-	if lines[3] != "3. Resume picker  Choose a Codex CLI session to resume" {
+	if lines[3] != "3. Resume picker          Choose a Codex CLI session to resume" {
 		t.Fatalf("Resume picker line = %q", lines[3])
 	}
 }
@@ -49,6 +49,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"(variable/variable)",
 		"($0.08/$0.18)",
 		"($1.25/$4.25)",
+		"($0.045 1K/$0.09 2K)",
 	}
 	descriptions := []string{
 		"openrouter/moonshotai/kimi-k3",
@@ -57,6 +58,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash-0731",
 		"openrouter/meta/muse-spark-1.2",
+		"images/bytedance-seed/seedream-5-0-pro",
 	}
 	wantDetailColumn := -1
 	wantDescriptionColumn := -1
@@ -159,6 +161,35 @@ func TestSelectingCodexResumePickerChoiceReturnsResumePickerCommand(t *testing.T
 	}
 }
 
+func TestSelectingCodexModelChoicesReturnsExplicitModelCommands(t *testing.T) {
+	tests := []struct {
+		key     string
+		name    string
+		command string
+	}{
+		{"4", "Codex GPT 5.6 Sol High", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="default"' -c 'model_reasoning_effort="high"'`},
+		{"5", "Codex GPT 5.6 Sol High/Fast", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="fast"' -c 'model_reasoning_effort="high"'`},
+		{"6", "Codex GPT 5.6 Luna", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna -c 'service_tier="default"' -c 'model_reasoning_effort="medium"'`},
+		{"7", "Codex GPT 5.6 Luna/Fast", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna -c 'service_tier="fast"' -c 'model_reasoning_effort="medium"'`},
+	}
+
+	for _, test := range tests {
+		t.Run(test.key, func(t *testing.T) {
+			model := chooseCodex(t, key(test.key))
+			item, ok := model.SelectedItem()
+			if !ok {
+				t.Fatal("SelectedItem returned no value")
+			}
+			if item.Name != test.name {
+				t.Fatalf("Name = %q, want %q", item.Name, test.name)
+			}
+			if item.Command != test.command {
+				t.Fatalf("Command = %q, want %q", item.Command, test.command)
+			}
+		})
+	}
+}
+
 func TestSelectingCopilotGPT55ChoiceReturnsExplicitModelCommand(t *testing.T) {
 	model := chooseCopilot(t, key("1"))
 
@@ -204,8 +235,41 @@ func TestSelectingCopilotOpus5ChoiceReturnsExplicitModelCommand(t *testing.T) {
 	}
 }
 
-func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
+func TestSelectingCopilotAmdQwen3827BChoiceReturnsScopedWrapper(t *testing.T) {
+	model := chooseCopilot(t, key("4"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "GitHub Copilot Qwen 3.8 27B (AMD Ollama)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-CopilotAmdOllama.ps1"` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeZenOxAlphaFreeChoiceReturnsZenCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("1"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode 0x Alpha Free (Unlimited)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode x-preview-f-free` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+	if len(item.Env) != 1 || item.Env[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
+		t.Fatalf("Env = %#v", item.Env)
+	}
+}
+
+func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
+	model := chooseOpenCode(t, key("2"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -244,7 +308,7 @@ func TestSelectingMoonshotAIReturnsDirectKimiK3Command(t *testing.T) {
 }
 
 func TestSelectingOpenCodeQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
-	model := chooseOpenCode(t, key("2"))
+	model := chooseOpenCode(t, key("3"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -259,7 +323,7 @@ func TestSelectingOpenCodeQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
 }
 
 func TestSelectingOpenCodeGLM52ChoiceReturnsGLM52Command(t *testing.T) {
-	model := chooseOpenCode(t, key("3"))
+	model := chooseOpenCode(t, key("4"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -274,7 +338,7 @@ func TestSelectingOpenCodeGLM52ChoiceReturnsGLM52Command(t *testing.T) {
 }
 
 func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *testing.T) {
-	model := chooseOpenCode(t, key("4"))
+	model := chooseOpenCode(t, key("5"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -285,6 +349,33 @@ func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go deepseek-v4-flash` {
 		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeHomeAndAmdModelChoices(t *testing.T) {
+	tests := []struct {
+		key     string
+		name    string
+		command string
+	}{
+		{"6", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
+		{"7", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
+	}
+
+	for _, test := range tests {
+		t.Run(test.key, func(t *testing.T) {
+			model := chooseOpenCode(t, key(test.key))
+			item, ok := model.SelectedItem()
+			if !ok {
+				t.Fatal("SelectedItem returned no value")
+			}
+			if item.Name != test.name {
+				t.Fatalf("Name = %q, want %q", item.Name, test.name)
+			}
+			if item.Command != test.command {
+				t.Fatalf("Command = %q, want %q", item.Command, test.command)
+			}
+		})
 	}
 }
 
@@ -378,6 +469,39 @@ func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *test
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter meta/muse-spark-1.2` {
 		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterSeedream50ProChoiceReturnsImageCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("7"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Seedream 5.0 Pro ($0.045 1K/$0.09 2K)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOllamaQwen3827BChoiceReturnsOpenCodeCommand(t *testing.T) {
+	model := chooseOllama(t, key("1"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "Ollama Qwen 3.8 27B" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+	if len(item.Env) != 0 {
+		t.Fatalf("Env = %#v", item.Env)
 	}
 }
 
@@ -535,6 +659,16 @@ func chooseOpenRouter(t *testing.T, choice tea.KeyPressMsg) Model {
 
 	model := New(config.Default())
 	updated, _ := model.Update(key("7"))
+	model = updated.(Model)
+	updated, _ = model.Update(choice)
+	return updated.(Model)
+}
+
+func chooseOllama(t *testing.T, choice tea.KeyPressMsg) Model {
+	t.Helper()
+
+	model := New(config.Default())
+	updated, _ := model.Update(key("8"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
