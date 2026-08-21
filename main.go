@@ -40,7 +40,7 @@ func main() {
 			}
 
 			if !hasInteractiveTerminal() {
-				return fmt.Errorf("hs-tui-launcher requires an interactive terminal; run .\\run.ps1 from PowerShell or use --print-config")
+				return fmt.Errorf("hs-tui-launcher requires an interactive terminal; use run.ps1 on PowerShell, run.sh on macOS/Linux, or --print-config")
 			}
 
 			model := tui.New(cfg)
