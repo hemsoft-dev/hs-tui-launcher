@@ -8,12 +8,24 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $repoRoot = Split-Path -Parent $PSCommandPath
-$goCommand = @('go.exe', 'go') |
-    ForEach-Object { Get-Command $_ -CommandType Application -ErrorAction SilentlyContinue } |
-    Select-Object -First 1
+$nativeLauncher = Join-Path $repoRoot 'hs-tui-launcher.exe'
+$launcherCommand = $null
+$launcherPrefix = @()
 
-if (-not $goCommand) {
-    throw 'Go is required to run hs-tui-launcher, but no Go executable was found on PATH.'
+if (Test-Path -LiteralPath $nativeLauncher -PathType Leaf) {
+    $launcherCommand = $nativeLauncher
+}
+else {
+    $goCommand = @('go.exe', 'go') |
+        ForEach-Object { Get-Command $_ -CommandType Application -ErrorAction SilentlyContinue } |
+        Select-Object -First 1
+
+    if (-not $goCommand) {
+        throw 'hs-tui-launcher.exe is missing and no Go executable was found on PATH.'
+    }
+
+    $launcherCommand = $goCommand.Source
+    $launcherPrefix = @('run', '.')
 }
 
 function Test-NonInteractiveRequest {
@@ -171,14 +183,14 @@ $selectionFile = $null
 Push-Location -LiteralPath $repoRoot
 try {
     if (Test-NonInteractiveRequest -Arguments $AppArgs) {
-        & $goCommand.Source run . @AppArgs
+        & $launcherCommand @launcherPrefix @AppArgs
         $exitCode = $LASTEXITCODE
     }
     else {
         # The Go TUI writes the selected command here and exits before PowerShell launches it.
         # Keeping launch ownership in this wrapper avoids child processes inheriting TUI terminal state.
         $selectionFile = New-TemporaryFile
-        & $goCommand.Source run . --selection-file $selectionFile.FullName @AppArgs
+        & $launcherCommand @launcherPrefix --selection-file $selectionFile.FullName @AppArgs
         $exitCode = $LASTEXITCODE
     }
 }
