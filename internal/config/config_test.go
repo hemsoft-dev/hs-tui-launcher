@@ -21,8 +21,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if cfg.Title != "HemSoft TUI Launcher" {
 		t.Fatalf("Title = %q", cfg.Title)
 	}
-	if len(cfg.Items) != 7 {
-		t.Fatalf("len(Items) = %d, want 7", len(cfg.Items))
+	if len(cfg.Items) != 8 {
+		t.Fatalf("len(Items) = %d, want 8", len(cfg.Items))
 	}
 	if got := cfg.Items[0].Command; got != "" {
 		t.Fatalf("Codex command = %q", got)
@@ -33,8 +33,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[0].ReasoningEffort; got != "high" {
 		t.Fatalf("Codex reasoning effort = %q", got)
 	}
-	if len(cfg.Items[0].Choices) != 3 {
-		t.Fatalf("Codex choices = %d, want 3", len(cfg.Items[0].Choices))
+	if len(cfg.Items[0].Choices) != 7 {
+		t.Fatalf("Codex choices = %d, want 7", len(cfg.Items[0].Choices))
 	}
 	if got := cfg.Items[0].Choices[0].Command; got != codexFreshCommand {
 		t.Fatalf("Codex fresh command = %q", got)
@@ -45,6 +45,28 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[0].Choices[2].Command; got != codexResumePickerCommand {
 		t.Fatalf("Codex resume picker command = %q", got)
 	}
+	codexChoices := []struct {
+		name        string
+		description string
+		command     string
+	}{
+		{"GPT 5.6 Sol High", "Start Codex with GPT-5.6 Sol at high reasoning", codexSolHighCommand},
+		{"GPT 5.6 Sol High/Fast", "Start Codex with GPT-5.6 Sol at high reasoning and fast service", codexSolHighFastCommand},
+		{"GPT 5.6 Luna", "Start Codex with GPT-5.6 Luna at medium reasoning", codexLunaCommand},
+		{"GPT 5.6 Luna/Fast", "Start Codex with GPT-5.6 Luna at medium reasoning and fast service", codexLunaFastCommand},
+	}
+	for index, want := range codexChoices {
+		choice := cfg.Items[0].Choices[index+3]
+		if choice.Name != want.name {
+			t.Fatalf("Codex choice %d name = %q", index+3, choice.Name)
+		}
+		if choice.Description != want.description {
+			t.Fatalf("Codex choice %d description = %q", index+3, choice.Description)
+		}
+		if choice.Command != want.command {
+			t.Fatalf("Codex choice %d command = %q", index+3, choice.Command)
+		}
+	}
 	if got := cfg.Items[1].Command; got != "" {
 		t.Fatalf("GitHub Copilot command = %q", got)
 	}
@@ -54,8 +76,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[1].ReasoningEffort; got != "default" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
 	}
-	if got := len(cfg.Items[1].Choices); got != 3 {
-		t.Fatalf("GitHub Copilot choices = %d, want 3", got)
+	if got := len(cfg.Items[1].Choices); got != 4 {
+		t.Fatalf("GitHub Copilot choices = %d, want 4", got)
 	}
 	copilotGPT55Choice := cfg.Items[1].Choices[0]
 	if copilotGPT55Choice.Name != "GPT-5.5" {
@@ -86,6 +108,16 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	}
 	if copilotOpus5Choice.Command != copilotOpus5Command {
 		t.Fatalf("GitHub Copilot third choice command = %q", copilotOpus5Choice.Command)
+	}
+	copilotAmdQwenChoice := cfg.Items[1].Choices[3]
+	if copilotAmdQwenChoice.Name != "Qwen 3.8 27B (AMD Ollama)" {
+		t.Fatalf("GitHub Copilot fourth choice name = %q", copilotAmdQwenChoice.Name)
+	}
+	if copilotAmdQwenChoice.Description != "Use AMD Ollama over Tailscale with 262K context" {
+		t.Fatalf("GitHub Copilot fourth choice description = %q", copilotAmdQwenChoice.Description)
+	}
+	if copilotAmdQwenChoice.Command != copilotAmdQwen3827BCommand {
+		t.Fatalf("GitHub Copilot fourth choice command = %q", copilotAmdQwenChoice.Command)
 	}
 	if got := cfg.Items[2].Model; got != "claude-opus-4.8" {
 		t.Fatalf("Cursor model = %q", got)
@@ -124,18 +156,21 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 4 {
-		t.Fatalf("OpenCode choices = %d, want 4", got)
+	if got := len(cfg.Items[5].Choices); got != 7 {
+		t.Fatalf("OpenCode choices = %d, want 7", got)
 	}
 	opencodeChoices := []struct {
 		name        string
 		description string
 		command     string
 	}{
+		{"0x Alpha Free (Unlimited)", "opencode/x-preview-f-free", opencodeZenOxAlphaCommand},
 		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
 		{"GLM 5.2", "opencode-go/glm-5.2", opencodeGLM52Command},
 		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
+		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
+		{"Qwen 3.8 27B (amd Ollama)", "amd-ollama/qwen3.8:27b", amdOllamaQwen3827BCommand},
 	}
 	for index, want := range opencodeChoices {
 		choice := cfg.Items[5].Choices[index]
@@ -152,6 +187,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[6].Name; got != "OpenRouter" {
 		t.Fatalf("OpenRouter name = %q", got)
 	}
+	if got := cfg.Items[6].Description; got != "Open OpenRouter models and image generation" {
+		t.Fatalf("OpenRouter description = %q", got)
+	}
 	if got := cfg.Items[6].Command; got != "" {
 		t.Fatalf("OpenRouter command = %q", got)
 	}
@@ -161,8 +199,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[6].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[6].Choices); got != 6 {
-		t.Fatalf("OpenRouter choices = %d, want 6", got)
+	if got := len(cfg.Items[6].Choices); got != 7 {
+		t.Fatalf("OpenRouter choices = %d, want 7", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -175,6 +213,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash 0731 ($0.08/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
 		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSparkCommand},
+		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
 	}
 	for index, want := range openrouterChoices {
 		choice := cfg.Items[6].Choices[index]
@@ -187,6 +226,35 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		if choice.Command != want.command {
 			t.Fatalf("OpenRouter choice %d command = %q", index, choice.Command)
 		}
+	}
+	ollama := cfg.Items[7]
+	if ollama.Name != "Ollama" {
+		t.Fatalf("Ollama name = %q", ollama.Name)
+	}
+	if ollama.Description != "Open local Ollama models with OpenCode" {
+		t.Fatalf("Ollama description = %q", ollama.Description)
+	}
+	if ollama.Command != "" {
+		t.Fatalf("Ollama command = %q", ollama.Command)
+	}
+	if ollama.Model != "select model" {
+		t.Fatalf("Ollama model = %q", ollama.Model)
+	}
+	if len(ollama.Env) != 0 {
+		t.Fatalf("Ollama env = %#v", ollama.Env)
+	}
+	if got := len(ollama.Choices); got != 1 {
+		t.Fatalf("Ollama choices = %d, want 1", got)
+	}
+	ollamaQwen := ollama.Choices[0]
+	if ollamaQwen.Name != "Qwen 3.8 27B" {
+		t.Fatalf("Ollama first choice name = %q", ollamaQwen.Name)
+	}
+	if ollamaQwen.Description != "ollama/qwen3.8:27b" {
+		t.Fatalf("Ollama first choice description = %q", ollamaQwen.Description)
+	}
+	if ollamaQwen.Command != ollamaQwen3827BCommand {
+		t.Fatalf("Ollama first choice command = %q", ollamaQwen.Command)
 	}
 	for _, arg := range cfg.ShellArgs {
 		if arg == "-NoExit" {

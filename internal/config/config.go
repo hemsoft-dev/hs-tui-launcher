@@ -15,42 +15,62 @@ const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
 	gpt56SolModel                  = "gpt-5.6-sol"
+	gpt56LunaModel                 = "gpt-5.6-luna"
 	copilotGPT55Model              = "gpt-5.5"
 	claudeModel                    = "claude-opus-4.8"
 	copilotOpus5Model              = "claude-opus-5"
 	selectModel                    = "select model"
+	mediumReasoning                = "medium"
 	highReasoning                  = "high"
 	xhighReasoning                 = "xhigh"
 	defaultReasoning               = "default"
+	defaultServiceTier             = "default"
+	fastServiceTier                = "fast"
 	cursorAgentCommand             = "cursor-agent --disable-auto-update"
 	opencodeGoProvider             = "opencode-go"
+	opencodeZenProvider            = "opencode"
 	openrouterProvider             = "openrouter"
 	moonshotProvider               = "moonshot"
+	ollamaProvider                 = "ollama"
 	kimiK3Model                    = "kimi-k3"
+	ollamaQwen3827BModel           = "qwen3.8:27b"
 	opencodeQwen38Model            = "qwen3.8-max"
 	opencodeGLM52Model             = "glm-5.2"
 	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
+	opencodeZenOxAlphaFreeModel    = "x-preview-f-free"
 	openrouterKimiK3               = "moonshotai/kimi-k3"
 	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash-0731"
 	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
+	openrouterSeedream50ProModel   = "bytedance-seed/seedream-5-0-pro"
 	qwen38MaxModel                 = "qwen/qwen3.8-max"
 	glmModel                       = "z-ai/glm-5.2"
 	fusionModel                    = "openrouter/fusion"
 	moonshotLauncherCommand        = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
+	ollamaQwen3827BCommand         = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
+	amdOllamaQwen3827BCommand      = `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`
+	copilotAmdQwen3827BCommand     = `& "$repoRoot\scripts\Start-CopilotAmdOllama.ps1"`
+	openrouterSeedreamCommand      = `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"`
 )
 
 var (
-	codexPreset           = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
-	copilotGPT55Preset    = modelPreset{Model: copilotGPT55Model, ReasoningEffort: highReasoning}
-	copilotGPT56SolPreset = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
-	copilotOpus5Preset    = modelPreset{Model: copilotOpus5Model, ReasoningEffort: xhighReasoning}
-	cursorPreset          = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
-	claudeCodePreset      = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
-	modelMenuPreset       = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
+	codexPreset            = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning, ServiceTier: defaultServiceTier}
+	copilotGPT55Preset     = modelPreset{Model: copilotGPT55Model, ReasoningEffort: highReasoning}
+	copilotGPT56SolPreset  = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
+	copilotOpus5Preset     = modelPreset{Model: copilotOpus5Model, ReasoningEffort: xhighReasoning}
+	cursorPreset           = modelPreset{Model: claudeModel, ReasoningEffort: xhighReasoning}
+	claudeCodePreset       = modelPreset{Model: claudeModel, ReasoningEffort: defaultReasoning}
+	modelMenuPreset        = modelPreset{Model: selectModel, ReasoningEffort: defaultReasoning}
+	codexSolHighFastPreset = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning, ServiceTier: fastServiceTier}
+	codexLunaPreset        = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: defaultServiceTier}
+	codexLunaFastPreset    = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: fastServiceTier}
 
-	codexFreshCommand          = codexCommand("")
-	codexResumeCommand         = codexCommand("resume --last")
-	codexResumePickerCommand   = codexCommand("resume")
+	codexFreshCommand          = codexCommand("", codexPreset)
+	codexResumeCommand         = codexCommand("resume --last", codexPreset)
+	codexResumePickerCommand   = codexCommand("resume", codexPreset)
+	codexSolHighCommand        = codexCommand("", codexPreset)
+	codexSolHighFastCommand    = codexCommand("", codexSolHighFastPreset)
+	codexLunaCommand           = codexCommand("", codexLunaPreset)
+	codexLunaFastCommand       = codexCommand("", codexLunaFastPreset)
 	copilotGPT55Command        = copilotCommand(copilotGPT55Preset)
 	copilotGPT56SolCommand     = copilotCommand(copilotGPT56SolPreset)
 	copilotOpus5Command        = copilotCommand(copilotOpus5Preset)
@@ -58,6 +78,7 @@ var (
 	opencodeQwen38Command      = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
 	opencodeGLM52Command       = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
 	opencodeDeepSeekCommand    = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	opencodeZenOxAlphaCommand  = openCodeCommand(opencodeZenProvider, opencodeZenOxAlphaFreeModel)
 	openrouterKimiK3Command    = openCodeCommand(openrouterProvider, openrouterKimiK3)
 	openrouterQwen38Command    = openCodeCommand(openrouterProvider, qwen38MaxModel)
 	openrouterGLMCommand       = openCodeCommand(openrouterProvider, glmModel)
@@ -94,6 +115,7 @@ type LaunchChoice struct {
 type modelPreset struct {
 	Model           string
 	ReasoningEffort string
+	ServiceTier     string
 }
 
 func Load(path string) (Config, string, error) {
@@ -146,6 +168,26 @@ func Default() Config {
 						Description: "Choose a Codex CLI session to resume",
 						Command:     codexResumePickerCommand,
 					},
+					{
+						Name:        "GPT 5.6 Sol High",
+						Description: "Start Codex with GPT-5.6 Sol at high reasoning",
+						Command:     codexSolHighCommand,
+					},
+					{
+						Name:        "GPT 5.6 Sol High/Fast",
+						Description: "Start Codex with GPT-5.6 Sol at high reasoning and fast service",
+						Command:     codexSolHighFastCommand,
+					},
+					{
+						Name:        "GPT 5.6 Luna",
+						Description: "Start Codex with GPT-5.6 Luna at medium reasoning",
+						Command:     codexLunaCommand,
+					},
+					{
+						Name:        "GPT 5.6 Luna/Fast",
+						Description: "Start Codex with GPT-5.6 Luna at medium reasoning and fast service",
+						Command:     codexLunaFastCommand,
+					},
 				},
 			},
 			{
@@ -169,6 +211,11 @@ func Default() Config {
 						Name:        "Claude Opus 5",
 						Description: "Use Claude Opus 5 with xhigh reasoning effort",
 						Command:     copilotOpus5Command,
+					},
+					{
+						Name:        "Qwen 3.8 27B (AMD Ollama)",
+						Description: "Use AMD Ollama over Tailscale with 262K context",
+						Command:     copilotAmdQwen3827BCommand,
 					},
 				},
 			},
@@ -205,6 +252,11 @@ func Default() Config {
 				Tags:            []string{"ai", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
+						Name:        "0x Alpha Free (Unlimited)",
+						Description: modelDescription(opencodeZenProvider, opencodeZenOxAlphaFreeModel),
+						Command:     opencodeZenOxAlphaCommand,
+					},
+					{
 						Name:        "Kimi K3",
 						Description: modelDescription(opencodeGoProvider, kimiK3Model),
 						Command:     opencodeKimiK3Command,
@@ -224,11 +276,21 @@ func Default() Config {
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     opencodeDeepSeekCommand,
 					},
+					{
+						Name:        "Qwen 3.8 27B (home Ollama)",
+						Description: modelDescription(ollamaProvider, ollamaQwen3827BModel),
+						Command:     ollamaQwen3827BCommand,
+					},
+					{
+						Name:        "Qwen 3.8 27B (amd Ollama)",
+						Description: "amd-ollama/" + ollamaQwen3827BModel,
+						Command:     amdOllamaQwen3827BCommand,
+					},
 				},
 			},
 			{
 				Name:            "OpenRouter",
-				Description:     "Open OpenCode with OpenRouter",
+				Description:     "Open OpenRouter models and image generation",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
 				Env:             []string{`OPENCODE_PERMISSION={"*":"allow"}`},
@@ -264,22 +326,41 @@ func Default() Config {
 						Description: modelDescription(openrouterProvider, openrouterMuseSpark12Model),
 						Command:     openrouterMuseSparkCommand,
 					},
+					{
+						Name:        "Seedream 5.0 Pro ($0.045 1K/$0.09 2K)",
+						Description: "images/" + openrouterSeedream50ProModel,
+						Command:     openrouterSeedreamCommand,
+					},
+				},
+			},
+			{
+				Name:            "Ollama",
+				Description:     "Open local Ollama models with OpenCode",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
+				Tags:            []string{"ai", "ollama", "opencode", "local", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "Qwen 3.8 27B",
+						Description: modelDescription(ollamaProvider, ollamaQwen3827BModel),
+						Command:     ollamaQwen3827BCommand,
+					},
 				},
 			},
 		},
 	}
 }
 
-func codexCommand(subcommand string) string {
+func codexCommand(subcommand string, preset modelPreset) string {
 	parts := []string{"codex"}
 	if strings.TrimSpace(subcommand) != "" {
 		parts = append(parts, strings.Fields(subcommand)...)
 	}
 	parts = append(parts,
 		"--dangerously-bypass-approvals-and-sandbox",
-		"-m", codexPreset.Model,
-		"-c", `'service_tier="default"'`,
-		"-c", fmt.Sprintf(`'model_reasoning_effort="%s"'`, codexPreset.ReasoningEffort),
+		"-m", preset.Model,
+		"-c", fmt.Sprintf(`'service_tier="%s"'`, preset.ServiceTier),
+		"-c", fmt.Sprintf(`'model_reasoning_effort="%s"'`, preset.ReasoningEffort),
 	)
 	return strings.Join(parts, " ")
 }
