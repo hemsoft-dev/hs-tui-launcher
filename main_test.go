@@ -53,8 +53,8 @@ func TestWriteSelectionEmitsStructuredInvocation(t *testing.T) {
 func TestWriteSelectionResolvesRepoRootPowerShellInvocation(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "selection.json")
 	item := config.LaunchItem{
-		Name:    "OpenRouter GLM 5.2",
-		Command: `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2`,
+		Name:    "OpenRouter GLM-5.3-Flash",
+		Command: `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.3-flash`,
 	}
 
 	if err := writeSelection(path, item); err != nil {
@@ -75,7 +75,7 @@ func TestWriteSelectionResolvesRepoRootPowerShellInvocation(t *testing.T) {
 	if !ok {
 		t.Fatalf("args = %#v, want array", selection["args"])
 	}
-	wantArgs := []string{"openrouter", "z-ai/glm-5.2"}
+	wantArgs := []string{"openrouter", "z-ai/glm-5.3-flash"}
 	if len(args) != len(wantArgs) {
 		t.Fatalf("len(args) = %d, want %d", len(args), len(wantArgs))
 	}

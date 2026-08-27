@@ -28,22 +28,20 @@ const (
 	fastServiceTier                = "fast"
 	cursorAgentCommand             = "cursor-agent --disable-auto-update"
 	opencodeGoProvider             = "opencode-go"
-	opencodeZenProvider            = "opencode"
 	openrouterProvider             = "openrouter"
 	moonshotProvider               = "moonshot"
 	ollamaProvider                 = "ollama"
 	kimiK3Model                    = "kimi-k3"
 	ollamaQwen3827BModel           = "qwen3.8:27b"
 	opencodeQwen38Model            = "qwen3.8-max"
-	opencodeGLM52Model             = "glm-5.2"
+	opencodeGLM53FlashModel        = "glm-5.3-flash"
 	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
-	opencodeZenOxAlphaFreeModel    = "x-preview-f-free"
 	openrouterKimiK3               = "moonshotai/kimi-k3"
 	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash-0731"
 	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
 	openrouterSeedream50ProModel   = "bytedance-seed/seedream-5-0-pro"
 	qwen38MaxModel                 = "qwen/qwen3.8-max"
-	glmModel                       = "z-ai/glm-5.2"
+	openrouterGLM53FlashModel      = "z-ai/glm-5.3-flash"
 	fusionModel                    = "openrouter/fusion"
 	moonshotLauncherCommand        = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
 	ollamaQwen3827BCommand         = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
@@ -64,27 +62,26 @@ var (
 	codexLunaPreset        = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: defaultServiceTier}
 	codexLunaFastPreset    = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: fastServiceTier}
 
-	codexFreshCommand          = codexCommand("", codexPreset)
-	codexResumeCommand         = codexCommand("resume --last", codexPreset)
-	codexResumePickerCommand   = codexCommand("resume", codexPreset)
-	codexSolHighCommand        = codexCommand("", codexPreset)
-	codexSolHighFastCommand    = codexCommand("", codexSolHighFastPreset)
-	codexLunaCommand           = codexCommand("", codexLunaPreset)
-	codexLunaFastCommand       = codexCommand("", codexLunaFastPreset)
-	copilotGPT55Command        = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand     = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command        = copilotCommand(copilotOpus5Preset)
-	opencodeKimiK3Command      = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command      = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM52Command       = openCodeCommand(opencodeGoProvider, opencodeGLM52Model)
-	opencodeDeepSeekCommand    = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
-	opencodeZenOxAlphaCommand  = openCodeCommand(opencodeZenProvider, opencodeZenOxAlphaFreeModel)
-	openrouterKimiK3Command    = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command    = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLMCommand       = openCodeCommand(openrouterProvider, glmModel)
-	openrouterFusionCommand    = openCodeCommand(openrouterProvider, fusionModel)
-	openrouterDeepSeekCommand  = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
-	openrouterMuseSparkCommand = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
+	codexFreshCommand           = codexCommand("", codexPreset)
+	codexResumeCommand          = codexCommand("resume --last", codexPreset)
+	codexResumePickerCommand    = codexCommand("resume", codexPreset)
+	codexSolHighCommand         = codexCommand("", codexPreset)
+	codexSolHighFastCommand     = codexCommand("", codexSolHighFastPreset)
+	codexLunaCommand            = codexCommand("", codexLunaPreset)
+	codexLunaFastCommand        = codexCommand("", codexLunaFastPreset)
+	copilotGPT55Command         = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand      = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command         = copilotCommand(copilotOpus5Preset)
+	opencodeKimiK3Command       = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command       = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM53FlashCommand   = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
+	opencodeDeepSeekCommand     = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	openrouterKimiK3Command     = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command     = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLM53FlashCommand = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
+	openrouterFusionCommand     = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekCommand   = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
+	openrouterMuseSparkCommand  = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
 )
 
 type Config struct {
@@ -252,9 +249,9 @@ func Default() Config {
 				Tags:            []string{"ai", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "0x Alpha Free (Unlimited)",
-						Description: modelDescription(opencodeZenProvider, opencodeZenOxAlphaFreeModel),
-						Command:     opencodeZenOxAlphaCommand,
+						Name:        "GLM-5.3-Flash (2x usage)",
+						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
+						Command:     opencodeGLM53FlashCommand,
 					},
 					{
 						Name:        "Kimi K3",
@@ -265,11 +262,6 @@ func Default() Config {
 						Name:        "Qwen 3.8 Max",
 						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
 						Command:     opencodeQwen38Command,
-					},
-					{
-						Name:        "GLM 5.2",
-						Description: modelDescription(opencodeGoProvider, opencodeGLM52Model),
-						Command:     opencodeGLM52Command,
 					},
 					{
 						Name:        "DeepSeek V4 Flash",
@@ -307,9 +299,9 @@ func Default() Config {
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM 5.2 ($0.50/$3.15)",
-						Description: modelDescription(openrouterProvider, glmModel),
-						Command:     openrouterGLMCommand,
+						Name:        "GLM-5.3-Flash ($0.075/$0.25)",
+						Description: modelDescription(openrouterProvider, openrouterGLM53FlashModel),
+						Command:     openrouterGLM53FlashCommand,
 					},
 					{
 						Name:        "Fusion (variable/variable)",

@@ -45,7 +45,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 	details := []string{
 		"($3/$15)",
 		"($2/$6)",
-		"($0.50/$3.15)",
+		"($0.075/$0.25)",
 		"(variable/variable)",
 		"($0.08/$0.18)",
 		"($1.25/$4.25)",
@@ -54,7 +54,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 	descriptions := []string{
 		"openrouter/moonshotai/kimi-k3",
 		"openrouter/qwen/qwen3.8-max",
-		"openrouter/z-ai/glm-5.2",
+		"openrouter/z-ai/glm-5.3-flash",
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash-0731",
 		"openrouter/meta/muse-spark-1.2",
@@ -250,17 +250,17 @@ func TestSelectingCopilotAmdQwen3827BChoiceReturnsScopedWrapper(t *testing.T) {
 	}
 }
 
-func TestSelectingOpenCodeZenOxAlphaFreeChoiceReturnsZenCommand(t *testing.T) {
+func TestSelectingOpenCodeGLM53FlashChoiceReturnsOpenCodeGoCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("1"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenCode 0x Alpha Free (Unlimited)" {
+	if item.Name != "OpenCode GLM-5.3-Flash (2x usage)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode x-preview-f-free` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.3-flash` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 	if len(item.Env) != 1 || item.Env[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
@@ -322,23 +322,8 @@ func TestSelectingOpenCodeQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T) {
 	}
 }
 
-func TestSelectingOpenCodeGLM52ChoiceReturnsGLM52Command(t *testing.T) {
-	model := chooseOpenCode(t, key("4"))
-
-	item, ok := model.SelectedItem()
-	if !ok {
-		t.Fatal("SelectedItem returned no value")
-	}
-	if item.Name != "OpenCode GLM 5.2" {
-		t.Fatalf("Name = %q", item.Name)
-	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.2` {
-		t.Fatalf("Command = %q", item.Command)
-	}
-}
-
 func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *testing.T) {
-	model := chooseOpenCode(t, key("5"))
+	model := chooseOpenCode(t, key("4"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -358,8 +343,8 @@ func TestSelectingOpenCodeHomeAndAmdModelChoices(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"6", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
-		{"7", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
+		{"5", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
+		{"6", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
 	}
 
 	for _, test := range tests {
@@ -412,17 +397,17 @@ func TestSelectingOpenRouterQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T)
 	}
 }
 
-func TestSelectingOpenRouterGLMChoiceReturnsGLMCommand(t *testing.T) {
+func TestSelectingOpenRouterGLM53FlashChoiceReturnsGLM53FlashCommand(t *testing.T) {
 	model := chooseOpenRouter(t, key("3"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM 5.2 ($0.50/$3.15)" {
+	if item.Name != "OpenRouter GLM-5.3-Flash ($0.075/$0.25)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.3-flash` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }

@@ -95,18 +95,15 @@ items:
       - opencode
       - cli
     choices:
-      - name: 0x Alpha Free (Unlimited)
-        description: opencode/x-preview-f-free
-        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode x-preview-f-free'
+      - name: GLM-5.3-Flash (2x usage)
+        description: opencode-go/glm-5.3-flash
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.3-flash'
       - name: Kimi K3
         description: opencode-go/kimi-k3
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go kimi-k3'
       - name: Qwen 3.8 Max
         description: opencode-go/qwen3.8-max
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go qwen3.8-max'
-      - name: GLM 5.2
-        description: opencode-go/glm-5.2
-        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go glm-5.2'
       - name: DeepSeek V4 Flash
         description: opencode-go/deepseek-v4-flash
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go deepseek-v4-flash'
@@ -134,9 +131,9 @@ items:
       - name: Qwen 3.8 Max ($2/$6)
         description: openrouter/qwen/qwen3.8-max
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max'
-      - name: GLM 5.2 ($0.50/$3.15)
-        description: openrouter/z-ai/glm-5.2
-        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.2'
+      - name: GLM-5.3-Flash ($0.075/$0.25)
+        description: openrouter/z-ai/glm-5.3-flash
+        command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.3-flash'
       - name: Fusion (variable/variable)
         description: openrouter/openrouter/fusion
         command: '& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter openrouter/fusion'

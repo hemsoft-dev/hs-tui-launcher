@@ -156,18 +156,17 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 7 {
-		t.Fatalf("OpenCode choices = %d, want 7", got)
+	if got := len(cfg.Items[5].Choices); got != 6 {
+		t.Fatalf("OpenCode choices = %d, want 6", got)
 	}
 	opencodeChoices := []struct {
 		name        string
 		description string
 		command     string
 	}{
-		{"0x Alpha Free (Unlimited)", "opencode/x-preview-f-free", opencodeZenOxAlphaCommand},
+		{"GLM-5.3-Flash (2x usage)", "opencode-go/glm-5.3-flash", opencodeGLM53FlashCommand},
 		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
-		{"GLM 5.2", "opencode-go/glm-5.2", opencodeGLM52Command},
 		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
 		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
 		{"Qwen 3.8 27B (amd Ollama)", "amd-ollama/qwen3.8:27b", amdOllamaQwen3827BCommand},
@@ -209,7 +208,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	}{
 		{"Kimi K3 ($3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
 		{"Qwen 3.8 Max ($2/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
-		{"GLM 5.2 ($0.50/$3.15)", "openrouter/z-ai/glm-5.2", openrouterGLMCommand},
+		{"GLM-5.3-Flash ($0.075/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash 0731 ($0.08/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
 		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSparkCommand},
