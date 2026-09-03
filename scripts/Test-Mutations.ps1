@@ -10,9 +10,10 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 
 $gremlins = 'github.com/go-gremlins/gremlins/cmd/gremlins@v0.6.0'
 $resultPath = Join-Path ([IO.Path]::GetTempPath()) "gremlins-$([guid]::NewGuid().ToString('N')).json"
+$mutationRoot = (Resolve-Path -LiteralPath '.').Path
 
 try {
-    $toolOutput = @(& go run $gremlins unleash --config .gremlins.yaml --output $resultPath . 2>&1)
+    $toolOutput = @(& go run $gremlins unleash --config .gremlins.yaml --output $resultPath $mutationRoot 2>&1)
     $toolExitCode = $LASTEXITCODE
     $toolOutput | ForEach-Object { Write-Host $_ }
 
