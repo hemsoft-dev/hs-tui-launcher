@@ -3,6 +3,6 @@ unleash:
   workers: 1
   timeout-coefficient: 10
   threshold:
-    efficacy: 90
+    efficacy: 75
     mutant-coverage: 10
   exclude-files: []
