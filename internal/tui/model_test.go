@@ -235,21 +235,6 @@ func TestSelectingCopilotOpus5ChoiceReturnsExplicitModelCommand(t *testing.T) {
 	}
 }
 
-func TestSelectingCopilotAmdQwen3827BChoiceReturnsScopedWrapper(t *testing.T) {
-	model := chooseCopilot(t, key("4"))
-
-	item, ok := model.SelectedItem()
-	if !ok {
-		t.Fatal("SelectedItem returned no value")
-	}
-	if item.Name != "GitHub Copilot Qwen 3.8 27B (AMD Ollama)" {
-		t.Fatalf("Name = %q", item.Name)
-	}
-	if item.Command != `& "$repoRoot\scripts\Start-CopilotAmdOllama.ps1"` {
-		t.Fatalf("Command = %q", item.Command)
-	}
-}
-
 func TestSelectingOpenCodeGLM53FlashChoiceReturnsOpenCodeGoCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("1"))
 

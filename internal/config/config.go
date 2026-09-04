@@ -46,7 +46,6 @@ const (
 	moonshotLauncherCommand        = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
 	ollamaQwen3827BCommand         = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
 	amdOllamaQwen3827BCommand      = `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`
-	copilotAmdQwen3827BCommand     = `& "$repoRoot\scripts\Start-CopilotAmdOllama.ps1"`
 	openrouterSeedreamCommand      = `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"`
 )
 
@@ -208,11 +207,6 @@ func Default() Config {
 						Name:        "Claude Opus 5",
 						Description: "Use Claude Opus 5 with xhigh reasoning effort",
 						Command:     copilotOpus5Command,
-					},
-					{
-						Name:        "Qwen 3.8 27B (AMD Ollama)",
-						Description: "Use AMD Ollama over Tailscale with 262K context",
-						Command:     copilotAmdQwen3827BCommand,
 					},
 				},
 			},

@@ -76,8 +76,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[1].ReasoningEffort; got != "default" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
 	}
-	if got := len(cfg.Items[1].Choices); got != 4 {
-		t.Fatalf("GitHub Copilot choices = %d, want 4", got)
+	if got := len(cfg.Items[1].Choices); got != 3 {
+		t.Fatalf("GitHub Copilot choices = %d, want 3", got)
 	}
 	copilotGPT55Choice := cfg.Items[1].Choices[0]
 	if copilotGPT55Choice.Name != "GPT-5.5" {
@@ -108,16 +108,6 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	}
 	if copilotOpus5Choice.Command != copilotOpus5Command {
 		t.Fatalf("GitHub Copilot third choice command = %q", copilotOpus5Choice.Command)
-	}
-	copilotAmdQwenChoice := cfg.Items[1].Choices[3]
-	if copilotAmdQwenChoice.Name != "Qwen 3.8 27B (AMD Ollama)" {
-		t.Fatalf("GitHub Copilot fourth choice name = %q", copilotAmdQwenChoice.Name)
-	}
-	if copilotAmdQwenChoice.Description != "Use AMD Ollama over Tailscale with 262K context" {
-		t.Fatalf("GitHub Copilot fourth choice description = %q", copilotAmdQwenChoice.Description)
-	}
-	if copilotAmdQwenChoice.Command != copilotAmdQwen3827BCommand {
-		t.Fatalf("GitHub Copilot fourth choice command = %q", copilotAmdQwenChoice.Command)
 	}
 	if got := cfg.Items[2].Model; got != "claude-opus-4.8" {
 		t.Fatalf("Cursor model = %q", got)

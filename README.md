@@ -105,7 +105,8 @@ items:
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="medium"'
       - name: GPT 5.6 Luna/Fast
-        description: Start Codex with GPT-5.6 Luna at medium reasoning and fast service
+        description: >-
+          Start Codex with GPT-5.6 Luna at medium reasoning and fast service
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna
           -c 'service_tier="fast"'
@@ -131,9 +132,6 @@ items:
         description: Use Claude Opus 5 with xhigh reasoning effort
         command: >-
           copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh
-      - name: Qwen 3.8 27B (AMD Ollama)
-        description: Use AMD Ollama over Tailscale with 262K context
-        command: '& "$repoRoot\scripts\Start-CopilotAmdOllama.ps1"'
 ```
 
 The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
@@ -141,8 +139,7 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. GitHub Copilot opens a model submenu with
-GPT-5.5, GPT-5.6 Sol, Claude Opus 5, and Qwen 3.8 27B on the `amd` Ollama
-server. The AMD wrapper uses
+GPT-5.5, GPT-5.6 Sol, and Claude Opus 5. The standalone AMD wrapper uses
 Copilot's OpenAI-compatible BYOK mode with offline mode enabled. It reserves
 245,760 prompt tokens and 16,384 output tokens, matching Qwen's 262,144-token
 context window, and restores all provider environment variables after Copilot
