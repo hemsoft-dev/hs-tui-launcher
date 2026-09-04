@@ -157,8 +157,9 @@ and charges the associated Moonshot API credits. It reads the API key from
 does not write the key or modify the global OpenCode configuration.
 OpenCode opens a model submenu led by GLM-5.3-Flash on OpenCode Go
 (`opencode-go/glm-5.3-flash`), which uses twice the normal OpenCode Go allowance,
-followed by the other OpenCode Go choices and two machine-specific choices:
-Qwen 3.8 27B on `home` and Qwen 3.8 27B on `amd`.
+followed by the other OpenCode Go choices, including Muse Spark V1.3 Contributor,
+and two machine-specific choices: Qwen 3.8 27B on `home` and Qwen 3.8 27B on
+`amd`.
 The `home` choice uses the local Ollama server with a 131,072-token limit. The
 `amd` choice connects directly to its Home-only Tailscale Ollama endpoint with a
 262,144-token limit. It checks that the server advertises the selected model
@@ -166,8 +167,8 @@ before starting OpenCode and does not depend on SSH or Lemonade. Both OpenCode
 launchers set Qwen's reasoning effort to `medium`; the Copilot-to-AMD launcher
 uses the same default.
 OpenRouter opens a separate submenu ordered as Kimi K3, Qwen 3.8 Max,
-GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, Muse Spark V1.2, and Seedream
-5.0 Pro.
+GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, Muse Spark V1.3, Muse Spark V1.2,
+and Seedream 5.0 Pro.
 Ollama opens a local-model submenu through OpenCode. Its first choice is
 Qwen 3.8 27B, using the installed `qwen3.8:27b` model at
 `http://localhost:11434/v1`. The OpenCode submenu exposes the same local choice
