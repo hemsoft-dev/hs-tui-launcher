@@ -36,8 +36,10 @@ const (
 	opencodeQwen38Model            = "qwen3.8-max"
 	opencodeGLM53FlashModel        = "glm-5.3-flash"
 	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
+	opencodeMuseSpark13Model       = "muse-spark-1.3-contributor"
 	openrouterKimiK3               = "moonshotai/kimi-k3"
 	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash-0731"
+	openrouterMuseSpark13Model     = "meta/muse-spark-1.3"
 	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
 	openrouterSeedream50ProModel   = "bytedance-seed/seedream-5-0-pro"
 	qwen38MaxModel                 = "qwen/qwen3.8-max"
@@ -61,26 +63,28 @@ var (
 	codexLunaPreset        = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: defaultServiceTier}
 	codexLunaFastPreset    = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: fastServiceTier}
 
-	codexFreshCommand           = codexCommand("", codexPreset)
-	codexResumeCommand          = codexCommand("resume --last", codexPreset)
-	codexResumePickerCommand    = codexCommand("resume", codexPreset)
-	codexSolHighCommand         = codexCommand("", codexPreset)
-	codexSolHighFastCommand     = codexCommand("", codexSolHighFastPreset)
-	codexLunaCommand            = codexCommand("", codexLunaPreset)
-	codexLunaFastCommand        = codexCommand("", codexLunaFastPreset)
-	copilotGPT55Command         = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand      = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command         = copilotCommand(copilotOpus5Preset)
-	opencodeKimiK3Command       = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command       = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM53FlashCommand   = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
-	opencodeDeepSeekCommand     = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
-	openrouterKimiK3Command     = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command     = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLM53FlashCommand = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
-	openrouterFusionCommand     = openCodeCommand(openrouterProvider, fusionModel)
-	openrouterDeepSeekCommand   = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
-	openrouterMuseSparkCommand  = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
+	codexFreshCommand            = codexCommand("", codexPreset)
+	codexResumeCommand           = codexCommand("resume --last", codexPreset)
+	codexResumePickerCommand     = codexCommand("resume", codexPreset)
+	codexSolHighCommand          = codexCommand("", codexPreset)
+	codexSolHighFastCommand      = codexCommand("", codexSolHighFastPreset)
+	codexLunaCommand             = codexCommand("", codexLunaPreset)
+	codexLunaFastCommand         = codexCommand("", codexLunaFastPreset)
+	copilotGPT55Command          = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand       = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command          = copilotCommand(copilotOpus5Preset)
+	opencodeKimiK3Command        = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command        = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM53FlashCommand    = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
+	opencodeDeepSeekCommand      = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	opencodeMuseSpark13Command   = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
+	openrouterKimiK3Command      = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command      = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLM53FlashCommand  = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
+	openrouterFusionCommand      = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekCommand    = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
+	openrouterMuseSpark13Command = openCodeCommand(openrouterProvider, openrouterMuseSpark13Model)
+	openrouterMuseSpark12Command = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
 )
 
 type Config struct {
@@ -263,6 +267,11 @@ func Default() Config {
 						Command:     opencodeDeepSeekCommand,
 					},
 					{
+						Name:        "Muse Spark V1.3 Contributor",
+						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
+						Command:     opencodeMuseSpark13Command,
+					},
+					{
 						Name:        "Qwen 3.8 27B (home Ollama)",
 						Description: modelDescription(ollamaProvider, ollamaQwen3827BModel),
 						Command:     ollamaQwen3827BCommand,
@@ -308,9 +317,14 @@ func Default() Config {
 						Command:     openrouterDeepSeekCommand,
 					},
 					{
+						Name:        "Muse Spark V1.3 ($1.25/$4.25)",
+						Description: modelDescription(openrouterProvider, openrouterMuseSpark13Model),
+						Command:     openrouterMuseSpark13Command,
+					},
+					{
 						Name:        "Muse Spark V1.2 ($1.25/$4.25)",
 						Description: modelDescription(openrouterProvider, openrouterMuseSpark12Model),
-						Command:     openrouterMuseSparkCommand,
+						Command:     openrouterMuseSpark12Command,
 					},
 					{
 						Name:        "Seedream 5.0 Pro ($0.045 1K/$0.09 2K)",

@@ -146,8 +146,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 6 {
-		t.Fatalf("OpenCode choices = %d, want 6", got)
+	if got := len(cfg.Items[5].Choices); got != 7 {
+		t.Fatalf("OpenCode choices = %d, want 7", got)
 	}
 	opencodeChoices := []struct {
 		name        string
@@ -158,6 +158,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
 		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
+		{"Muse Spark V1.3 Contributor", "opencode-go/muse-spark-1.3-contributor", opencodeMuseSpark13Command},
 		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
 		{"Qwen 3.8 27B (amd Ollama)", "amd-ollama/qwen3.8:27b", amdOllamaQwen3827BCommand},
 	}
@@ -188,8 +189,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[6].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[6].Choices); got != 7 {
-		t.Fatalf("OpenRouter choices = %d, want 7", got)
+	if got := len(cfg.Items[6].Choices); got != 8 {
+		t.Fatalf("OpenRouter choices = %d, want 8", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -201,7 +202,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GLM-5.3-Flash ($0.075/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash 0731 ($0.08/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
-		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSparkCommand},
+		{"Muse Spark V1.3 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
+		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSpark12Command},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
 	}
 	for index, want := range openrouterChoices {

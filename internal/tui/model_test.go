@@ -49,6 +49,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"(variable/variable)",
 		"($0.08/$0.18)",
 		"($1.25/$4.25)",
+		"($1.25/$4.25)",
 		"($0.045 1K/$0.09 2K)",
 	}
 	descriptions := []string{
@@ -57,6 +58,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/z-ai/glm-5.3-flash",
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash-0731",
+		"openrouter/meta/muse-spark-1.3",
 		"openrouter/meta/muse-spark-1.2",
 		"images/bytedance-seed/seedream-5-0-pro",
 	}
@@ -322,14 +324,29 @@ func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *
 	}
 }
 
+func TestSelectingOpenCodeMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
+	model := chooseOpenCode(t, key("5"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode Muse Spark V1.3 Contributor" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go muse-spark-1.3-contributor` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
 func TestSelectingOpenCodeHomeAndAmdModelChoices(t *testing.T) {
 	tests := []struct {
 		key     string
 		name    string
 		command string
 	}{
-		{"5", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
-		{"6", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
+		{"6", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
+		{"7", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
 	}
 
 	for _, test := range tests {
@@ -427,8 +444,23 @@ func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t
 	}
 }
 
-func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *testing.T) {
+func TestSelectingOpenRouterMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
 	model := chooseOpenRouter(t, key("6"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Muse Spark V1.3 ($1.25/$4.25)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter meta/muse-spark-1.3` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *testing.T) {
+	model := chooseOpenRouter(t, key("7"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -443,7 +475,7 @@ func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *test
 }
 
 func TestSelectingOpenRouterSeedream50ProChoiceReturnsImageCommand(t *testing.T) {
-	model := chooseOpenRouter(t, key("7"))
+	model := chooseOpenRouter(t, key("8"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
