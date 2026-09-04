@@ -179,7 +179,7 @@ func tokenizeSelectionCommand(command string) ([]string, error) {
 		case char == '\'' || char == '"':
 			quote = char
 			tokenStarted = true
-		case char == ' ' || char == '\t' || char == '\r' || char == '\n':
+		case strings.ContainsRune(" \t\r\n", char):
 			flushToken()
 		case strings.ContainsRune(";|<>`", char):
 			return nil, fmt.Errorf("selection command contains unsupported PowerShell metacharacter %q", char)

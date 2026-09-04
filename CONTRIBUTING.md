@@ -13,6 +13,7 @@ The `verify` job is defined in `.github/workflows/ci.yml`. It runs these checks:
 go build ./...
 go vet ./...
 go test ./...
+.\scripts\Test-Complexity.ps1
 staticcheck ./...
 deadcode ./...
 ```
@@ -45,3 +46,25 @@ efficacy and 10.76% mutant coverage.
 The scan has no file exclusions. Keep that scope unless a documented technical
 reason requires a narrow exclusion. Raise either threshold when better tests
 provide durable headroom; do not lower one merely to make CI pass.
+
+## Cyclomatic complexity
+
+The required `verify` job measures every production Go function with
+[gocyclo](https://github.com/fzipp/gocyclo):
+
+```powershell
+.\scripts\Test-Complexity.ps1
+```
+
+The script pins gocyclo to
+`v0.6.1-0.20251227213109-7b6c7c5e29f1` and enforces a per-function cyclomatic
+complexity limit of 15. It scans the repository root recursively, including
+`main.go`, `internal/config`, and `internal/tui`. It excludes only `_test.go`
+files because the limit applies to production code, not test harnesses. No
+production package or file is excluded.
+
+On failure, gocyclo prints each function's measured complexity, package,
+function name, and `file:line:column`. The initial maximum after adopting the
+limit is 13 in `tokenizeSelectionCommand`. Change `$complexityLimit` in
+`scripts/Test-Complexity.ps1` only after reviewing the affected functions;
+prefer splitting control flow over raising the limit.
