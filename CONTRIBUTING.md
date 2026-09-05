@@ -18,12 +18,12 @@ staticcheck ./...
 deadcode ./...
 ```
 
-Run the same checks locally before opening a pull request. Install the analysis
-tools first when they are not already on `PATH`:
+Run the same checks locally before opening a pull request. Install the pinned
+analysis tools first so local checks use the same versions as CI:
 
 ```powershell
-go install honnef.co/go/tools/cmd/staticcheck@latest
-go install golang.org/x/tools/cmd/deadcode@latest
+go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
+go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
 
 ## Mutation testing
