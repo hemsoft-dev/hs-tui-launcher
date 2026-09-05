@@ -59,7 +59,7 @@ shell_args:
 items:
   - name: Codex
     description: Open the Codex CLI
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     reasoning_effort: high
     tags:
       - ai
@@ -69,21 +69,21 @@ items:
       - name: Start fresh
         description: Open a new Codex CLI session
         command: >-
-          codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol
+          codex --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
       - name: Resume last
         description: Resume the last Codex CLI session
         command: >-
           codex resume --last --dangerously-bypass-approvals-and-sandbox
-          -m gpt-5.6-sol
+          -m gpt-6-astra
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
       - name: Resume picker
         description: Choose a Codex CLI session to resume
         command: >-
           codex resume --dangerously-bypass-approvals-and-sandbox
-          -m gpt-5.6-sol
+          -m gpt-6-astra
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
       - name: GPT 5.6 Sol High

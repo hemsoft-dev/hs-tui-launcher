@@ -14,6 +14,7 @@ import (
 const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
+	gpt6AstraModel                 = "gpt-6-astra"
 	gpt56SolModel                  = "gpt-5.6-sol"
 	gpt56LunaModel                 = "gpt-5.6-luna"
 	copilotGPT55Model              = "gpt-5.5"
@@ -52,7 +53,8 @@ const (
 )
 
 var (
-	codexPreset            = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning, ServiceTier: defaultServiceTier}
+	codexPreset            = modelPreset{Model: gpt6AstraModel, ReasoningEffort: highReasoning, ServiceTier: defaultServiceTier}
+	codexSolHighPreset     = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning, ServiceTier: defaultServiceTier}
 	copilotGPT55Preset     = modelPreset{Model: copilotGPT55Model, ReasoningEffort: highReasoning}
 	copilotGPT56SolPreset  = modelPreset{Model: gpt56SolModel, ReasoningEffort: highReasoning}
 	copilotOpus5Preset     = modelPreset{Model: copilotOpus5Model, ReasoningEffort: xhighReasoning}
@@ -66,7 +68,7 @@ var (
 	codexFreshCommand            = codexCommand("", codexPreset)
 	codexResumeCommand           = codexCommand("resume --last", codexPreset)
 	codexResumePickerCommand     = codexCommand("resume", codexPreset)
-	codexSolHighCommand          = codexCommand("", codexPreset)
+	codexSolHighCommand          = codexCommand("", codexSolHighPreset)
 	codexSolHighFastCommand      = codexCommand("", codexSolHighFastPreset)
 	codexLunaCommand             = codexCommand("", codexLunaPreset)
 	codexLunaFastCommand         = codexCommand("", codexLunaFastPreset)

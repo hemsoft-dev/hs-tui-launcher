@@ -128,7 +128,7 @@ func TestSelectingCodexFreshChoiceReturnsFreshCommand(t *testing.T) {
 	if item.Name != "Codex Start fresh" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != "codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
+	if item.Command != "codex --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }
@@ -143,7 +143,7 @@ func TestSelectingCodexResumeChoiceReturnsResumeCommand(t *testing.T) {
 	if item.Name != "Codex Resume last" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
+	if item.Command != "codex resume --last --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }
@@ -158,7 +158,7 @@ func TestSelectingCodexResumePickerChoiceReturnsResumePickerCommand(t *testing.T
 	if item.Name != "Codex Resume picker" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
+	if item.Command != "codex resume --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra -c 'service_tier=\"default\"' -c 'model_reasoning_effort=\"high\"'" {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }
