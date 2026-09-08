@@ -65,7 +65,7 @@ items:
     tags:
       - ai
       - pi
-      - openai
+      - openai-codex
       - cli
     choices:
       - name: GPT 6 Astra
