@@ -91,7 +91,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"GPT 6 Astra", "openai-codex/gpt-6-astra", piCodexAstraCommand},
+		{"GPT 6 Astra", "openai-codex/gpt-6-astra at medium reasoning", piCodexAstraCommand},
 		{"GPT 5.6 Sol High", "openai-codex/gpt-5.6-sol at high reasoning", piCodexSolHighCommand},
 		{"GPT 5.6 Luna Max", "openai-codex/gpt-5.6-luna at max reasoning", piCodexLunaMaxCommand},
 		{"GLM-5.3-Flash (2x usage)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},

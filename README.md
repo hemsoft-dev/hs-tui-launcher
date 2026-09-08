@@ -182,7 +182,7 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
-led by Codex-subscription models — GPT-6 Astra at default thinking, GPT-5.6 Sol
+led by Codex-subscription models — GPT-6 Astra at medium reasoning, GPT-5.6 Sol
 at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag —
 followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek

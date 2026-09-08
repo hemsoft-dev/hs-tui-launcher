@@ -88,7 +88,7 @@ var (
 	piQwen38Command              = piCommand(opencodeQwen38Model)
 	piDeepSeekCommand            = piCommand(opencodeDeepSeekV4FlashModel)
 	piMuseSpark13Command         = piCommand(opencodeMuseSpark13Model)
-	piCodexAstraCommand          = piModelCommand(openaiCodexProvider, gpt6AstraModel)
+	piCodexAstraCommand          = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
 	piCodexSolHighCommand        = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
 	piCodexLunaMaxCommand        = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
 	openrouterKimiK3Command      = openCodeCommand(openrouterProvider, openrouterKimiK3)
@@ -168,7 +168,7 @@ func Default() Config {
 				Choices: []LaunchChoice{
 					{
 						Name:        "GPT 6 Astra",
-						Description: modelDescription(openaiCodexProvider, gpt6AstraModel),
+						Description: modelDescription(openaiCodexProvider, gpt6AstraModel) + " at medium reasoning",
 						Command:     piCodexAstraCommand,
 					},
 					{

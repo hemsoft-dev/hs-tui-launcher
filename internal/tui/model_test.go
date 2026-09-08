@@ -123,7 +123,7 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"1", "Pi GPT 6 Astra", "pi --model openai-codex/gpt-6-astra"},
+		{"1", "Pi GPT 6 Astra", "pi --model openai-codex/gpt-6-astra --thinking medium"},
 		{"2", "Pi GPT 5.6 Sol High", "pi --model openai-codex/gpt-5.6-sol --thinking high"},
 		{"3", "Pi GPT 5.6 Luna Max", "pi --model openai-codex/gpt-5.6-luna --thinking max"},
 		{"4", "Pi GLM-5.3-Flash (2x usage)", "pi --model opencode-go/glm-5.3-flash"},

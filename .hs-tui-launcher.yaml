@@ -15,8 +15,8 @@ items:
       - cli
     choices:
       - name: GPT 6 Astra
-        description: openai-codex/gpt-6-astra
-        command: pi --model openai-codex/gpt-6-astra
+        description: openai-codex/gpt-6-astra at medium reasoning
+        command: pi --model openai-codex/gpt-6-astra --thinking medium
       - name: GPT 5.6 Sol High
         description: openai-codex/gpt-5.6-sol at high reasoning
         command: pi --model openai-codex/gpt-5.6-sol --thinking high
