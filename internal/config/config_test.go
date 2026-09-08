@@ -449,7 +449,16 @@ func TestCommittedConfigFileMatchesDefaults(t *testing.T) {
 	if source != path {
 		t.Fatalf("source = %q, want %q", source, path)
 	}
-	if !reflect.DeepEqual(cfg, Default()) {
+	// The committed config is the home machine's variant, so its shell differs
+	// from Default() on non-Windows platforms. Exclude the machine-specific
+	// shell fields from the drift check.
+	cfg.Shell = ""
+	cfg.ShellArgs = nil
+	expected := Default()
+	expected.Shell = ""
+	expected.ShellArgs = nil
+
+	if !reflect.DeepEqual(cfg, expected) {
 		t.Fatal("committed .hs-tui-launcher.yaml drifted from Default(); update it alongside config.go")
 	}
 }
