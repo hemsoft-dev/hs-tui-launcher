@@ -6,11 +6,11 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a compact numbered menu for Codex, Pi, Pi Codex,
-Antigravity, GitHub Copilot, Moonshot AI, OpenCode, OpenRouter, Ollama,
-Cursor, and Claude Code. Each row shows the model and reasoning effort. The
-platform wrapper exits the Go picker before handing off to the selected CLI in
-the same console.
+`hs-tui-launcher` opens a compact numbered menu for Pi, Codex, Antigravity,
+GitHub Copilot, Moonshot AI, OpenCode, OpenRouter, Ollama, Cursor, and
+Claude Code. Each row shows the model and reasoning effort. The platform
+wrapper exits the Go picker before handing off to the selected CLI in the
+same console.
 
 ## Run
 
@@ -58,6 +58,40 @@ shell_args:
   - -NoLogo
   - -Command
 items:
+  - name: Pi
+    description: Open the Pi CLI
+    model: select model
+    reasoning_effort: default
+    tags:
+      - ai
+      - pi
+      - openai
+      - cli
+    choices:
+      - name: GPT 6 Astra
+        description: openai-codex/gpt-6-astra
+        command: pi --model openai-codex/gpt-6-astra
+      - name: GPT 5.6 Sol High
+        description: openai-codex/gpt-5.6-sol at high reasoning
+        command: pi --model openai-codex/gpt-5.6-sol --thinking high
+      - name: GPT 5.6 Luna Max
+        description: openai-codex/gpt-5.6-luna at max reasoning
+        command: pi --model openai-codex/gpt-5.6-luna --thinking max
+      - name: GLM-5.3-Flash (2x usage)
+        description: opencode-go/glm-5.3-flash
+        command: pi --model opencode-go/glm-5.3-flash
+      - name: Kimi K3
+        description: opencode-go/kimi-k3
+        command: pi --model opencode-go/kimi-k3
+      - name: Qwen 3.8 Max
+        description: opencode-go/qwen3.8-max
+        command: pi --model opencode-go/qwen3.8-max
+      - name: DeepSeek V4 Flash
+        description: opencode-go/deepseek-v4-flash
+        command: pi --model opencode-go/deepseek-v4-flash
+      - name: Muse Spark V1.3 Contributor
+        description: opencode-go/muse-spark-1.3-contributor
+        command: pi --model opencode-go/muse-spark-1.3-contributor
   - name: Codex
     description: Open the Codex CLI
     model: gpt-6-astra
@@ -112,49 +146,6 @@ items:
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna
           -c 'service_tier="fast"'
           -c 'model_reasoning_effort="medium"'
-  - name: Pi
-    description: Open the Pi CLI
-    model: select model
-    reasoning_effort: default
-    tags:
-      - ai
-      - pi
-      - cli
-    choices:
-      - name: GLM-5.3-Flash (2x usage)
-        description: opencode-go/glm-5.3-flash
-        command: pi --model opencode-go/glm-5.3-flash
-      - name: Kimi K3
-        description: opencode-go/kimi-k3
-        command: pi --model opencode-go/kimi-k3
-      - name: Qwen 3.8 Max
-        description: opencode-go/qwen3.8-max
-        command: pi --model opencode-go/qwen3.8-max
-      - name: DeepSeek V4 Flash
-        description: opencode-go/deepseek-v4-flash
-        command: pi --model opencode-go/deepseek-v4-flash
-      - name: Muse Spark V1.3 Contributor
-        description: opencode-go/muse-spark-1.3-contributor
-        command: pi --model opencode-go/muse-spark-1.3-contributor
-  - name: Pi Codex
-    description: Open the Pi CLI with Codex subscription models
-    model: select model
-    reasoning_effort: default
-    tags:
-      - ai
-      - pi
-      - openai
-      - cli
-    choices:
-      - name: GPT 6 Astra
-        description: openai-codex/gpt-6-astra
-        command: pi --model openai-codex/gpt-6-astra
-      - name: GPT 5.6 Sol High
-        description: openai-codex/gpt-5.6-sol at high reasoning
-        command: pi --model openai-codex/gpt-5.6-sol --thinking high
-      - name: GPT 5.6 Luna Max
-        description: openai-codex/gpt-5.6-luna at max reasoning
-        command: pi --model openai-codex/gpt-5.6-luna --thinking max
   - name: Antigravity
     description: Open the Antigravity CLI
     command: agy --dangerously-skip-permissions
@@ -190,13 +181,13 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 `~/.codex/agents/anvil.toml`; launcher flags can start a fresh session, resume
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
-where `l` or `run.ps1` was invoked. Pi opens a model submenu for OpenCode Go
-models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash, and Muse Spark
-V1.3 Contributor) launched via `pi --model opencode-go/<model>`.
-Pi Codex opens a model submenu directly below Pi for the same Pi CLI billed
-against the ChatGPT Codex subscription: GPT-6 Astra (default thinking),
-GPT-5.6 Sol at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
-`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag.
+where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
+led by Codex-subscription models — GPT-6 Astra at default thinking, GPT-5.6 Sol
+at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
+`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag —
+followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek
+V4 Flash, and Muse Spark V1.3 Contributor) launched via
+`pi --model opencode-go/<model>`.
 GitHub Copilot opens a model submenu with
 GPT-5.5, GPT-5.6 Sol, and Claude Opus 5. The standalone AMD wrapper uses
 Copilot's OpenAI-compatible BYOK mode with offline mode enabled. It reserves
