@@ -164,7 +164,7 @@ func Default() Config {
 				Description:     "Open the Pi CLI",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai", "cli"},
+				Tags:            []string{"ai", "pi", "openai-codex", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "GPT 6 Astra",
