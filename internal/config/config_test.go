@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -50,10 +51,10 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"GPT 5.6 Sol High", "Start Codex with GPT-5.6 Sol at high reasoning", codexSolHighCommand},
-		{"GPT 5.6 Sol High/Fast", "Start Codex with GPT-5.6 Sol at high reasoning and fast service", codexSolHighFastCommand},
-		{"GPT 5.6 Luna", "Start Codex with GPT-5.6 Luna at medium reasoning", codexLunaCommand},
-		{"GPT 5.6 Luna/Fast", "Start Codex with GPT-5.6 Luna at medium reasoning and fast service", codexLunaFastCommand},
+		{"GPT 5.6 Sol High ($5/$0.5/$30)", "Start Codex with GPT-5.6 Sol at high reasoning", codexSolHighCommand},
+		{"GPT 5.6 Sol High/Fast ($5/$0.5/$30)", "Start Codex with GPT-5.6 Sol at high reasoning and fast service", codexSolHighFastCommand},
+		{"GPT 5.6 Luna ($0.2/$0.02/$1.2)", "Start Codex with GPT-5.6 Luna at medium reasoning", codexLunaCommand},
+		{"GPT 5.6 Luna/Fast ($0.2/$0.02/$1.2)", "Start Codex with GPT-5.6 Luna at medium reasoning and fast service", codexLunaFastCommand},
 	}
 	for index, want := range codexChoices {
 		choice := cfg.Items[1].Choices[index+3]
@@ -83,22 +84,26 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if pi.ReasoningEffort != "default" {
 		t.Fatalf("Pi reasoning effort = %q", pi.ReasoningEffort)
 	}
-	if got := len(pi.Choices); got != 8 {
-		t.Fatalf("Pi choices = %d, want 8", got)
+	if got := len(pi.Choices); got != 12 {
+		t.Fatalf("Pi choices = %d, want 12", got)
 	}
 	piChoices := []struct {
 		name        string
 		description string
 		command     string
 	}{
-		{"GPT 6 Astra", "openai-codex/gpt-6-astra at medium reasoning", piCodexAstraCommand},
-		{"GPT 5.6 Sol High", "openai-codex/gpt-5.6-sol at high reasoning", piCodexSolHighCommand},
-		{"GPT 5.6 Luna Max", "openai-codex/gpt-5.6-luna at max reasoning", piCodexLunaMaxCommand},
-		{"GLM-5.3-Flash (2x usage)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
-		{"Kimi K3", "opencode-go/kimi-k3", piKimiK3Command},
-		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", piQwen38Command},
-		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", piDeepSeekCommand},
-		{"Muse Spark V1.3 Contributor", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
+		{"GPT 6 Astra ($10/$1/$50)", "openai-codex/gpt-6-astra at medium reasoning", piCodexAstraCommand},
+		{"GPT 5.6 Sol High ($5/$0.5/$30)", "openai-codex/gpt-5.6-sol at high reasoning", piCodexSolHighCommand},
+		{"GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "openai-codex/gpt-5.6-luna at max reasoning", piCodexLunaMaxCommand},
+		{"Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)", "antigravity/gemini-3.8-flash", piGemini38FlashCommand},
+		{"Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "github-copilot/gemini-3.8-flash", piCopilotGemini38Command},
+		{"Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "github-copilot/gpt-5.6-sol at high reasoning", piCopilotSolHighCommand},
+		{"Copilot: GPT 6 Astra Medium ($10/$1/$50)", "github-copilot/gpt-6-astra at medium reasoning", piCopilotAstraCommand},
+		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
+		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", piKimiK3Command},
+		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", piQwen38Command},
+		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", piDeepSeekCommand},
+		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
 	}
 	for index, want := range piChoices {
 		choice := pi.Choices[index]
@@ -138,7 +143,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		t.Fatalf("GitHub Copilot choices = %d, want 3", got)
 	}
 	copilotGPT55Choice := cfg.Items[3].Choices[0]
-	if copilotGPT55Choice.Name != "GPT-5.5" {
+	if copilotGPT55Choice.Name != "GPT-5.5 ($5/$0.5/$30)" {
 		t.Fatalf("GitHub Copilot first choice name = %q", copilotGPT55Choice.Name)
 	}
 	if copilotGPT55Choice.Description != "Use GPT-5.5 with high reasoning effort" {
@@ -148,7 +153,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		t.Fatalf("GitHub Copilot first choice command = %q", copilotGPT55Choice.Command)
 	}
 	copilotGPT56SolChoice := cfg.Items[3].Choices[1]
-	if copilotGPT56SolChoice.Name != "GPT-5.6 Sol" {
+	if copilotGPT56SolChoice.Name != "GPT-5.6 Sol ($4/$0.4/$20)" {
 		t.Fatalf("GitHub Copilot second choice name = %q", copilotGPT56SolChoice.Name)
 	}
 	if copilotGPT56SolChoice.Description != "Use GPT-5.6 Sol with high reasoning effort" {
@@ -158,7 +163,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		t.Fatalf("GitHub Copilot second choice command = %q", copilotGPT56SolChoice.Command)
 	}
 	copilotOpus5Choice := cfg.Items[3].Choices[2]
-	if copilotOpus5Choice.Name != "Claude Opus 5" {
+	if copilotOpus5Choice.Name != "Claude Opus 5 ($5/$0.5/$25)" {
 		t.Fatalf("GitHub Copilot third choice name = %q", copilotOpus5Choice.Name)
 	}
 	if copilotOpus5Choice.Description != "Use Claude Opus 5 with xhigh reasoning effort" {
@@ -212,11 +217,11 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"GLM-5.3-Flash (2x usage)", "opencode-go/glm-5.3-flash", opencodeGLM53FlashCommand},
-		{"Kimi K3", "opencode-go/kimi-k3", opencodeKimiK3Command},
-		{"Qwen 3.8 Max", "opencode-go/qwen3.8-max", opencodeQwen38Command},
-		{"DeepSeek V4 Flash", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
-		{"Muse Spark V1.3 Contributor", "opencode-go/muse-spark-1.3-contributor", opencodeMuseSpark13Command},
+		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", opencodeGLM53FlashCommand},
+		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", opencodeKimiK3Command},
+		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", opencodeQwen38Command},
+		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
+		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", opencodeMuseSpark13Command},
 		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
 		{"Qwen 3.8 27B (amd Ollama)", "amd-ollama/qwen3.8:27b", amdOllamaQwen3827BCommand},
 	}
@@ -255,13 +260,13 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"Kimi K3 ($3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
-		{"Qwen 3.8 Max ($2/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
-		{"GLM-5.3-Flash ($0.075/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
+		{"Kimi K3 ($3/$0.3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Qwen 3.8 Max ($2/$0.25/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
+		{"GLM-5.3-Flash ($0.075/$0.015/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
-		{"DeepSeek V4 Flash 0731 ($0.08/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
-		{"Muse Spark V1.3 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
-		{"Muse Spark V1.2 ($1.25/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSpark12Command},
+		{"DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
+		{"Muse Spark V1.3 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
+		{"Muse Spark V1.2 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSpark12Command},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
 	}
 	for index, want := range openrouterChoices {
@@ -427,6 +432,34 @@ title: Partial Launcher
 	}
 	if cfg.Items[0].Name != Default().Items[0].Name {
 		t.Fatalf("First item name = %q", cfg.Items[0].Name)
+	}
+}
+
+func TestCommittedConfigFileMatchesDefaults(t *testing.T) {
+	path := filepath.Join("..", "..", ".hs-tui-launcher.yaml")
+	if _, err := os.Stat(path); err != nil {
+		t.Skip("committed .hs-tui-launcher.yaml is not present")
+	}
+
+	cfg, source, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+
+	if source != path {
+		t.Fatalf("source = %q, want %q", source, path)
+	}
+	// The committed config is the home machine's variant, so its shell differs
+	// from Default() on non-Windows platforms. Exclude the machine-specific
+	// shell fields from the drift check.
+	cfg.Shell = ""
+	cfg.ShellArgs = nil
+	expected := Default()
+	expected.Shell = ""
+	expected.ShellArgs = nil
+
+	if !reflect.DeepEqual(cfg, expected) {
+		t.Fatal("committed .hs-tui-launcher.yaml drifted from Default(); update it alongside config.go")
 	}
 }
 

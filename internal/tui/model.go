@@ -33,22 +33,21 @@ func (i launchItem) Line() string {
 
 type launchChoice struct {
 	config.LaunchChoice
-	Number int
 }
 
-func (c launchChoice) Line(nameWidth int, detailWidth int) string {
+func (c launchChoice) Line(label string, nameWidth int, detailWidth int) string {
 	name, detail := splitChoiceName(c.Name)
 	if strings.TrimSpace(c.Description) == "" {
 		if detailWidth > 0 {
-			return fmt.Sprintf("%d. %-*s  %s", c.Number, nameWidth, name, detail)
+			return fmt.Sprintf("%s %-*s  %s", label, nameWidth, name, detail)
 		}
-		return fmt.Sprintf("%d. %s", c.Number, c.Name)
+		return fmt.Sprintf("%s %s", label, c.Name)
 	}
 
 	if detailWidth == 0 {
 		return fmt.Sprintf(
-			"%d. %-*s  %s",
-			c.Number,
+			"%s %-*s  %s",
+			label,
 			nameWidth,
 			name,
 			c.Description,
@@ -56,14 +55,24 @@ func (c launchChoice) Line(nameWidth int, detailWidth int) string {
 	}
 
 	return fmt.Sprintf(
-		"%d. %-*s  %-*s  %s",
-		c.Number,
+		"%s %-*s  %-*s  %s",
+		label,
 		nameWidth,
 		name,
 		detailWidth,
 		detail,
 		c.Description,
 	)
+}
+
+// choiceLabel names a choice for display and keyboard selection: choices 1-9
+// use their number, choices 10 and beyond use letters (10 -> A, 11 -> B, ...)
+// so every label stays two characters wide and remains a single keypress.
+func choiceLabel(number int) string {
+	if number <= 9 {
+		return fmt.Sprintf("%d.", number)
+	}
+	return fmt.Sprintf("%c.", 'A'+number-10)
 }
 
 func splitChoiceName(name string) (string, string) {
@@ -251,10 +260,9 @@ func (m Model) choiceLines() []string {
 	for index, choice := range parent.Choices {
 		line := launchChoice{
 			LaunchChoice: choice,
-			Number:       index + 1,
-		}.Line(nameWidth, detailWidth)
+		}.Line(choiceLabel(index+1), nameWidth, detailWidth)
 		if m.width > 0 && len(line)+6 > m.width {
-			line = fmt.Sprintf("%d. %s", index+1, choice.Name)
+			line = fmt.Sprintf("%s %s", choiceLabel(index+1), choice.Name)
 		}
 		lines = append(lines, line)
 	}
@@ -279,15 +287,40 @@ func (m Model) launchChoiceForKey(key string) (launchChoice, bool) {
 		return launchChoice{}, false
 	}
 
-	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.choiceParent.Choices) || number > 9 {
+	number, ok := choiceNumberForKey(key, len(m.choiceParent.Choices))
+	if !ok {
 		return launchChoice{}, false
 	}
 
 	return launchChoice{
 		LaunchChoice: m.choiceParent.Choices[number-1],
-		Number:       number,
 	}, true
+}
+
+// choiceNumberForKey maps a keypress to a choice: digit keys pick choices
+// 1-9, letter keys pick choices 10 and beyond ("a" is the 10th choice, "b"
+// the 11th, and so on, case-insensitively).
+func choiceNumberForKey(key string, choiceCount int) (int, bool) {
+	if number, err := strconv.Atoi(key); err == nil {
+		if number < 1 || number > 9 || number > choiceCount {
+			return 0, false
+		}
+		return number, true
+	}
+
+	if len(key) != 1 {
+		return 0, false
+	}
+	letter := strings.ToLower(key)[0]
+	if letter < 'a' || letter > 'z' {
+		return 0, false
+	}
+
+	number := 10 + int(letter-'a')
+	if number > choiceCount {
+		return 0, false
+	}
+	return number, true
 }
 
 func (m Model) selectItem(item launchItem) (tea.Model, tea.Cmd) {
@@ -321,7 +354,6 @@ func (m Model) selectCursor() (tea.Model, tea.Cmd) {
 		cursor := clampCursor(m.cursor, len(m.choiceParent.Choices))
 		return m.selectChoice(launchChoice{
 			LaunchChoice: m.choiceParent.Choices[cursor],
-			Number:       cursor + 1,
 		})
 	}
 

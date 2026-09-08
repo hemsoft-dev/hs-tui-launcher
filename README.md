@@ -68,28 +68,40 @@ items:
       - openai-codex
       - cli
     choices:
-      - name: GPT 6 Astra
+      - name: GPT 6 Astra ($10/$1/$50)
         description: openai-codex/gpt-6-astra
         command: pi --model openai-codex/gpt-6-astra
-      - name: GPT 5.6 Sol High
+      - name: GPT 5.6 Sol High ($5/$0.5/$30)
         description: openai-codex/gpt-5.6-sol at high reasoning
         command: pi --model openai-codex/gpt-5.6-sol --thinking high
-      - name: GPT 5.6 Luna Max
+      - name: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
         description: openai-codex/gpt-5.6-luna at max reasoning
         command: pi --model openai-codex/gpt-5.6-luna --thinking max
-      - name: GLM-5.3-Flash (2x usage)
+      - name: Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)
+        description: antigravity/gemini-3.8-flash
+        command: pi --model antigravity/gemini-3.8-flash
+      - name: Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)
+        description: github-copilot/gemini-3.8-flash
+        command: pi --model github-copilot/gemini-3.8-flash
+      - name: Copilot: GPT 5.6 Sol High ($4/$0.4/$20)
+        description: github-copilot/gpt-5.6-sol at high reasoning
+        command: pi --model github-copilot/gpt-5.6-sol --thinking high
+      - name: Copilot: GPT 6 Astra Medium ($10/$1/$50)
+        description: github-copilot/gpt-6-astra at medium reasoning
+        command: pi --model github-copilot/gpt-6-astra --thinking medium
+      - name: GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)
         description: opencode-go/glm-5.3-flash
         command: pi --model opencode-go/glm-5.3-flash
-      - name: Kimi K3
+      - name: Kimi K3 ($3/$0.3/$15)
         description: opencode-go/kimi-k3
         command: pi --model opencode-go/kimi-k3
-      - name: Qwen 3.8 Max
+      - name: Qwen 3.8 Max ($2/$0.25/$6)
         description: opencode-go/qwen3.8-max
         command: pi --model opencode-go/qwen3.8-max
-      - name: DeepSeek V4 Flash
+      - name: DeepSeek V4 Flash ($0.22/$0.007/$0.66)
         description: opencode-go/deepseek-v4-flash
         command: pi --model opencode-go/deepseek-v4-flash
-      - name: Muse Spark V1.3 Contributor
+      - name: Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)
         description: opencode-go/muse-spark-1.3-contributor
         command: pi --model opencode-go/muse-spark-1.3-contributor
   - name: Codex
@@ -121,25 +133,25 @@ items:
           -m gpt-6-astra
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
-      - name: GPT 5.6 Sol High
+      - name: GPT 5.6 Sol High ($5/$0.5/$30)
         description: Start Codex with GPT-5.6 Sol at high reasoning
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
-      - name: GPT 5.6 Sol High/Fast
+      - name: GPT 5.6 Sol High/Fast ($5/$0.5/$30)
         description: Start Codex with GPT-5.6 Sol at high reasoning and fast service
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol
           -c 'service_tier="fast"'
           -c 'model_reasoning_effort="high"'
-      - name: GPT 5.6 Luna
+      - name: GPT 5.6 Luna ($0.2/$0.02/$1.2)
         description: Start Codex with GPT-5.6 Luna at medium reasoning
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="medium"'
-      - name: GPT 5.6 Luna/Fast
+      - name: GPT 5.6 Luna/Fast ($0.2/$0.02/$1.2)
         description: >-
           Start Codex with GPT-5.6 Luna at medium reasoning and fast service
         command: >-
@@ -163,15 +175,15 @@ items:
       - github
       - cli
     choices:
-      - name: GPT-5.5
+      - name: GPT-5.5 ($5/$0.5/$30)
         description: Use GPT-5.5 with high reasoning effort
         command: >-
           copilot --allow-all --model gpt-5.5 --reasoning-effort high
-      - name: GPT-5.6 Sol
+      - name: GPT-5.6 Sol ($4/$0.4/$20)
         description: Use GPT-5.6 Sol with high reasoning effort
         command: >-
           copilot --allow-all --model gpt-5.6-sol --reasoning-effort high
-      - name: Claude Opus 5
+      - name: Claude Opus 5 ($5/$0.5/$25)
         description: Use Claude Opus 5 with xhigh reasoning effort
         command: >-
           copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh
@@ -184,10 +196,13 @@ with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
 led by Codex-subscription models — GPT-6 Astra at medium reasoning, GPT-5.6 Sol
 at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
-`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag —
-followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek
+`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag — plus Gemini 3.8 Flash via
+`pi --model antigravity/gemini-3.8-flash` and Copilot-hosted models (Gemini
+3.8 Flash, GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning)
+via `pi --model github-copilot/<model>`, followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek
 V4 Flash, and Muse Spark V1.3 Contributor) launched via
-`pi --model opencode-go/<model>`.
+`pi --model opencode-go/<model>`. Model choice labels show per-million-token
+prices as `($input/$cached input/$output)`.
 GitHub Copilot opens a model submenu with
 GPT-5.5, GPT-5.6 Sol, and Claude Opus 5. The standalone AMD wrapper uses
 Copilot's OpenAI-compatible BYOK mode with offline mode enabled. It reserves
@@ -265,4 +280,8 @@ The `-Prompt` argument also accepts a text-file path:
 ## Keys
 
 - `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`: launch that numbered target
-- `q`, `esc`, `ctrl+c`: exit
+- `a`–`z` (case-insensitive): in a choice submenu, launch the tenth choice and
+  beyond (`a` picks the 10th choice, `b` the 11th, and so on)
+- `↑`/`↓` or `j`/`k` + `enter`: pick any visible target with the cursor
+- `q`, `esc`, `ctrl+c`: exit (`esc` returns from a choice submenu to the main
+  menu first)

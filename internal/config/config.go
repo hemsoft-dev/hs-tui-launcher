@@ -20,6 +20,10 @@ const (
 	copilotGPT55Model              = "gpt-5.5"
 	claudeModel                    = "claude-opus-4.8"
 	copilotOpus5Model              = "claude-opus-5"
+	antigravityProvider            = "antigravity"
+	antigravityGemini38FlashModel  = "gemini-3.8-flash"
+	githubCopilotProvider          = "github-copilot"
+	copilotGemini38FlashModel      = "gemini-3.8-flash"
 	selectModel                    = "select model"
 	mediumReasoning                = "medium"
 	highReasoning                  = "high"
@@ -88,9 +92,13 @@ var (
 	piQwen38Command              = piCommand(opencodeQwen38Model)
 	piDeepSeekCommand            = piCommand(opencodeDeepSeekV4FlashModel)
 	piMuseSpark13Command         = piCommand(opencodeMuseSpark13Model)
+	piGemini38FlashCommand       = piModelCommand(antigravityProvider, antigravityGemini38FlashModel)
 	piCodexAstraCommand          = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
 	piCodexSolHighCommand        = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
 	piCodexLunaMaxCommand        = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
+	piCopilotGemini38Command     = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
+	piCopilotSolHighCommand      = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
+	piCopilotAstraCommand        = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
 	openrouterKimiK3Command      = openCodeCommand(openrouterProvider, openrouterKimiK3)
 	openrouterQwen38Command      = openCodeCommand(openrouterProvider, qwen38MaxModel)
 	openrouterGLM53FlashCommand  = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
@@ -164,45 +172,65 @@ func Default() Config {
 				Description:     "Open the Pi CLI",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai-codex", "cli"},
+				Tags:            []string{"ai", "pi", "openai-codex", "antigravity", "github-copilot", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "GPT 6 Astra",
+						Name:        "GPT 6 Astra ($10/$1/$50)",
 						Description: modelDescription(openaiCodexProvider, gpt6AstraModel) + " at medium reasoning",
 						Command:     piCodexAstraCommand,
 					},
 					{
-						Name:        "GPT 5.6 Sol High",
+						Name:        "GPT 5.6 Sol High ($5/$0.5/$30)",
 						Description: modelDescription(openaiCodexProvider, gpt56SolModel) + " at high reasoning",
 						Command:     piCodexSolHighCommand,
 					},
 					{
-						Name:        "GPT 5.6 Luna Max",
+						Name:        "GPT 5.6 Luna Max ($0.2/$0.02/$1.2)",
 						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
 						Command:     piCodexLunaMaxCommand,
 					},
 					{
-						Name:        "GLM-5.3-Flash (2x usage)",
+						Name:        "Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)",
+						Description: modelDescription(antigravityProvider, antigravityGemini38FlashModel),
+						Command:     piGemini38FlashCommand,
+					},
+					{
+						Name:        "Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)",
+						Description: modelDescription(githubCopilotProvider, copilotGemini38FlashModel),
+						Command:     piCopilotGemini38Command,
+					},
+					{
+						Name:        "Copilot: GPT 5.6 Sol High ($4/$0.4/$20)",
+						Description: modelDescription(githubCopilotProvider, gpt56SolModel) + " at high reasoning",
+						Command:     piCopilotSolHighCommand,
+					},
+					{
+						Name:        "Copilot: GPT 6 Astra Medium ($10/$1/$50)",
+						Description: modelDescription(githubCopilotProvider, gpt6AstraModel) + " at medium reasoning",
+						Command:     piCopilotAstraCommand,
+					},
+					{
+						Name:        "GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)",
 						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
 						Command:     piGLM53FlashCommand,
 					},
 					{
-						Name:        "Kimi K3",
+						Name:        "Kimi K3 ($3/$0.3/$15)",
 						Description: modelDescription(opencodeGoProvider, kimiK3Model),
 						Command:     piKimiK3Command,
 					},
 					{
-						Name:        "Qwen 3.8 Max",
+						Name:        "Qwen 3.8 Max ($2/$0.25/$6)",
 						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
 						Command:     piQwen38Command,
 					},
 					{
-						Name:        "DeepSeek V4 Flash",
+						Name:        "DeepSeek V4 Flash ($0.22/$0.007/$0.66)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     piDeepSeekCommand,
 					},
 					{
-						Name:        "Muse Spark V1.3 Contributor",
+						Name:        "Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)",
 						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
 						Command:     piMuseSpark13Command,
 					},
@@ -231,22 +259,22 @@ func Default() Config {
 						Command:     codexResumePickerCommand,
 					},
 					{
-						Name:        "GPT 5.6 Sol High",
+						Name:        "GPT 5.6 Sol High ($5/$0.5/$30)",
 						Description: "Start Codex with GPT-5.6 Sol at high reasoning",
 						Command:     codexSolHighCommand,
 					},
 					{
-						Name:        "GPT 5.6 Sol High/Fast",
+						Name:        "GPT 5.6 Sol High/Fast ($5/$0.5/$30)",
 						Description: "Start Codex with GPT-5.6 Sol at high reasoning and fast service",
 						Command:     codexSolHighFastCommand,
 					},
 					{
-						Name:        "GPT 5.6 Luna",
+						Name:        "GPT 5.6 Luna ($0.2/$0.02/$1.2)",
 						Description: "Start Codex with GPT-5.6 Luna at medium reasoning",
 						Command:     codexLunaCommand,
 					},
 					{
-						Name:        "GPT 5.6 Luna/Fast",
+						Name:        "GPT 5.6 Luna/Fast ($0.2/$0.02/$1.2)",
 						Description: "Start Codex with GPT-5.6 Luna at medium reasoning and fast service",
 						Command:     codexLunaFastCommand,
 					},
@@ -267,17 +295,17 @@ func Default() Config {
 				Tags:            []string{"ai", "github", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "GPT-5.5",
+						Name:        "GPT-5.5 ($5/$0.5/$30)",
 						Description: "Use GPT-5.5 with high reasoning effort",
 						Command:     copilotGPT55Command,
 					},
 					{
-						Name:        "GPT-5.6 Sol",
+						Name:        "GPT-5.6 Sol ($4/$0.4/$20)",
 						Description: "Use GPT-5.6 Sol with high reasoning effort",
 						Command:     copilotGPT56SolCommand,
 					},
 					{
-						Name:        "Claude Opus 5",
+						Name:        "Claude Opus 5 ($5/$0.5/$25)",
 						Description: "Use Claude Opus 5 with xhigh reasoning effort",
 						Command:     copilotOpus5Command,
 					},
@@ -300,27 +328,27 @@ func Default() Config {
 				Tags:            []string{"ai", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "GLM-5.3-Flash (2x usage)",
+						Name:        "GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)",
 						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
 						Command:     opencodeGLM53FlashCommand,
 					},
 					{
-						Name:        "Kimi K3",
+						Name:        "Kimi K3 ($3/$0.3/$15)",
 						Description: modelDescription(opencodeGoProvider, kimiK3Model),
 						Command:     opencodeKimiK3Command,
 					},
 					{
-						Name:        "Qwen 3.8 Max",
+						Name:        "Qwen 3.8 Max ($2/$0.25/$6)",
 						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
 						Command:     opencodeQwen38Command,
 					},
 					{
-						Name:        "DeepSeek V4 Flash",
+						Name:        "DeepSeek V4 Flash ($0.22/$0.007/$0.66)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     opencodeDeepSeekCommand,
 					},
 					{
-						Name:        "Muse Spark V1.3 Contributor",
+						Name:        "Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)",
 						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
 						Command:     opencodeMuseSpark13Command,
 					},
@@ -345,17 +373,17 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "Kimi K3 ($3/$15)",
+						Name:        "Kimi K3 ($3/$0.3/$15)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
 					{
-						Name:        "Qwen 3.8 Max ($2/$6)",
+						Name:        "Qwen 3.8 Max ($2/$0.25/$6)",
 						Description: modelDescription(openrouterProvider, qwen38MaxModel),
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM-5.3-Flash ($0.075/$0.25)",
+						Name:        "GLM-5.3-Flash ($0.075/$0.015/$0.25)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashModel),
 						Command:     openrouterGLM53FlashCommand,
 					},
@@ -365,17 +393,17 @@ func Default() Config {
 						Command:     openrouterFusionCommand,
 					},
 					{
-						Name:        "DeepSeek V4 Flash 0731 ($0.08/$0.18)",
+						Name:        "DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
 						Command:     openrouterDeepSeekCommand,
 					},
 					{
-						Name:        "Muse Spark V1.3 ($1.25/$4.25)",
+						Name:        "Muse Spark V1.3 ($1.25/$0.15/$4.25)",
 						Description: modelDescription(openrouterProvider, openrouterMuseSpark13Model),
 						Command:     openrouterMuseSpark13Command,
 					},
 					{
-						Name:        "Muse Spark V1.2 ($1.25/$4.25)",
+						Name:        "Muse Spark V1.2 ($1.25/$0.15/$4.25)",
 						Description: modelDescription(openrouterProvider, openrouterMuseSpark12Model),
 						Command:     openrouterMuseSpark12Command,
 					},
