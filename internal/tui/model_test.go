@@ -26,7 +26,7 @@ func TestSelectingItemWithChoicesWaitsForChoice(t *testing.T) {
 func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("1"))
+	updated, _ := model.Update(key("2"))
 	model = updated.(Model)
 
 	lines := model.choiceLines()
@@ -38,7 +38,7 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("8"))
+	updated, _ := model.Update(key("7"))
 	model = updated.(Model)
 
 	lines := model.choiceLines()
@@ -91,7 +91,7 @@ func TestChoiceMenuFallsBackToNamesForNarrowWidth(t *testing.T) {
 
 	updated, _ := model.Update(tea.WindowSizeMsg{Width: 45})
 	model = updated.(Model)
-	updated, _ = model.Update(key("1"))
+	updated, _ = model.Update(key("2"))
 	model = updated.(Model)
 
 	lines := model.choiceLines()
@@ -103,7 +103,7 @@ func TestChoiceMenuFallsBackToNamesForNarrowWidth(t *testing.T) {
 func TestSelectingPiWaitsForChoice(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("2"))
+	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
 
 	if _, ok := model.SelectedItem(); ok {
@@ -123,11 +123,14 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"1", "Pi GLM-5.3-Flash (2x usage)", "pi --model opencode-go/glm-5.3-flash"},
-		{"2", "Pi Kimi K3", "pi --model opencode-go/kimi-k3"},
-		{"3", "Pi Qwen 3.8 Max", "pi --model opencode-go/qwen3.8-max"},
-		{"4", "Pi DeepSeek V4 Flash", "pi --model opencode-go/deepseek-v4-flash"},
-		{"5", "Pi Muse Spark V1.3 Contributor", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"1", "Pi GPT 6 Astra", "pi --model openai-codex/gpt-6-astra"},
+		{"2", "Pi GPT 5.6 Sol High", "pi --model openai-codex/gpt-5.6-sol --thinking high"},
+		{"3", "Pi GPT 5.6 Luna Max", "pi --model openai-codex/gpt-5.6-luna --thinking max"},
+		{"4", "Pi GLM-5.3-Flash (2x usage)", "pi --model opencode-go/glm-5.3-flash"},
+		{"5", "Pi Kimi K3", "pi --model opencode-go/kimi-k3"},
+		{"6", "Pi Qwen 3.8 Max", "pi --model opencode-go/qwen3.8-max"},
+		{"7", "Pi DeepSeek V4 Flash", "pi --model opencode-go/deepseek-v4-flash"},
+		{"8", "Pi Muse Spark V1.3 Contributor", "pi --model opencode-go/muse-spark-1.3-contributor"},
 	}
 
 	for _, test := range tests {
@@ -147,55 +150,10 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 	}
 }
 
-func TestSelectingPiCodexWaitsForChoice(t *testing.T) {
-	model := New(config.Default())
-
-	updated, _ := model.Update(key("3"))
-	model = updated.(Model)
-
-	if _, ok := model.SelectedItem(); ok {
-		t.Fatal("SelectedItem returned a value before a Pi Codex choice was selected")
-	}
-	if model.choiceParent == nil {
-		t.Fatal("choiceParent was nil after selecting Pi Codex")
-	}
-	if model.choiceParent.Name != "Pi Codex" {
-		t.Fatalf("choiceParent name = %q, want Pi Codex", model.choiceParent.Name)
-	}
-}
-
-func TestSelectingPiCodexChoicesReturnsModelCommands(t *testing.T) {
-	tests := []struct {
-		key     string
-		name    string
-		command string
-	}{
-		{"1", "Pi Codex GPT 6 Astra", "pi --model openai-codex/gpt-6-astra"},
-		{"2", "Pi Codex GPT 5.6 Sol High", "pi --model openai-codex/gpt-5.6-sol --thinking high"},
-		{"3", "Pi Codex GPT 5.6 Luna Max", "pi --model openai-codex/gpt-5.6-luna --thinking max"},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			model := choosePiCodex(t, key(test.key))
-			item, ok := model.SelectedItem()
-			if !ok {
-				t.Fatal("SelectedItem returned no value")
-			}
-			if item.Name != test.name {
-				t.Fatalf("Name = %q, want %q", item.Name, test.name)
-			}
-			if item.Command != test.command {
-				t.Fatalf("Command = %q, want %q", item.Command, test.command)
-			}
-		})
-	}
-}
-
 func TestSelectingAntigravitySkipsPermissions(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("4"))
+	updated, _ := model.Update(key("3"))
 	model = updated.(Model)
 
 	item, ok := model.SelectedItem()
@@ -213,12 +171,7 @@ func TestSelectingAntigravitySkipsPermissions(t *testing.T) {
 func TestSelectingCursorDisablesAutoUpdate(t *testing.T) {
 	model := New(config.Default())
 
-	// Cursor is the tenth item, past the single-digit number keys.
-	for range 9 {
-		updated, _ := model.Update(specialKey(tea.KeyDown))
-		model = updated.(Model)
-	}
-	updated, _ := model.Update(specialKey(tea.KeyEnter))
+	updated, _ := model.Update(key("9"))
 	model = updated.(Model)
 
 	item, ok := model.SelectedItem()
@@ -388,7 +341,7 @@ func TestSelectingOpenCodeKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 func TestSelectingMoonshotAIReturnsDirectKimiK3Command(t *testing.T) {
 	model := New(config.Default())
 
-	updated, _ := model.Update(key("6"))
+	updated, _ := model.Update(key("5"))
 	model = updated.(Model)
 
 	item, ok := model.SelectedItem()
@@ -745,7 +698,7 @@ func chooseCodex(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("1"))
+	updated, _ := model.Update(key("2"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -755,17 +708,7 @@ func choosePi(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("2"))
-	model = updated.(Model)
-	updated, _ = model.Update(choice)
-	return updated.(Model)
-}
-
-func choosePiCodex(t *testing.T, choice tea.KeyPressMsg) Model {
-	t.Helper()
-
-	model := New(config.Default())
-	updated, _ := model.Update(key("3"))
+	updated, _ := model.Update(key("1"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -775,7 +718,7 @@ func chooseCopilot(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("5"))
+	updated, _ := model.Update(key("4"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -785,7 +728,7 @@ func chooseOpenCode(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("7"))
+	updated, _ := model.Update(key("6"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -795,7 +738,7 @@ func chooseOpenRouter(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("8"))
+	updated, _ := model.Update(key("7"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)
@@ -805,7 +748,7 @@ func chooseOllama(t *testing.T, choice tea.KeyPressMsg) Model {
 	t.Helper()
 
 	model := New(config.Default())
-	updated, _ := model.Update(key("9"))
+	updated, _ := model.Update(key("8"))
 	model = updated.(Model)
 	updated, _ = model.Update(choice)
 	return updated.(Model)

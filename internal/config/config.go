@@ -160,6 +160,55 @@ func Default() Config {
 		ShellArgs: []string{"-NoLogo", "-Command"},
 		Items: []LaunchItem{
 			{
+				Name:            "Pi",
+				Description:     "Open the Pi CLI",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
+				Tags:            []string{"ai", "pi", "openai", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "GPT 6 Astra",
+						Description: modelDescription(openaiCodexProvider, gpt6AstraModel),
+						Command:     piCodexAstraCommand,
+					},
+					{
+						Name:        "GPT 5.6 Sol High",
+						Description: modelDescription(openaiCodexProvider, gpt56SolModel) + " at high reasoning",
+						Command:     piCodexSolHighCommand,
+					},
+					{
+						Name:        "GPT 5.6 Luna Max",
+						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
+						Command:     piCodexLunaMaxCommand,
+					},
+					{
+						Name:        "GLM-5.3-Flash (2x usage)",
+						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
+						Command:     piGLM53FlashCommand,
+					},
+					{
+						Name:        "Kimi K3",
+						Description: modelDescription(opencodeGoProvider, kimiK3Model),
+						Command:     piKimiK3Command,
+					},
+					{
+						Name:        "Qwen 3.8 Max",
+						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
+						Command:     piQwen38Command,
+					},
+					{
+						Name:        "DeepSeek V4 Flash",
+						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
+						Command:     piDeepSeekCommand,
+					},
+					{
+						Name:        "Muse Spark V1.3 Contributor",
+						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
+						Command:     piMuseSpark13Command,
+					},
+				},
+			},
+			{
 				Name:            "Codex",
 				Description:     "Open the Codex CLI",
 				Model:           codexPreset.Model,
@@ -200,64 +249,6 @@ func Default() Config {
 						Name:        "GPT 5.6 Luna/Fast",
 						Description: "Start Codex with GPT-5.6 Luna at medium reasoning and fast service",
 						Command:     codexLunaFastCommand,
-					},
-				},
-			},
-			{
-				Name:            "Pi",
-				Description:     "Open the Pi CLI",
-				Model:           modelMenuPreset.Model,
-				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "cli"},
-				Choices: []LaunchChoice{
-					{
-						Name:        "GLM-5.3-Flash (2x usage)",
-						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
-						Command:     piGLM53FlashCommand,
-					},
-					{
-						Name:        "Kimi K3",
-						Description: modelDescription(opencodeGoProvider, kimiK3Model),
-						Command:     piKimiK3Command,
-					},
-					{
-						Name:        "Qwen 3.8 Max",
-						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
-						Command:     piQwen38Command,
-					},
-					{
-						Name:        "DeepSeek V4 Flash",
-						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
-						Command:     piDeepSeekCommand,
-					},
-					{
-						Name:        "Muse Spark V1.3 Contributor",
-						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
-						Command:     piMuseSpark13Command,
-					},
-				},
-			},
-			{
-				Name:            "Pi Codex",
-				Description:     "Open the Pi CLI with Codex subscription models",
-				Model:           modelMenuPreset.Model,
-				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai", "cli"},
-				Choices: []LaunchChoice{
-					{
-						Name:        "GPT 6 Astra",
-						Description: modelDescription(openaiCodexProvider, gpt6AstraModel),
-						Command:     piCodexAstraCommand,
-					},
-					{
-						Name:        "GPT 5.6 Sol High",
-						Description: modelDescription(openaiCodexProvider, gpt56SolModel) + " at high reasoning",
-						Command:     piCodexSolHighCommand,
-					},
-					{
-						Name:        "GPT 5.6 Luna Max",
-						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
-						Command:     piCodexLunaMaxCommand,
 					},
 				},
 			},
