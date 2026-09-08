@@ -23,12 +23,15 @@ const (
 	selectModel                    = "select model"
 	mediumReasoning                = "medium"
 	highReasoning                  = "high"
+	maxReasoning                   = "max"
 	xhighReasoning                 = "xhigh"
 	defaultReasoning               = "default"
 	defaultServiceTier             = "default"
 	fastServiceTier                = "fast"
+	antigravityAgentCommand        = "agy --dangerously-skip-permissions"
 	cursorAgentCommand             = "cursor-agent --disable-auto-update"
 	opencodeGoProvider             = "opencode-go"
+	openaiCodexProvider            = "openai-codex"
 	openrouterProvider             = "openrouter"
 	moonshotProvider               = "moonshot"
 	ollamaProvider                 = "ollama"
@@ -80,6 +83,14 @@ var (
 	opencodeGLM53FlashCommand    = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
 	opencodeDeepSeekCommand      = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
 	opencodeMuseSpark13Command   = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
+	piGLM53FlashCommand          = piCommand(opencodeGLM53FlashModel)
+	piKimiK3Command              = piCommand(kimiK3Model)
+	piQwen38Command              = piCommand(opencodeQwen38Model)
+	piDeepSeekCommand            = piCommand(opencodeDeepSeekV4FlashModel)
+	piMuseSpark13Command         = piCommand(opencodeMuseSpark13Model)
+	piCodexAstraCommand          = piModelCommand(openaiCodexProvider, gpt6AstraModel)
+	piCodexSolHighCommand        = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
+	piCodexLunaMaxCommand        = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
 	openrouterKimiK3Command      = openCodeCommand(openrouterProvider, openrouterKimiK3)
 	openrouterQwen38Command      = openCodeCommand(openrouterProvider, qwen38MaxModel)
 	openrouterGLM53FlashCommand  = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
@@ -193,6 +204,71 @@ func Default() Config {
 				},
 			},
 			{
+				Name:            "Pi",
+				Description:     "Open the Pi CLI",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
+				Tags:            []string{"ai", "pi", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "GLM-5.3-Flash (2x usage)",
+						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
+						Command:     piGLM53FlashCommand,
+					},
+					{
+						Name:        "Kimi K3",
+						Description: modelDescription(opencodeGoProvider, kimiK3Model),
+						Command:     piKimiK3Command,
+					},
+					{
+						Name:        "Qwen 3.8 Max",
+						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
+						Command:     piQwen38Command,
+					},
+					{
+						Name:        "DeepSeek V4 Flash",
+						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
+						Command:     piDeepSeekCommand,
+					},
+					{
+						Name:        "Muse Spark V1.3 Contributor",
+						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
+						Command:     piMuseSpark13Command,
+					},
+				},
+			},
+			{
+				Name:            "Pi Codex",
+				Description:     "Open the Pi CLI with Codex subscription models",
+				Model:           modelMenuPreset.Model,
+				ReasoningEffort: modelMenuPreset.ReasoningEffort,
+				Tags:            []string{"ai", "pi", "openai", "cli"},
+				Choices: []LaunchChoice{
+					{
+						Name:        "GPT 6 Astra",
+						Description: modelDescription(openaiCodexProvider, gpt6AstraModel),
+						Command:     piCodexAstraCommand,
+					},
+					{
+						Name:        "GPT 5.6 Sol High",
+						Description: modelDescription(openaiCodexProvider, gpt56SolModel) + " at high reasoning",
+						Command:     piCodexSolHighCommand,
+					},
+					{
+						Name:        "GPT 5.6 Luna Max",
+						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
+						Command:     piCodexLunaMaxCommand,
+					},
+				},
+			},
+			{
+				Name:            "Antigravity",
+				Description:     "Open the Antigravity CLI",
+				Command:         antigravityAgentCommand,
+				ReasoningEffort: defaultReasoning,
+				Tags:            []string{"ai", "google", "cli"},
+			},
+			{
 				Name:            "GitHub Copilot",
 				Description:     "Open GitHub Copilot CLI",
 				Model:           modelMenuPreset.Model,
@@ -215,22 +291,6 @@ func Default() Config {
 						Command:     copilotOpus5Command,
 					},
 				},
-			},
-			{
-				Name:            "Cursor",
-				Description:     "Open the Cursor Agent CLI",
-				Command:         cursorAgentCommand,
-				Model:           cursorPreset.Model,
-				ReasoningEffort: cursorPreset.ReasoningEffort,
-				Tags:            []string{"ai", "editor", "cli"},
-			},
-			{
-				Name:            "Claude Code",
-				Description:     "Open Claude Code CLI",
-				Command:         "claude --dangerously-skip-permissions",
-				Model:           claudeCodePreset.Model,
-				ReasoningEffort: claudeCodePreset.ReasoningEffort,
-				Tags:            []string{"ai", "anthropic", "cli"},
 			},
 			{
 				Name:            "Moonshot AI",
@@ -349,6 +409,22 @@ func Default() Config {
 					},
 				},
 			},
+			{
+				Name:            "Cursor",
+				Description:     "Open the Cursor Agent CLI",
+				Command:         cursorAgentCommand,
+				Model:           cursorPreset.Model,
+				ReasoningEffort: cursorPreset.ReasoningEffort,
+				Tags:            []string{"ai", "editor", "cli"},
+			},
+			{
+				Name:            "Claude Code",
+				Description:     "Open Claude Code CLI",
+				Command:         "claude --dangerously-skip-permissions",
+				Model:           claudeCodePreset.Model,
+				ReasoningEffort: claudeCodePreset.ReasoningEffort,
+				Tags:            []string{"ai", "anthropic", "cli"},
+			},
 		},
 	}
 }
@@ -381,6 +457,18 @@ func openCodeCommand(provider string, model string) string {
 	// Use positional script arguments because parameter-name strings in an array
 	// are bound as values instead of named parameters.
 	return fmt.Sprintf(`& "$repoRoot\scripts\Start-OpenCode.ps1" %s %s`, provider, model)
+}
+
+func piCommand(model string) string {
+	return piModelCommand(opencodeGoProvider, model)
+}
+
+func piModelCommand(provider string, model string) string {
+	return fmt.Sprintf("pi --model %s/%s", provider, model)
+}
+
+func piThinkingCommand(provider string, model string, thinking string) string {
+	return fmt.Sprintf("%s --thinking %s", piModelCommand(provider, model), thinking)
 }
 
 func modelDescription(provider string, model string) string {
