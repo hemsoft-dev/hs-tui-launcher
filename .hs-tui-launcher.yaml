@@ -34,6 +34,57 @@ items:
       - name: GPT 5.6 Luna/Fast
         description: Start Codex with GPT-5.6 Luna at medium reasoning and fast service
         command: codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna -c 'service_tier="fast"' -c 'model_reasoning_effort="medium"'
+  - name: Pi
+    description: Open the Pi CLI
+    model: select model
+    reasoning_effort: default
+    tags:
+      - ai
+      - pi
+      - cli
+    choices:
+      - name: GLM-5.3-Flash (2x usage)
+        description: opencode-go/glm-5.3-flash
+        command: pi --model opencode-go/glm-5.3-flash
+      - name: Kimi K3
+        description: opencode-go/kimi-k3
+        command: pi --model opencode-go/kimi-k3
+      - name: Qwen 3.8 Max
+        description: opencode-go/qwen3.8-max
+        command: pi --model opencode-go/qwen3.8-max
+      - name: DeepSeek V4 Flash
+        description: opencode-go/deepseek-v4-flash
+        command: pi --model opencode-go/deepseek-v4-flash
+      - name: Muse Spark V1.3 Contributor
+        description: opencode-go/muse-spark-1.3-contributor
+        command: pi --model opencode-go/muse-spark-1.3-contributor
+  - name: Pi Codex
+    description: Open the Pi CLI with Codex subscription models
+    model: select model
+    reasoning_effort: default
+    tags:
+      - ai
+      - pi
+      - openai
+      - cli
+    choices:
+      - name: GPT 6 Astra
+        description: openai-codex/gpt-6-astra
+        command: pi --model openai-codex/gpt-6-astra
+      - name: GPT 5.6 Sol High
+        description: openai-codex/gpt-5.6-sol at high reasoning
+        command: pi --model openai-codex/gpt-5.6-sol --thinking high
+      - name: GPT 5.6 Luna Max
+        description: openai-codex/gpt-5.6-luna at max reasoning
+        command: pi --model openai-codex/gpt-5.6-luna --thinking max
+  - name: Antigravity
+    description: Open the Antigravity CLI
+    command: agy --dangerously-skip-permissions
+    reasoning_effort: default
+    tags:
+      - ai
+      - google
+      - cli
   - name: GitHub Copilot
     description: Open GitHub Copilot CLI
     model: select model
@@ -52,24 +103,6 @@ items:
       - name: Claude Opus 5
         description: Use Claude Opus 5 with xhigh reasoning effort
         command: copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh
-  - name: Cursor
-    description: Open the Cursor Agent CLI
-    command: cursor-agent --disable-auto-update
-    model: claude-opus-4.8
-    reasoning_effort: xhigh
-    tags:
-      - ai
-      - editor
-      - cli
-  - name: Claude Code
-    description: Open Claude Code CLI
-    command: claude --dangerously-skip-permissions
-    model: claude-opus-4.8
-    reasoning_effort: default
-    tags:
-      - ai
-      - anthropic
-      - cli
   - name: Moonshot AI
     description: Open Kimi K3 with Moonshot AI credits
     command: '& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3'
@@ -163,3 +196,21 @@ items:
       - name: Qwen 3.8 27B
         description: ollama/qwen3.8:27b
         command: '& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b'
+  - name: Cursor
+    description: Open the Cursor Agent CLI
+    command: cursor-agent --disable-auto-update
+    model: claude-opus-4.8
+    reasoning_effort: xhigh
+    tags:
+      - ai
+      - editor
+      - cli
+  - name: Claude Code
+    description: Open Claude Code CLI
+    command: claude --dangerously-skip-permissions
+    model: claude-opus-4.8
+    reasoning_effort: default
+    tags:
+      - ai
+      - anthropic
+      - cli
