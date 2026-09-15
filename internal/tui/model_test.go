@@ -35,6 +35,33 @@ func TestChoiceMenuUsesCompactSpacing(t *testing.T) {
 	}
 }
 
+func TestChoiceLineHandlesMissingDescriptionWithDetail(t *testing.T) {
+	choice := launchChoice{LaunchChoice: config.LaunchChoice{Name: "Choice (detail)"}}
+
+	if got := choice.Line("1.", 10, 8); got != "1. Choice      (detail)" {
+		t.Fatalf("Line = %q", got)
+	}
+}
+
+func TestChoiceLineHandlesMissingDescriptionWithoutDetail(t *testing.T) {
+	choice := launchChoice{LaunchChoice: config.LaunchChoice{Name: "Choice"}}
+
+	if got := choice.Line("1.", 10, 0); got != "1. Choice" {
+		t.Fatalf("Line = %q", got)
+	}
+}
+
+func TestChoiceLineHandlesDescriptionWithoutDetail(t *testing.T) {
+	choice := launchChoice{LaunchChoice: config.LaunchChoice{
+		Name:        "Choice",
+		Description: "description",
+	}}
+
+	if got := choice.Line("1.", 10, 0); got != "1. Choice      description" {
+		t.Fatalf("Line = %q", got)
+	}
+}
+
 func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 	model := New(config.Default())
 
@@ -48,6 +75,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($0.075/$0.015/$0.25)",
 		"(variable/variable)",
 		"($0.065/$0.016/$0.18)",
+		"($0.15/$0.003/$0.6)",
 		"($1.25/$0.15/$4.25)",
 		"($1.25/$0.15/$4.25)",
 		"($0.045 1K/$0.09 2K)",
@@ -58,6 +86,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/z-ai/glm-5.3-flash",
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash-0731",
+		"openrouter/deepseek/deepseek-v4.1-flash",
 		"openrouter/meta/muse-spark-1.3",
 		"openrouter/meta/muse-spark-1.2",
 		"images/bytedance-seed/seedream-5-0-pro",
@@ -225,7 +254,9 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 	}{
 		{"a", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
 		{"b", "Pi DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "pi --model opencode-go/deepseek-v4-flash"},
-		{"c", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"c", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
+		{"d", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"e", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
 		{"A", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
 	}
 
@@ -293,8 +324,14 @@ func TestChoiceMenuLabelsChoicesPastNineWithLetters(t *testing.T) {
 	if !strings.HasPrefix(lines[10], "A. Qwen 3.8 Max") {
 		t.Fatalf("tenth choice line = %q", lines[10])
 	}
-	if !strings.HasPrefix(lines[12], "C. Muse Spark V1.3 Contributor") {
+	if !strings.HasPrefix(lines[12], "C. DeepSeek V4.1 Flash") {
 		t.Fatalf("twelfth choice line = %q", lines[12])
+	}
+	if !strings.HasPrefix(lines[13], "D. Muse Spark V1.3 Contributor") {
+		t.Fatalf("thirteenth choice line = %q", lines[13])
+	}
+	if !strings.HasPrefix(lines[14], "E. OpenRouter: DeepSeek V4.1 Flash") {
+		t.Fatalf("fourteenth choice line = %q", lines[14])
 	}
 }
 
@@ -409,6 +446,24 @@ func TestSelectingCopilotOpus5ChoiceReturnsExplicitModelCommand(t *testing.T) {
 	}
 }
 
+func TestSelectingCopilotAutoChoiceUsesServerRouting(t *testing.T) {
+	model := chooseCopilot(t, key("4"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "GitHub Copilot Auto (server-routed)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Description != "Let GitHub Copilot choose the model for each task" {
+		t.Fatalf("Description = %q", item.Description)
+	}
+	if item.Command != "copilot --allow-all --model auto" {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
 func TestSelectingOpenCodeGLM53FlashChoiceReturnsOpenCodeGoCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("1"))
 
@@ -496,8 +551,23 @@ func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *
 	}
 }
 
-func TestSelectingOpenCodeMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
+func TestSelectingOpenCodeDeepSeekV41FlashChoiceReturnsDeepSeekV41FlashCommand(t *testing.T) {
 	model := chooseOpenCode(t, key("5"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenCode DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go deepseek-v4.1-flash` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenCodeMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
+	model := chooseOpenCode(t, key("6"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -517,8 +587,8 @@ func TestSelectingOpenCodeHomeAndAmdModelChoices(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"6", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
-		{"7", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
+		{"7", "OpenCode Qwen 3.8 27B (home Ollama)", `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`},
+		{"8", "OpenCode Qwen 3.8 27B (amd Ollama)", `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`},
 	}
 
 	for _, test := range tests {
@@ -616,8 +686,23 @@ func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t
 	}
 }
 
-func TestSelectingOpenRouterMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
+func TestSelectingOpenRouterDeepSeekV41FlashChoiceReturnsDeepSeekV41FlashCommand(t *testing.T) {
 	model := chooseOpenRouter(t, key("6"))
+
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4.1-flash` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *testing.T) {
+	model := chooseOpenRouter(t, key("7"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -632,7 +717,7 @@ func TestSelectingOpenRouterMuseSparkV13ChoiceReturnsMuseSparkV13Command(t *test
 }
 
 func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *testing.T) {
-	model := chooseOpenRouter(t, key("7"))
+	model := chooseOpenRouter(t, key("8"))
 
 	item, ok := model.SelectedItem()
 	if !ok {
@@ -647,7 +732,7 @@ func TestSelectingOpenRouterMuseSparkV12ChoiceReturnsMuseSparkV12Command(t *test
 }
 
 func TestSelectingOpenRouterSeedream50ProChoiceReturnsImageCommand(t *testing.T) {
-	model := chooseOpenRouter(t, key("8"))
+	model := chooseOpenRouter(t, key("9"))
 
 	item, ok := model.SelectedItem()
 	if !ok {

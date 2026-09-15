@@ -11,6 +11,40 @@ import (
 	"github.com/HemSoft/hs-tui-launcher/internal/config"
 )
 
+func TestMainPrintsResolvedConfig(t *testing.T) {
+	configPath := filepath.Join(t.TempDir(), "config.yaml")
+	if err := os.WriteFile(configPath, []byte("title: Printed config\n"), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	outputFile, err := os.CreateTemp(t.TempDir(), "stderr-*.txt")
+	if err != nil {
+		t.Fatalf("create stderr capture: %v", err)
+	}
+	originalArgs := os.Args
+	originalStderr := os.Stderr
+	defer func() {
+		os.Args = originalArgs
+		os.Stderr = originalStderr
+		_ = outputFile.Close()
+	}()
+
+	os.Args = []string{"hs-tui-launcher", "--config", configPath, "--print-config"}
+	os.Stderr = outputFile
+	main()
+	if err := outputFile.Close(); err != nil {
+		t.Fatalf("close stderr capture: %v", err)
+	}
+
+	output, err := os.ReadFile(outputFile.Name())
+	if err != nil {
+		t.Fatalf("read captured config: %v", err)
+	}
+	if !strings.Contains(string(output), "title: Printed config") {
+		t.Fatalf("--print-config output = %q", output)
+	}
+}
+
 func TestWriteSelectionEmitsStructuredInvocation(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "selection.json")
 	item := config.LaunchItem{
@@ -96,6 +130,14 @@ func TestParseSelectionCommandDoesNotExpandSimilarVariableNames(t *testing.T) {
 	}
 }
 
+func TestParseSelectionCommandRejectsEmptyCommand(t *testing.T) {
+	if _, err := parseSelectionCommand(" \t\n"); err == nil {
+		t.Fatal("parseSelectionCommand accepted an empty command")
+	} else if !strings.Contains(err.Error(), "selection command is required") {
+		t.Fatalf("error = %q, want required-command context", err)
+	}
+}
+
 func TestWriteSelectionRejectsUnquotedPowerShellMetacharacters(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "selection.json")
 	item := config.LaunchItem{
@@ -123,6 +165,17 @@ func TestWriteSelectionRejectsEmptyQuotedExecutable(t *testing.T) {
 	}
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		t.Fatalf("selection file exists after rejected command: %v", err)
+	}
+}
+
+func TestWriteSelectionRejectsDirectoryOutputPath(t *testing.T) {
+	if err := writeSelection(t.TempDir(), config.LaunchItem{
+		Name:    "Tool",
+		Command: "tool",
+	}); err == nil {
+		t.Fatal("writeSelection returned nil for a directory output path")
+	} else if !strings.Contains(err.Error(), "create selection file") {
+		t.Fatalf("error = %q, want create-selection-file context", err)
 	}
 }
 

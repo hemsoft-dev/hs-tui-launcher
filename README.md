@@ -101,9 +101,15 @@ items:
       - name: DeepSeek V4 Flash ($0.22/$0.007/$0.66)
         description: opencode-go/deepseek-v4-flash
         command: pi --model opencode-go/deepseek-v4-flash
+      - name: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)
+        description: opencode-go/deepseek-v4.1-flash
+        command: pi --model opencode-go/deepseek-v4.1-flash
       - name: Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)
         description: opencode-go/muse-spark-1.3-contributor
         command: pi --model opencode-go/muse-spark-1.3-contributor
+      - name: 'OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)'
+        description: openrouter/deepseek/deepseek-v4.1-flash
+        command: pi --model openrouter/deepseek/deepseek-v4.1-flash
   - name: Codex
     description: Open the Codex CLI
     model: gpt-6-astra
@@ -187,6 +193,9 @@ items:
         description: Use Claude Opus 5 with xhigh reasoning effort
         command: >-
           copilot --allow-all --model claude-opus-5 --reasoning-effort xhigh
+      - name: Auto (server-routed)
+        description: Let GitHub Copilot choose the model for each task
+        command: copilot --allow-all --model auto
 ```
 
 The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
@@ -199,13 +208,17 @@ at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag — plus Gemini 3.8 Flash via
 `pi --model antigravity/gemini-3.8-flash` and Copilot-hosted models (Gemini
 3.8 Flash, GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning)
-via `pi --model github-copilot/<model>`, followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek
-V4 Flash, and Muse Spark V1.3 Contributor) launched via
-`pi --model opencode-go/<model>`. Model choice labels show per-million-token
+via `pi --model github-copilot/<model>`, followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
+DeepSeek V4.1 Flash, and Muse Spark V1.3 Contributor) launched via
+`pi --model opencode-go/<model>`, plus OpenRouter's DeepSeek V4.1 Flash via
+`pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show per-million-token
 prices as `($input/$cached input/$output)`.
-GitHub Copilot opens a model submenu with
-GPT-5.5, GPT-5.6 Sol, and Claude Opus 5. The standalone AMD wrapper uses
-Copilot's OpenAI-compatible BYOK mode with offline mode enabled. It reserves
+GitHub Copilot opens a model submenu with GPT-5.5, GPT-5.6 Sol, Claude Opus
+5, and Copilot's server-routed Auto mode. Auto is launched through the
+supported Copilot CLI command `copilot --allow-all --model auto`; it is not
+listed under Pi because Pi's GitHub Copilot provider does not expose
+`github-copilot/auto`. The standalone AMD wrapper uses Copilot's
+OpenAI-compatible BYOK mode with offline mode enabled. It reserves
 245,760 prompt tokens and 16,384 output tokens, matching Qwen's 262,144-token
 context window, and restores all provider environment variables after Copilot
 exits.
@@ -223,7 +236,8 @@ and charges the associated Moonshot API credits. It reads the API key from
 does not write the key or modify the global OpenCode configuration.
 OpenCode opens a model submenu led by GLM-5.3-Flash on OpenCode Go
 (`opencode-go/glm-5.3-flash`), which uses twice the normal OpenCode Go allowance,
-followed by the other OpenCode Go choices, including Muse Spark V1.3 Contributor,
+followed by the other OpenCode Go choices, including DeepSeek V4.1 Flash and
+Muse Spark V1.3 Contributor,
 and two machine-specific choices: Qwen 3.8 27B on `home` and Qwen 3.8 27B on
 `amd`.
 The `home` choice uses the local Ollama server with a 131,072-token limit. The
@@ -233,8 +247,8 @@ before starting OpenCode and does not depend on SSH or Lemonade. Both OpenCode
 launchers set Qwen's reasoning effort to `medium`; the Copilot-to-AMD launcher
 uses the same default.
 OpenRouter opens a separate submenu ordered as Kimi K3, Qwen 3.8 Max,
-GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, Muse Spark V1.3, Muse Spark V1.2,
-and Seedream 5.0 Pro.
+GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, DeepSeek V4.1 Flash,
+Muse Spark V1.3, Muse Spark V1.2, and Seedream 5.0 Pro.
 Ollama opens a local-model submenu through OpenCode. Its first choice is
 Qwen 3.8 27B, using the installed `qwen3.8:27b` model at
 `http://localhost:11434/v1`. The OpenCode submenu exposes the same local choice

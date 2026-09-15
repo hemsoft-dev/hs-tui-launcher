@@ -14,49 +14,51 @@ import (
 const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
-	gpt6AstraModel                 = "gpt-6-astra"
-	gpt56SolModel                  = "gpt-5.6-sol"
-	gpt56LunaModel                 = "gpt-5.6-luna"
-	copilotGPT55Model              = "gpt-5.5"
-	claudeModel                    = "claude-opus-4.8"
-	copilotOpus5Model              = "claude-opus-5"
-	antigravityProvider            = "antigravity"
-	antigravityGemini38FlashModel  = "gemini-3.8-flash"
-	githubCopilotProvider          = "github-copilot"
-	copilotGemini38FlashModel      = "gemini-3.8-flash"
-	selectModel                    = "select model"
-	mediumReasoning                = "medium"
-	highReasoning                  = "high"
-	maxReasoning                   = "max"
-	xhighReasoning                 = "xhigh"
-	defaultReasoning               = "default"
-	defaultServiceTier             = "default"
-	fastServiceTier                = "fast"
-	antigravityAgentCommand        = "agy --dangerously-skip-permissions"
-	cursorAgentCommand             = "cursor-agent --disable-auto-update"
-	opencodeGoProvider             = "opencode-go"
-	openaiCodexProvider            = "openai-codex"
-	openrouterProvider             = "openrouter"
-	moonshotProvider               = "moonshot"
-	ollamaProvider                 = "ollama"
-	kimiK3Model                    = "kimi-k3"
-	ollamaQwen3827BModel           = "qwen3.8:27b"
-	opencodeQwen38Model            = "qwen3.8-max"
-	opencodeGLM53FlashModel        = "glm-5.3-flash"
-	opencodeDeepSeekV4FlashModel   = "deepseek-v4-flash"
-	opencodeMuseSpark13Model       = "muse-spark-1.3-contributor"
-	openrouterKimiK3               = "moonshotai/kimi-k3"
-	openrouterDeepSeekV4FlashModel = "deepseek/deepseek-v4-flash-0731"
-	openrouterMuseSpark13Model     = "meta/muse-spark-1.3"
-	openrouterMuseSpark12Model     = "meta/muse-spark-1.2"
-	openrouterSeedream50ProModel   = "bytedance-seed/seedream-5-0-pro"
-	qwen38MaxModel                 = "qwen/qwen3.8-max"
-	openrouterGLM53FlashModel      = "z-ai/glm-5.3-flash"
-	fusionModel                    = "openrouter/fusion"
-	moonshotLauncherCommand        = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
-	ollamaQwen3827BCommand         = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
-	amdOllamaQwen3827BCommand      = `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`
-	openrouterSeedreamCommand      = `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"`
+	gpt6AstraModel                  = "gpt-6-astra"
+	gpt56SolModel                   = "gpt-5.6-sol"
+	gpt56LunaModel                  = "gpt-5.6-luna"
+	copilotGPT55Model               = "gpt-5.5"
+	claudeModel                     = "claude-opus-4.8"
+	copilotOpus5Model               = "claude-opus-5"
+	antigravityProvider             = "antigravity"
+	antigravityGemini38FlashModel   = "gemini-3.8-flash"
+	githubCopilotProvider           = "github-copilot"
+	copilotGemini38FlashModel       = "gemini-3.8-flash"
+	selectModel                     = "select model"
+	mediumReasoning                 = "medium"
+	highReasoning                   = "high"
+	maxReasoning                    = "max"
+	xhighReasoning                  = "xhigh"
+	defaultReasoning                = "default"
+	defaultServiceTier              = "default"
+	fastServiceTier                 = "fast"
+	antigravityAgentCommand         = "agy --dangerously-skip-permissions"
+	cursorAgentCommand              = "cursor-agent --disable-auto-update"
+	opencodeGoProvider              = "opencode-go"
+	openaiCodexProvider             = "openai-codex"
+	openrouterProvider              = "openrouter"
+	moonshotProvider                = "moonshot"
+	ollamaProvider                  = "ollama"
+	kimiK3Model                     = "kimi-k3"
+	ollamaQwen3827BModel            = "qwen3.8:27b"
+	opencodeQwen38Model             = "qwen3.8-max"
+	opencodeGLM53FlashModel         = "glm-5.3-flash"
+	opencodeDeepSeekV4FlashModel    = "deepseek-v4-flash"
+	opencodeDeepSeekV41FlashModel   = "deepseek-v4.1-flash"
+	opencodeMuseSpark13Model        = "muse-spark-1.3-contributor"
+	openrouterKimiK3                = "moonshotai/kimi-k3"
+	openrouterDeepSeekV4FlashModel  = "deepseek/deepseek-v4-flash-0731"
+	openrouterDeepSeekV41FlashModel = "deepseek/deepseek-v4.1-flash"
+	openrouterMuseSpark13Model      = "meta/muse-spark-1.3"
+	openrouterMuseSpark12Model      = "meta/muse-spark-1.2"
+	openrouterSeedream50ProModel    = "bytedance-seed/seedream-5-0-pro"
+	qwen38MaxModel                  = "qwen/qwen3.8-max"
+	openrouterGLM53FlashModel       = "z-ai/glm-5.3-flash"
+	fusionModel                     = "openrouter/fusion"
+	moonshotLauncherCommand         = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
+	ollamaQwen3827BCommand          = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
+	amdOllamaQwen3827BCommand       = `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`
+	openrouterSeedreamCommand       = `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"`
 )
 
 var (
@@ -72,40 +74,45 @@ var (
 	codexLunaPreset        = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: defaultServiceTier}
 	codexLunaFastPreset    = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: fastServiceTier}
 
-	codexFreshCommand            = codexCommand("", codexPreset)
-	codexResumeCommand           = codexCommand("resume --last", codexPreset)
-	codexResumePickerCommand     = codexCommand("resume", codexPreset)
-	codexSolHighCommand          = codexCommand("", codexSolHighPreset)
-	codexSolHighFastCommand      = codexCommand("", codexSolHighFastPreset)
-	codexLunaCommand             = codexCommand("", codexLunaPreset)
-	codexLunaFastCommand         = codexCommand("", codexLunaFastPreset)
-	copilotGPT55Command          = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand       = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command          = copilotCommand(copilotOpus5Preset)
-	opencodeKimiK3Command        = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command        = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM53FlashCommand    = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
-	opencodeDeepSeekCommand      = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
-	opencodeMuseSpark13Command   = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
-	piGLM53FlashCommand          = piCommand(opencodeGLM53FlashModel)
-	piKimiK3Command              = piCommand(kimiK3Model)
-	piQwen38Command              = piCommand(opencodeQwen38Model)
-	piDeepSeekCommand            = piCommand(opencodeDeepSeekV4FlashModel)
-	piMuseSpark13Command         = piCommand(opencodeMuseSpark13Model)
-	piGemini38FlashCommand       = piModelCommand(antigravityProvider, antigravityGemini38FlashModel)
-	piCodexAstraCommand          = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
-	piCodexSolHighCommand        = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
-	piCodexLunaMaxCommand        = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
-	piCopilotGemini38Command     = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
-	piCopilotSolHighCommand      = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
-	piCopilotAstraCommand        = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
-	openrouterKimiK3Command      = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command      = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLM53FlashCommand  = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
-	openrouterFusionCommand      = openCodeCommand(openrouterProvider, fusionModel)
-	openrouterDeepSeekCommand    = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
-	openrouterMuseSpark13Command = openCodeCommand(openrouterProvider, openrouterMuseSpark13Model)
-	openrouterMuseSpark12Command = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
+	codexFreshCommand              = codexCommand("", codexPreset)
+	codexResumeCommand             = codexCommand("resume --last", codexPreset)
+	codexResumePickerCommand       = codexCommand("resume", codexPreset)
+	codexSolHighCommand            = codexCommand("", codexSolHighPreset)
+	codexSolHighFastCommand        = codexCommand("", codexSolHighFastPreset)
+	codexLunaCommand               = codexCommand("", codexLunaPreset)
+	codexLunaFastCommand           = codexCommand("", codexLunaFastPreset)
+	copilotGPT55Command            = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand         = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command            = copilotCommand(copilotOpus5Preset)
+	copilotAutoCommand             = "copilot --allow-all --model auto"
+	opencodeKimiK3Command          = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command          = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM53FlashCommand      = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
+	opencodeDeepSeekCommand        = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
+	opencodeDeepSeekV41Command     = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV41FlashModel)
+	opencodeMuseSpark13Command     = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
+	piGLM53FlashCommand            = piCommand(opencodeGLM53FlashModel)
+	piKimiK3Command                = piCommand(kimiK3Model)
+	piQwen38Command                = piCommand(opencodeQwen38Model)
+	piDeepSeekCommand              = piCommand(opencodeDeepSeekV4FlashModel)
+	piDeepSeekV41Command           = piCommand(opencodeDeepSeekV41FlashModel)
+	piMuseSpark13Command           = piCommand(opencodeMuseSpark13Model)
+	piOpenRouterDeepSeekV41Command = piModelCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
+	piGemini38FlashCommand         = piModelCommand(antigravityProvider, antigravityGemini38FlashModel)
+	piCodexAstraCommand            = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
+	piCodexSolHighCommand          = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
+	piCodexLunaMaxCommand          = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
+	piCopilotGemini38Command       = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
+	piCopilotSolHighCommand        = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
+	piCopilotAstraCommand          = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
+	openrouterKimiK3Command        = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command        = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLM53FlashCommand    = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
+	openrouterFusionCommand        = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekCommand      = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
+	openrouterDeepSeekV41Command   = openCodeCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
+	openrouterMuseSpark13Command   = openCodeCommand(openrouterProvider, openrouterMuseSpark13Model)
+	openrouterMuseSpark12Command   = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
 )
 
 type Config struct {
@@ -230,9 +237,19 @@ func Default() Config {
 						Command:     piDeepSeekCommand,
 					},
 					{
+						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV41FlashModel),
+						Command:     piDeepSeekV41Command,
+					},
+					{
 						Name:        "Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)",
 						Description: modelDescription(opencodeGoProvider, opencodeMuseSpark13Model),
 						Command:     piMuseSpark13Command,
+					},
+					{
+						Name:        "OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Description: modelDescription(openrouterProvider, openrouterDeepSeekV41FlashModel),
+						Command:     piOpenRouterDeepSeekV41Command,
 					},
 				},
 			},
@@ -309,6 +326,11 @@ func Default() Config {
 						Description: "Use Claude Opus 5 with xhigh reasoning effort",
 						Command:     copilotOpus5Command,
 					},
+					{
+						Name:        "Auto (server-routed)",
+						Description: "Let GitHub Copilot choose the model for each task",
+						Command:     copilotAutoCommand,
+					},
 				},
 			},
 			{
@@ -346,6 +368,11 @@ func Default() Config {
 						Name:        "DeepSeek V4 Flash ($0.22/$0.007/$0.66)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     opencodeDeepSeekCommand,
+					},
+					{
+						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV41FlashModel),
+						Command:     opencodeDeepSeekV41Command,
 					},
 					{
 						Name:        "Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)",
@@ -396,6 +423,11 @@ func Default() Config {
 						Name:        "DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
 						Command:     openrouterDeepSeekCommand,
+					},
+					{
+						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Description: modelDescription(openrouterProvider, openrouterDeepSeekV41FlashModel),
+						Command:     openrouterDeepSeekV41Command,
 					},
 					{
 						Name:        "Muse Spark V1.3 ($1.25/$0.15/$4.25)",

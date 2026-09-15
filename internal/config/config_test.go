@@ -84,8 +84,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if pi.ReasoningEffort != "default" {
 		t.Fatalf("Pi reasoning effort = %q", pi.ReasoningEffort)
 	}
-	if got := len(pi.Choices); got != 12 {
-		t.Fatalf("Pi choices = %d, want 12", got)
+	if got := len(pi.Choices); got != 14 {
+		t.Fatalf("Pi choices = %d, want 14", got)
 	}
 	piChoices := []struct {
 		name        string
@@ -103,7 +103,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", piKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", piQwen38Command},
 		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", piDeepSeekCommand},
+		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", piDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
+		{"OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "openrouter/deepseek/deepseek-v4.1-flash", piOpenRouterDeepSeekV41Command},
 	}
 	for index, want := range piChoices {
 		choice := pi.Choices[index]
@@ -139,8 +141,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[3].ReasoningEffort; got != "default" {
 		t.Fatalf("GitHub Copilot reasoning effort = %q", got)
 	}
-	if got := len(cfg.Items[3].Choices); got != 3 {
-		t.Fatalf("GitHub Copilot choices = %d, want 3", got)
+	if got := len(cfg.Items[3].Choices); got != 4 {
+		t.Fatalf("GitHub Copilot choices = %d, want 4", got)
 	}
 	copilotGPT55Choice := cfg.Items[3].Choices[0]
 	if copilotGPT55Choice.Name != "GPT-5.5 ($5/$0.5/$30)" {
@@ -171,6 +173,16 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	}
 	if copilotOpus5Choice.Command != copilotOpus5Command {
 		t.Fatalf("GitHub Copilot third choice command = %q", copilotOpus5Choice.Command)
+	}
+	copilotAutoChoice := cfg.Items[3].Choices[3]
+	if copilotAutoChoice.Name != "Auto (server-routed)" {
+		t.Fatalf("GitHub Copilot fourth choice name = %q", copilotAutoChoice.Name)
+	}
+	if copilotAutoChoice.Description != "Let GitHub Copilot choose the model for each task" {
+		t.Fatalf("GitHub Copilot fourth choice description = %q", copilotAutoChoice.Description)
+	}
+	if copilotAutoChoice.Command != copilotAutoCommand {
+		t.Fatalf("GitHub Copilot fourth choice command = %q", copilotAutoChoice.Command)
 	}
 	if got := cfg.Items[8].Model; got != "claude-opus-4.8" {
 		t.Fatalf("Cursor model = %q", got)
@@ -209,8 +221,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[5].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenCode env = %#v", got)
 	}
-	if got := len(cfg.Items[5].Choices); got != 7 {
-		t.Fatalf("OpenCode choices = %d, want 7", got)
+	if got := len(cfg.Items[5].Choices); got != 8 {
+		t.Fatalf("OpenCode choices = %d, want 8", got)
 	}
 	opencodeChoices := []struct {
 		name        string
@@ -221,6 +233,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", opencodeQwen38Command},
 		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
+		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", opencodeDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", opencodeMuseSpark13Command},
 		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
 		{"Qwen 3.8 27B (amd Ollama)", "amd-ollama/qwen3.8:27b", amdOllamaQwen3827BCommand},
@@ -252,8 +265,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[6].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[6].Choices); got != 8 {
-		t.Fatalf("OpenRouter choices = %d, want 8", got)
+	if got := len(cfg.Items[6].Choices); got != 9 {
+		t.Fatalf("OpenRouter choices = %d, want 9", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -265,6 +278,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GLM-5.3-Flash ($0.075/$0.015/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
+		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "openrouter/deepseek/deepseek-v4.1-flash", openrouterDeepSeekV41Command},
 		{"Muse Spark V1.3 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
 		{"Muse Spark V1.2 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSpark12Command},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
