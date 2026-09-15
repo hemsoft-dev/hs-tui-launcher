@@ -70,19 +70,19 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 
 	lines := model.choiceLines()
 	details := []string{
-		"($3/$0.3/$15)",
+		"($2.648/$0.303/$13.283)",
 		"($2/$0.25/$6)",
 		"($0.075/$0.015/$0.25)",
 		"(variable/variable)",
-		"($0.065/$0.016/$0.18)",
-		"($0.15/$0.003/$0.6)",
+		"($0.06/$0.012/$0.12)",
+		"($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
 		"($1.25/$0.15/$4.25)",
 		"($1.25/$0.15/$4.25)",
 		"($0.045 1K/$0.09 2K)",
 	}
 	descriptions := []string{
 		"openrouter/moonshotai/kimi-k3",
-		"openrouter/qwen/qwen3.8-max",
+		"openrouter/qwen/qwen3.8-max-0902",
 		"openrouter/z-ai/glm-5.3-flash",
 		"openrouter/openrouter/fusion",
 		"openrouter/deepseek/deepseek-v4-flash-0731",
@@ -253,10 +253,10 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 		command string
 	}{
 		{"a", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
-		{"b", "Pi DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "pi --model opencode-go/deepseek-v4-flash"},
+		{"b", "Pi DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4-flash"},
 		{"c", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
 		{"d", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
-		{"e", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
+		{"e", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
 		{"A", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
 	}
 
@@ -543,7 +543,7 @@ func TestSelectingOpenCodeDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t *
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenCode DeepSeek V4 Flash ($0.22/$0.007/$0.66)" {
+	if item.Name != "OpenCode DeepSeek V4 Flash ($0.15/$0.003/$0.6)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" opencode-go deepseek-v4-flash` {
@@ -615,7 +615,7 @@ func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter Kimi K3 ($3/$0.3/$15)" {
+	if item.Name != "OpenRouter Kimi K3 ($2.648/$0.303/$13.283)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3` {
@@ -636,7 +636,7 @@ func TestSelectingOpenRouterQwen38MaxChoiceReturnsQwen38MaxCommand(t *testing.T)
 	if item.Name != "OpenRouter Qwen 3.8 Max ($2/$0.25/$6)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
-	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max` {
+	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter qwen/qwen3.8-max-0902` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }
@@ -678,7 +678,7 @@ func TestSelectingOpenRouterDeepSeekV4FlashChoiceReturnsDeepSeekV4FlashCommand(t
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)" {
+	if item.Name != "OpenRouter DeepSeek V4 Flash 0731 ($0.06/$0.012/$0.12)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4-flash-0731` {
@@ -693,7 +693,7 @@ func TestSelectingOpenRouterDeepSeekV41FlashChoiceReturnsDeepSeekV41FlashCommand
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)" {
+	if item.Name != "OpenRouter DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter deepseek/deepseek-v4.1-flash` {

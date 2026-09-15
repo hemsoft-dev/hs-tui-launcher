@@ -98,7 +98,7 @@ items:
       - name: Qwen 3.8 Max ($2/$0.25/$6)
         description: opencode-go/qwen3.8-max
         command: pi --model opencode-go/qwen3.8-max
-      - name: DeepSeek V4 Flash ($0.22/$0.007/$0.66)
+      - name: DeepSeek V4 Flash ($0.15/$0.003/$0.6)
         description: opencode-go/deepseek-v4-flash
         command: pi --model opencode-go/deepseek-v4-flash
       - name: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)
@@ -107,7 +107,7 @@ items:
       - name: Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)
         description: opencode-go/muse-spark-1.3-contributor
         command: pi --model opencode-go/muse-spark-1.3-contributor
-      - name: 'OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)'
+      - name: 'OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)'
         description: openrouter/deepseek/deepseek-v4.1-flash
         command: pi --model openrouter/deepseek/deepseek-v4.1-flash
   - name: Codex
@@ -248,15 +248,18 @@ launchers set Qwen's reasoning effort to `medium`; the Copilot-to-AMD launcher
 uses the same default.
 OpenRouter opens a separate submenu ordered as Kimi K3, Qwen 3.8 Max,
 GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, DeepSeek V4.1 Flash,
-Muse Spark V1.3, Muse Spark V1.2, and Seedream 5.0 Pro.
+Muse Spark V1.3, Muse Spark V1.2, and Seedream 5.0 Pro. DeepSeek V4.1 Flash
+has weekday peak windows, so its displayed rate is a base-to-peak range.
 Ollama opens a local-model submenu through OpenCode. Its first choice is
 Qwen 3.8 27B, using the installed `qwen3.8:27b` model at
 `http://localhost:11434/v1`. The OpenCode submenu exposes the same local choice
 so it can be selected beside the AMD-hosted copy. These wrappers inject provider
 definitions for one process and do not modify the global OpenCode configuration.
-Parenthesized prices list the current OpenRouter catalog input/output rate per
-million tokens. OpenRouter can route multi-provider models to endpoints with
-different rates, so actual charges may differ. Fusion is variable because it
+Parenthesized prices list current catalog input/cached-input/output rates per
+million tokens. The OpenCode Go GLM-5.3-Flash choice shows its usage-equivalent
+half-rate because that model consumes twice the normal allowance. OpenRouter can
+apply discounts, scheduled rates, and provider-specific routing, so actual
+charges may differ. Fusion is variable because it
 bills the underlying panel and judge calls. Seedream uses per-image pricing:
 `$0.045` for 1K or `$0.09` for 2K. Its endpoint also lists `$0.003` per input
 reference image, but the launcher currently sends text prompts only. The image

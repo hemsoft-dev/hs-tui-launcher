@@ -102,10 +102,10 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
 		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", piKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", piQwen38Command},
-		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", piDeepSeekCommand},
+		{"DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4-flash", piDeepSeekCommand},
 		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", piDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
-		{"OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "openrouter/deepseek/deepseek-v4.1-flash", piOpenRouterDeepSeekV41Command},
+		{"OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "openrouter/deepseek/deepseek-v4.1-flash", piOpenRouterDeepSeekV41Command},
 	}
 	for index, want := range piChoices {
 		choice := pi.Choices[index]
@@ -232,7 +232,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", opencodeGLM53FlashCommand},
 		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", opencodeKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "opencode-go/qwen3.8-max", opencodeQwen38Command},
-		{"DeepSeek V4 Flash ($0.22/$0.007/$0.66)", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
+		{"DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4-flash", opencodeDeepSeekCommand},
 		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", opencodeDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", opencodeMuseSpark13Command},
 		{"Qwen 3.8 27B (home Ollama)", "ollama/qwen3.8:27b", ollamaQwen3827BCommand},
@@ -273,12 +273,12 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"Kimi K3 ($3/$0.3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
-		{"Qwen 3.8 Max ($2/$0.25/$6)", "openrouter/qwen/qwen3.8-max", openrouterQwen38Command},
+		{"Kimi K3 ($2.648/$0.303/$13.283)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Qwen 3.8 Max ($2/$0.25/$6)", "openrouter/qwen/qwen3.8-max-0902", openrouterQwen38Command},
 		{"GLM-5.3-Flash ($0.075/$0.015/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
-		{"DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
-		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "openrouter/deepseek/deepseek-v4.1-flash", openrouterDeepSeekV41Command},
+		{"DeepSeek V4 Flash 0731 ($0.06/$0.012/$0.12)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
+		{"DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "openrouter/deepseek/deepseek-v4.1-flash", openrouterDeepSeekV41Command},
 		{"Muse Spark V1.3 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
 		{"Muse Spark V1.2 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.2", openrouterMuseSpark12Command},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},

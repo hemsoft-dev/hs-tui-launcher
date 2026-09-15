@@ -52,7 +52,7 @@ const (
 	openrouterMuseSpark13Model      = "meta/muse-spark-1.3"
 	openrouterMuseSpark12Model      = "meta/muse-spark-1.2"
 	openrouterSeedream50ProModel    = "bytedance-seed/seedream-5-0-pro"
-	qwen38MaxModel                  = "qwen/qwen3.8-max"
+	qwen38MaxModel                  = "qwen/qwen3.8-max-0902"
 	openrouterGLM53FlashModel       = "z-ai/glm-5.3-flash"
 	fusionModel                     = "openrouter/fusion"
 	moonshotLauncherCommand         = `& "$repoRoot\scripts\Start-Moonshot.ps1" kimi-k3`
@@ -232,7 +232,7 @@ func Default() Config {
 						Command:     piQwen38Command,
 					},
 					{
-						Name:        "DeepSeek V4 Flash ($0.22/$0.007/$0.66)",
+						Name:        "DeepSeek V4 Flash ($0.15/$0.003/$0.6)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     piDeepSeekCommand,
 					},
@@ -247,7 +247,7 @@ func Default() Config {
 						Command:     piMuseSpark13Command,
 					},
 					{
-						Name:        "OpenRouter: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Name:        "OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV41FlashModel),
 						Command:     piOpenRouterDeepSeekV41Command,
 					},
@@ -365,7 +365,7 @@ func Default() Config {
 						Command:     opencodeQwen38Command,
 					},
 					{
-						Name:        "DeepSeek V4 Flash ($0.22/$0.007/$0.66)",
+						Name:        "DeepSeek V4 Flash ($0.15/$0.003/$0.6)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
 						Command:     opencodeDeepSeekCommand,
 					},
@@ -400,7 +400,7 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "Kimi K3 ($3/$0.3/$15)",
+						Name:        "Kimi K3 ($2.648/$0.303/$13.283)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
@@ -420,12 +420,12 @@ func Default() Config {
 						Command:     openrouterFusionCommand,
 					},
 					{
-						Name:        "DeepSeek V4 Flash 0731 ($0.065/$0.016/$0.18)",
+						Name:        "DeepSeek V4 Flash 0731 ($0.06/$0.012/$0.12)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
 						Command:     openrouterDeepSeekCommand,
 					},
 					{
-						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
+						Name:        "DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV41FlashModel),
 						Command:     openrouterDeepSeekV41Command,
 					},
