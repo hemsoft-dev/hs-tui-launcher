@@ -157,10 +157,11 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		{"3", "Pi GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model openai-codex/gpt-5.6-luna --thinking max"},
 		{"4", "Pi Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)", "pi --model antigravity/gemini-3.8-flash"},
 		{"5", "Pi Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "pi --model github-copilot/gemini-3.8-flash"},
-		{"6", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
-		{"7", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
-		{"8", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
-		{"9", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
+		{"6", "Pi Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model github-copilot/gpt-5.6-luna --thinking max"},
+		{"7", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
+		{"8", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
+		{"9", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"a", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
 	}
 
 	for _, test := range tests {
@@ -252,12 +253,13 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"a", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
-		{"b", "Pi DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4-flash"},
-		{"c", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
-		{"d", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
-		{"e", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
-		{"A", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
+		{"a", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
+		{"b", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
+		{"c", "Pi DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4-flash"},
+		{"d", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
+		{"e", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"f", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
+		{"A", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
 	}
 
 	for _, test := range tests {
@@ -318,20 +320,23 @@ func TestChoiceMenuLabelsChoicesPastNineWithLetters(t *testing.T) {
 	if !strings.HasPrefix(lines[1], "1. GPT 6 Astra") {
 		t.Fatalf("first choice line = %q", lines[1])
 	}
-	if !strings.HasPrefix(lines[9], "9. Kimi K3") {
+	if !strings.HasPrefix(lines[9], "9. GLM-5.3-Flash") {
 		t.Fatalf("ninth choice line = %q", lines[9])
 	}
-	if !strings.HasPrefix(lines[10], "A. Qwen 3.8 Max") {
+	if !strings.HasPrefix(lines[10], "A. Kimi K3") {
 		t.Fatalf("tenth choice line = %q", lines[10])
 	}
-	if !strings.HasPrefix(lines[12], "C. DeepSeek V4.1 Flash") {
-		t.Fatalf("twelfth choice line = %q", lines[12])
+	if !strings.HasPrefix(lines[11], "B. Qwen 3.8 Max") {
+		t.Fatalf("eleventh choice line = %q", lines[11])
 	}
-	if !strings.HasPrefix(lines[13], "D. Muse Spark V1.3 Contributor") {
+	if !strings.HasPrefix(lines[13], "D. DeepSeek V4.1 Flash") {
 		t.Fatalf("thirteenth choice line = %q", lines[13])
 	}
-	if !strings.HasPrefix(lines[14], "E. OpenRouter: DeepSeek V4.1 Flash") {
+	if !strings.HasPrefix(lines[14], "E. Muse Spark V1.3 Contributor") {
 		t.Fatalf("fourteenth choice line = %q", lines[14])
+	}
+	if !strings.HasPrefix(lines[15], "F. OpenRouter: DeepSeek V4.1 Flash") {
+		t.Fatalf("fifteenth choice line = %q", lines[15])
 	}
 }
 

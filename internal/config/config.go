@@ -103,6 +103,7 @@ var (
 	piCodexSolHighCommand          = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
 	piCodexLunaMaxCommand          = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
 	piCopilotGemini38Command       = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
+	piCopilotLunaMaxCommand        = piThinkingCommand(githubCopilotProvider, gpt56LunaModel, maxReasoning)
 	piCopilotSolHighCommand        = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
 	piCopilotAstraCommand          = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
 	openrouterKimiK3Command        = openCodeCommand(openrouterProvider, openrouterKimiK3)
@@ -205,6 +206,11 @@ func Default() Config {
 						Name:        "Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)",
 						Description: modelDescription(githubCopilotProvider, copilotGemini38FlashModel),
 						Command:     piCopilotGemini38Command,
+					},
+					{
+						Name:        "Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)",
+						Description: modelDescription(githubCopilotProvider, gpt56LunaModel) + " at max reasoning",
+						Command:     piCopilotLunaMaxCommand,
 					},
 					{
 						Name:        "Copilot: GPT 5.6 Sol High ($4/$0.4/$20)",

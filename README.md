@@ -83,6 +83,9 @@ items:
       - name: Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)
         description: github-copilot/gemini-3.8-flash
         command: pi --model github-copilot/gemini-3.8-flash
+      - name: Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
+        description: github-copilot/gpt-5.6-luna at max reasoning
+        command: pi --model github-copilot/gpt-5.6-luna --thinking max
       - name: Copilot: GPT 5.6 Sol High ($4/$0.4/$20)
         description: github-copilot/gpt-5.6-sol at high reasoning
         command: pi --model github-copilot/gpt-5.6-sol --thinking high
@@ -207,8 +210,9 @@ led by Codex-subscription models — GPT-6 Astra at medium reasoning, GPT-5.6 So
 at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag — plus Gemini 3.8 Flash via
 `pi --model antigravity/gemini-3.8-flash` and Copilot-hosted models (Gemini
-3.8 Flash, GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning)
-via `pi --model github-copilot/<model>`, followed by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
+3.8 Flash, GPT 5.6 Luna at max reasoning, GPT 5.6 Sol at high reasoning, and
+GPT 6 Astra at medium reasoning) via `pi --model github-copilot/<model>`, followed
+by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
 DeepSeek V4.1 Flash, and Muse Spark V1.3 Contributor) launched via
 `pi --model opencode-go/<model>`, plus OpenRouter's DeepSeek V4.1 Flash via
 `pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show per-million-token
