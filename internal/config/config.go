@@ -19,7 +19,9 @@ const (
 	gpt56LunaModel                  = "gpt-5.6-luna"
 	copilotGPT55Model               = "gpt-5.5"
 	claudeModel                     = "claude-opus-4.8"
+	claudeFable51Model              = "claude-fable-5-1"
 	copilotOpus5Model               = "claude-opus-5"
+	anthropicProvider               = "anthropic"
 	antigravityProvider             = "antigravity"
 	antigravityGemini38FlashModel   = "gemini-3.8-flash"
 	githubCopilotProvider           = "github-copilot"
@@ -105,6 +107,7 @@ var (
 	piCopilotGemini38Command       = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
 	piCopilotLunaMaxCommand        = piThinkingCommand(githubCopilotProvider, gpt56LunaModel, maxReasoning)
 	piCopilotSolHighCommand        = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
+	piClaudeFable51Command         = piModelCommand(anthropicProvider, claudeFable51Model)
 	piCopilotAstraCommand          = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
 	openrouterKimiK3Command        = openCodeCommand(openrouterProvider, openrouterKimiK3)
 	openrouterQwen38Command        = openCodeCommand(openrouterProvider, qwen38MaxModel)
@@ -180,7 +183,7 @@ func Default() Config {
 				Description:     "Open the Pi CLI",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai-codex", "antigravity", "github-copilot", "cli"},
+				Tags:            []string{"ai", "pi", "openai-codex", "antigravity", "github-copilot", "anthropic", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "GPT 6 Astra ($10/$1/$50)",
@@ -216,6 +219,11 @@ func Default() Config {
 						Name:        "Copilot: GPT 5.6 Sol High ($4/$0.4/$20)",
 						Description: modelDescription(githubCopilotProvider, gpt56SolModel) + " at high reasoning",
 						Command:     piCopilotSolHighCommand,
+					},
+					{
+						Name:        "Claude Sub: Fable 5.1 ($10/$0.25/$50)",
+						Description: modelDescription(anthropicProvider, claudeFable51Model),
+						Command:     piClaudeFable51Command,
 					},
 					{
 						Name:        "Copilot: GPT 6 Astra Medium ($10/$1/$50)",

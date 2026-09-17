@@ -84,8 +84,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if pi.ReasoningEffort != "default" {
 		t.Fatalf("Pi reasoning effort = %q", pi.ReasoningEffort)
 	}
-	if got := len(pi.Choices); got != 15 {
-		t.Fatalf("Pi choices = %d, want 15", got)
+	if got := len(pi.Choices); got != 16 {
+		t.Fatalf("Pi choices = %d, want 16", got)
 	}
 	piChoices := []struct {
 		name        string
@@ -99,6 +99,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "github-copilot/gemini-3.8-flash", piCopilotGemini38Command},
 		{"Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "github-copilot/gpt-5.6-luna at max reasoning", piCopilotLunaMaxCommand},
 		{"Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "github-copilot/gpt-5.6-sol at high reasoning", piCopilotSolHighCommand},
+		{"Claude Sub: Fable 5.1 ($10/$0.25/$50)", "anthropic/claude-fable-5-1", piClaudeFable51Command},
 		{"Copilot: GPT 6 Astra Medium ($10/$1/$50)", "github-copilot/gpt-6-astra at medium reasoning", piCopilotAstraCommand},
 		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
 		{"Kimi K3 ($3/$0.3/$15)", "opencode-go/kimi-k3", piKimiK3Command},
