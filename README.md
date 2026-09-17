@@ -89,6 +89,9 @@ items:
       - name: Copilot: GPT 5.6 Sol High ($4/$0.4/$20)
         description: github-copilot/gpt-5.6-sol at high reasoning
         command: pi --model github-copilot/gpt-5.6-sol --thinking high
+      - name: 'Claude Sub: Fable 5.1 ($10/$0.25/$50)'
+        description: anthropic/claude-fable-5-1
+        command: pi --model anthropic/claude-fable-5-1
       - name: Copilot: GPT 6 Astra Medium ($10/$1/$50)
         description: github-copilot/gpt-6-astra at medium reasoning
         command: pi --model github-copilot/gpt-6-astra --thinking medium
@@ -211,8 +214,9 @@ at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag — plus Gemini 3.8 Flash via
 `pi --model antigravity/gemini-3.8-flash` and Copilot-hosted models (Gemini
 3.8 Flash, GPT 5.6 Luna at max reasoning, GPT 5.6 Sol at high reasoning, and
-GPT 6 Astra at medium reasoning) via `pi --model github-copilot/<model>`, followed
-by OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
+GPT 6 Astra at medium reasoning) via `pi --model github-copilot/<model>`, plus
+Claude Sub's Fable 5.1 via `pi --model anthropic/claude-fable-5-1`, followed by
+OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
 DeepSeek V4.1 Flash, and Muse Spark V1.3 Contributor) launched via
 `pi --model opencode-go/<model>`, plus OpenRouter's DeepSeek V4.1 Flash via
 `pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show per-million-token

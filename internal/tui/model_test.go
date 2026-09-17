@@ -159,9 +159,10 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		{"5", "Pi Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "pi --model github-copilot/gemini-3.8-flash"},
 		{"6", "Pi Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model github-copilot/gpt-5.6-luna --thinking max"},
 		{"7", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
-		{"8", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
-		{"9", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
-		{"a", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
+		{"8", "Pi Claude Sub: Fable 5.1 ($10/$0.25/$50)", "pi --model anthropic/claude-fable-5-1"},
+		{"9", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
+		{"a", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"b", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
 	}
 
 	for _, test := range tests {
@@ -253,13 +254,14 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"a", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
-		{"b", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
-		{"c", "Pi DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4-flash"},
-		{"d", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
-		{"e", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
-		{"f", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
-		{"A", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
+		{"a", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"b", "Pi Kimi K3 ($3/$0.3/$15)", "pi --model opencode-go/kimi-k3"},
+		{"c", "Pi Qwen 3.8 Max ($2/$0.25/$6)", "pi --model opencode-go/qwen3.8-max"},
+		{"d", "Pi DeepSeek V4 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4-flash"},
+		{"e", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
+		{"f", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"g", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
+		{"A", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
 	}
 
 	for _, test := range tests {
@@ -320,23 +322,29 @@ func TestChoiceMenuLabelsChoicesPastNineWithLetters(t *testing.T) {
 	if !strings.HasPrefix(lines[1], "1. GPT 6 Astra") {
 		t.Fatalf("first choice line = %q", lines[1])
 	}
-	if !strings.HasPrefix(lines[9], "9. GLM-5.3-Flash") {
+	if !strings.HasPrefix(lines[8], "8. Claude Sub: Fable 5.1") {
+		t.Fatalf("eighth choice line = %q", lines[8])
+	}
+	if !strings.HasPrefix(lines[9], "9. Copilot: GPT 6 Astra Medium") {
 		t.Fatalf("ninth choice line = %q", lines[9])
 	}
-	if !strings.HasPrefix(lines[10], "A. Kimi K3") {
+	if !strings.HasPrefix(lines[10], "A. GLM-5.3-Flash") {
 		t.Fatalf("tenth choice line = %q", lines[10])
 	}
-	if !strings.HasPrefix(lines[11], "B. Qwen 3.8 Max") {
+	if !strings.HasPrefix(lines[11], "B. Kimi K3") {
 		t.Fatalf("eleventh choice line = %q", lines[11])
 	}
-	if !strings.HasPrefix(lines[13], "D. DeepSeek V4.1 Flash") {
+	if !strings.HasPrefix(lines[13], "D. DeepSeek V4 Flash") {
 		t.Fatalf("thirteenth choice line = %q", lines[13])
 	}
-	if !strings.HasPrefix(lines[14], "E. Muse Spark V1.3 Contributor") {
+	if !strings.HasPrefix(lines[14], "E. DeepSeek V4.1 Flash") {
 		t.Fatalf("fourteenth choice line = %q", lines[14])
 	}
-	if !strings.HasPrefix(lines[15], "F. OpenRouter: DeepSeek V4.1 Flash") {
+	if !strings.HasPrefix(lines[15], "F. Muse Spark V1.3 Contributor") {
 		t.Fatalf("fifteenth choice line = %q", lines[15])
+	}
+	if !strings.HasPrefix(lines[16], "G. OpenRouter: DeepSeek V4.1 Flash") {
+		t.Fatalf("sixteenth choice line = %q", lines[16])
 	}
 }
 
