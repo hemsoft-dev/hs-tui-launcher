@@ -321,8 +321,32 @@ $request | pwsh -NoProfile -File (Get-Command jev.ps1).Source -StdinJson
 The response is JSON containing `answers`, the resolved model, and usage. That
 makes `jev.ps1` suitable for a chat model to call, inspect, and use in its next
 step. Use `-DryRun` to inspect the request without spending credits. The
-underlying endpoint is [`https://openrouter.ai/api/alpha/decisions`](https://openrouter.ai/api/alpha/decisions), not the
+underlying endpoint is [`https://openrouter.ai/api/alpha/decisions`](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request), not the
 normal chat-completions endpoint.
+
+### Pi skill and native tool
+
+The repository also contains the Pi integration sources:
+
+- `pi/consult-jev/SKILL.md` defines when a typed second opinion is useful and
+  keeps Jev advisory; it excludes deterministic work, permission decisions, and
+  human-approval gates.
+- `pi/jev-decide/index.ts` registers the native `jev_decide` tool. It resolves
+  OpenRouter authentication through Pi, redacts likely secrets, bounds the
+  request, supports cancellation, and validates answer keys, probabilities,
+  confidence, usage, and the resolved model before returning them.
+- `pi/jev-decide/jev-core.test.ts` can be run without spending credits:
+
+  ```powershell
+  node --experimental-strip-types --test pi/jev-decide/*.test.ts
+  ```
+
+Install the two source files under `~/.pi/agent/extensions/jev-decide/` and the
+skill under `~/.pi/agent/skills/consult-jev/` (or load them with `-e` and
+`--skill` for a one-off test). The native tool is advisory only: its answer
+cannot grant permissions, bypass tests or policy, or approve destructive or
+production actions. Start with shadow-mode comparisons against the parent
+agent's actual route.
 
 Run a no-cost Seedream request preview directly:
 
