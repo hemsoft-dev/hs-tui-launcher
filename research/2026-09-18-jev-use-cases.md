@@ -1,6 +1,6 @@
 # Research: Using TypeSafe Jev through OpenRouter Decisions API
 
-> **Evidence note (2026-09-18).** This brief was prepared from the repository's checked-in `README.md` and `scripts/jev.ps1`. Web fetching was unavailable in this research runtime, so OpenRouter/TypeSafe pages below are linked as primary-source targets but were not independently fetched here. Claims marked *inference* are design guidance, not statements verified from those pages.
+> **Evidence note (2026-09-18).** Local wrapper claims are based on the repository's checked-in `README.md` and `scripts/jev.ps1`. Web claims are based on the linked first-party OpenRouter and TypeSafe documentation fetched during this research. Community implementations are labeled as implementation references. Claims marked *inference* are design guidance, not statements verified from those pages.
 
 ## Summary
 TypeSafe Jev is exposed in this project as OpenRouter's Decisions API model `~typesafe/jev-latest`, rather than a normal chat-completions model. A request supplies a `state` and a non-empty object of named `questions`; each question has a type (`choice`, `noul`, or `score`), instructions, and type-specific criteria. The resulting JSON contains answers, resolved model information, and usage, making it suitable as a bounded decision tool that a chat model or coding agent calls before acting.
@@ -38,7 +38,7 @@ Use a stable state shape such as `task`, `facts`, `constraints`, `options`, `unk
 
 ## Findings
 
-1. **Claim:** The project calls `POST https://openrouter.ai/api/alpha/decisions` with model `~typesafe/jev-latest`, not the normal chat-completions endpoint. **Sources:** [project README](../README.md); [OpenRouter Decisions API request documentation](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request); [Decisions endpoint](https://openrouter.ai/api/alpha/decisions). **Support:** direct evidence from the repository; the external links are primary-source targets not fetched in this run. **Confidence:** high for the repository behavior, low for current external API details.
+1. **Claim:** The project calls `POST https://openrouter.ai/api/alpha/decisions` with model `~typesafe/jev-latest`, not the normal chat-completions endpoint. **Sources:** [project README](../README.md); [OpenRouter Decisions API request documentation](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request); [Decisions endpoint](https://openrouter.ai/api/alpha/decisions). **Support:** direct evidence from the repository and the fetched first-party endpoint documentation. **Confidence:** high.
 
 2. **Claim:** The minimal request shape is `{model, state, questions}`. `state` may be text or structured JSON; `questions` must be a non-empty JSON object keyed by question ID. The local wrapper rejects missing state/questions and arrays as the questions object. **Sources:** [scripts/jev.ps1](../scripts/jev.ps1). **Support:** direct evidence. **Confidence:** high.
 
@@ -58,7 +58,7 @@ Use a stable state shape such as `task`, `facts`, `constraints`, `options`, `unk
 
 8. **Claim:** The wrapper treats non-2xx responses, empty responses, invalid JSON, missing API key, and timeout/transport failures as errors; its output is JSON and errors are returned in an `{error:{message,...}}` envelope. **Sources:** [scripts/jev.ps1](../scripts/jev.ps1). **Support:** direct evidence. **Confidence:** high.
 
-9. **Claim:** Availability, latency, pricing, rate limits, retention, and exact Jev model behavior were not measurable from local materials. The endpoint is labeled `/api/alpha/decisions` in the repository, so production integrations should assume interface/model availability may change until verified against current OpenRouter and TypeSafe documentation. **Sources:** [Decisions endpoint](https://openrouter.ai/api/alpha/decisions); [OpenRouter model page target](https://openrouter.ai/typesafe/jev-latest). **Support:** direct evidence for the URL/alpha label; uncertainty is researcher assessment. **Confidence:** high for missing evidence, low for any unstated operational guarantee.
+9. **Claim:** Account-specific latency, rate limits, retention, privacy terms, and target-workflow accuracy still need local measurement. The endpoint is labeled `/api/alpha/decisions`, and `~typesafe/jev-latest` is a moving alias, so production integrations should assume interface and behavior may change. **Sources:** [Decisions endpoint](https://openrouter.ai/api/alpha/decisions); [OpenRouter Jev Latest page](https://openrouter.ai/~typesafe/jev-latest). **Support:** direct evidence for the endpoint/model-page labels and an operational recommendation. **Confidence:** high.
 
 ## Request and question design
 
@@ -155,15 +155,14 @@ Suggested flow:
 
 ## Contradictions
 
-None found in the local materials. External documentation and schema were not fetched in this runtime, so no cross-source contradiction check was possible.
+No contradiction was found between the repository wrapper, the fetched OpenRouter documentation, and the fetched TypeSafe documentation. The community examples use the same endpoint and request shape but remain independent implementations.
 
-## Missing evidence
+## Remaining evidence gaps
 
-- Current OpenRouter OpenAPI schema: exact request/response JSON schema, score representation, optional fields, and error codes.
-- Official TypeSafe Jev documentation/repository: model semantics, training/evaluation claims, context limits, and intended distinction from ordinary chat models.
-- Current pricing, latency, rate limits, availability/SLA, provider routing, retention, and privacy terms.
-- First-party announcement or technical material describing Jev's design and benchmark evidence.
-- Live validation that `~typesafe/jev-latest` accepts all examples above and the exact answer envelope.
+- Account-specific latency, rate limits, availability, retention, and privacy terms.
+- Accuracy and threshold calibration for our own routing, review, and verification datasets.
+- Behavior after the moving `~typesafe/jev-latest` alias resolves to a newer Jev release.
+- Whether the unmerged community Pi extension remains the best native-tool design if we later replace the shell adapter.
 
 ## Sources
 
@@ -171,9 +170,9 @@ None found in the local materials. External documentation and schema were not fe
 
 - [Repository README](../README.md) — checked-in invocation, deployment example, endpoint, model ID, and response description.
 - [Local Jev wrapper](../scripts/jev.ps1) — authoritative implementation of request normalization, question types, options, timeout, dry-run, and error handling.
-- [OpenRouter Decisions API request documentation](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request) — primary external API documentation target; not fetched in this run.
+- [OpenRouter Decisions API request documentation](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request) — fetched first-party request documentation.
 - [OpenRouter Decisions endpoint](https://openrouter.ai/api/alpha/decisions) — endpoint named by the repository.
-- [OpenRouter TypeSafe Jev model page](https://openrouter.ai/typesafe/jev-latest) — primary model-page target; not fetched in this run.
+- [OpenRouter TypeSafe Jev model page](https://openrouter.ai/~typesafe/jev-latest) — fetched first-party model page.
 
 ### Rejected/deprioritized
 
@@ -181,6 +180,6 @@ None found in the local materials. External documentation and schema were not fe
 
 ## Next steps
 
-1. Fetch the current OpenRouter OpenAPI schema and Decisions API docs; validate every request and response example.
-2. Fetch TypeSafe's official model page/repository and first-party announcement; add model semantics and any benchmark evidence.
-3. Run dry-run and one controlled live request, recording latency, usage, response shape, and account-visible cost before enabling agent automation.
+1. Run a small shadow-mode corpus from our own agent tasks and record Jev's answer, confidence, latency, cost, and the parent agent's eventual outcome.
+2. Calibrate thresholds separately for harmless routing, review-depth selection, and destructive/high-stakes gates.
+3. Decide whether to add a native Pi `jev_decide` tool after the shell-based skill proves useful.
