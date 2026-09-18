@@ -282,6 +282,48 @@ key or prompt.
 The other wrappers update OpenCode's
 persisted TUI model before launch so the selected model is active immediately.
 
+`jev.ps1` calls [OpenRouter's Decisions API](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request) with the special
+`~typesafe/jev-latest` model. It accepts a state plus a structured choice,
+yes/no, or score question and writes one JSON response to stdout. It reads
+`OPENROUTER_API_KEY` from the environment and never prints the key.
+
+A simple choice request looks like this:
+
+```powershell
+jev.ps1 `
+  -State 'Choose where to deploy this build.' `
+  -Question 'Which target is the better fit?' `
+  -Criteria @(
+    'mini=Prefer local network access',
+    'air=Prefer a portable macOS target'
+  )
+```
+
+For a chat model or another program, pass the complete request as JSON. This
+avoids shell quoting around larger state objects:
+
+```powershell
+$request = @{
+  model = '~typesafe/jev-latest'
+  state = @{ task = 'Choose a deployment target'; options = @('mini', 'air') }
+  questions = @{
+    target = @{
+      type = 'choice'
+      instructions = 'Choose the better target.'
+      criteria = @{ mini = 'Local network access'; air = 'Portable macOS target' }
+    }
+  }
+} | ConvertTo-Json -Depth 10
+
+$request | pwsh -NoProfile -File (Get-Command jev.ps1).Source -StdinJson
+```
+
+The response is JSON containing `answers`, the resolved model, and usage. That
+makes `jev.ps1` suitable for a chat model to call, inspect, and use in its next
+step. Use `-DryRun` to inspect the request without spending credits. The
+underlying endpoint is [`https://openrouter.ai/api/alpha/decisions`](https://openrouter.ai/api/alpha/decisions), not the
+normal chat-completions endpoint.
+
 Run a no-cost Seedream request preview directly:
 
 ```powershell
