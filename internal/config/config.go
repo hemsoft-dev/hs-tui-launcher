@@ -414,7 +414,7 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "Kimi K3 ($2.648/$0.303/$13.283)",
+						Name:        "Kimi K3 ($2.1/$0.23/$10.95)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
@@ -424,7 +424,7 @@ func Default() Config {
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM-5.3-Flash ($0.075/$0.015/$0.25)",
+						Name:        "GLM-5.3-Flash ($0.09/$0.018/$0.3)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashModel),
 						Command:     openrouterGLM53FlashCommand,
 					},

@@ -275,9 +275,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"Kimi K3 ($2.648/$0.303/$13.283)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Kimi K3 ($2.1/$0.23/$10.95)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "openrouter/qwen/qwen3.8-max-0902", openrouterQwen38Command},
-		{"GLM-5.3-Flash ($0.075/$0.015/$0.25)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
+		{"GLM-5.3-Flash ($0.09/$0.018/$0.3)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4 Flash 0731 ($0.06/$0.012/$0.12)", "openrouter/deepseek/deepseek-v4-flash-0731", openrouterDeepSeekCommand},
 		{"DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "openrouter/deepseek/deepseek-v4.1-flash", openrouterDeepSeekV41Command},
