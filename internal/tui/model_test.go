@@ -70,9 +70,9 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 
 	lines := model.choiceLines()
 	details := []string{
-		"($2.648/$0.303/$13.283)",
+		"($2.1/$0.23/$10.95)",
 		"($2/$0.25/$6)",
-		"($0.075/$0.015/$0.25)",
+		"($0.09/$0.018/$0.3)",
 		"(variable/variable)",
 		"($0.06/$0.012/$0.12)",
 		"($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
@@ -628,7 +628,7 @@ func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter Kimi K3 ($2.648/$0.303/$13.283)" {
+	if item.Name != "OpenRouter Kimi K3 ($2.1/$0.23/$10.95)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3` {
@@ -661,7 +661,7 @@ func TestSelectingOpenRouterGLM53FlashChoiceReturnsGLM53FlashCommand(t *testing.
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM-5.3-Flash ($0.075/$0.015/$0.25)" {
+	if item.Name != "OpenRouter GLM-5.3-Flash ($0.09/$0.018/$0.3)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.3-flash` {
