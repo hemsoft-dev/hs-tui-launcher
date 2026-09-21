@@ -12,7 +12,6 @@ items:
       - ai
       - pi
       - openai-codex
-      - antigravity
       - github-copilot
       - anthropic
       - cli
@@ -26,9 +25,6 @@ items:
       - name: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
         description: openai-codex/gpt-5.6-luna at max reasoning
         command: pi --model openai-codex/gpt-5.6-luna --thinking max
-      - name: Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)
-        description: antigravity/gemini-3.8-flash
-        command: pi --model antigravity/gemini-3.8-flash
       - name: 'Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)'
         description: github-copilot/gemini-3.8-flash
         command: pi --model github-copilot/gemini-3.8-flash

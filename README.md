@@ -77,9 +77,6 @@ items:
       - name: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
         description: openai-codex/gpt-5.6-luna at max reasoning
         command: pi --model openai-codex/gpt-5.6-luna --thinking max
-      - name: Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)
-        description: antigravity/gemini-3.8-flash
-        command: pi --model antigravity/gemini-3.8-flash
       - name: Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)
         description: github-copilot/gemini-3.8-flash
         command: pi --model github-copilot/gemini-3.8-flash
@@ -209,18 +206,18 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
-led by Codex-subscription models — GPT-6 Astra at medium reasoning, GPT-5.6 Sol
-at high reasoning, and GPT-5.6 Luna at max reasoning, launched via
-`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag — plus Gemini 3.8 Flash via
-`pi --model antigravity/gemini-3.8-flash` and Copilot-hosted models (Gemini
-3.8 Flash, GPT 5.6 Luna at max reasoning, GPT 5.6 Sol at high reasoning, and
-GPT 6 Astra at medium reasoning) via `pi --model github-copilot/<model>`, plus
-Claude Sub's Fable 5.1 via `pi --model anthropic/claude-fable-5-1`, followed by
-OpenCode Go models (GLM-5.3-Flash, Kimi K3, Qwen 3.8 Max, DeepSeek V4 Flash,
-DeepSeek V4.1 Flash, and Muse Spark V1.3 Contributor) launched via
-`pi --model opencode-go/<model>`, plus OpenRouter's DeepSeek V4.1 Flash via
-`pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show per-million-token
-prices as `($input/$cached input/$output)`.
+led by Codex-subscription models: GPT-6 Astra at medium reasoning, GPT-5.6 Sol
+at high reasoning, and GPT-5.6 Luna at max reasoning. These launch via
+`pi --model openai-codex/<model>` with an optional `--thinking <level>` flag.
+Copilot-hosted models include Gemini 3.8 Flash, GPT 5.6 Luna at max reasoning,
+GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning. They launch
+via `pi --model github-copilot/<model>`. Pi removed its Antigravity provider in
+version 0.71.0, so the launcher does not offer Antigravity as a Pi model route.
+The remaining choices are Claude Sub's Fable 5.1 via
+`pi --model anthropic/claude-fable-5-1`, OpenCode Go models via
+`pi --model opencode-go/<model>`, and OpenRouter's DeepSeek V4.1 Flash via
+`pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show
+per-million-token prices as `($input/$cached input/$output)`.
 GitHub Copilot opens a model submenu with GPT-5.5, GPT-5.6 Sol, Claude Opus
 5, and Copilot's server-routed Auto mode. Auto is launched through the
 supported Copilot CLI command `copilot --allow-all --model auto`; it is not

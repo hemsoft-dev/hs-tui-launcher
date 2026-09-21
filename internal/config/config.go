@@ -22,8 +22,6 @@ const (
 	claudeFable51Model              = "claude-fable-5-1"
 	copilotOpus5Model               = "claude-opus-5"
 	anthropicProvider               = "anthropic"
-	antigravityProvider             = "antigravity"
-	antigravityGemini38FlashModel   = "gemini-3.8-flash"
 	githubCopilotProvider           = "github-copilot"
 	copilotGemini38FlashModel       = "gemini-3.8-flash"
 	selectModel                     = "select model"
@@ -100,7 +98,6 @@ var (
 	piDeepSeekV41Command           = piCommand(opencodeDeepSeekV41FlashModel)
 	piMuseSpark13Command           = piCommand(opencodeMuseSpark13Model)
 	piOpenRouterDeepSeekV41Command = piModelCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
-	piGemini38FlashCommand         = piModelCommand(antigravityProvider, antigravityGemini38FlashModel)
 	piCodexAstraCommand            = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
 	piCodexSolHighCommand          = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
 	piCodexLunaMaxCommand          = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
@@ -183,7 +180,7 @@ func Default() Config {
 				Description:     "Open the Pi CLI",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai-codex", "antigravity", "github-copilot", "anthropic", "cli"},
+				Tags:            []string{"ai", "pi", "openai-codex", "github-copilot", "anthropic", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "GPT 6 Astra ($10/$1/$50)",
@@ -199,11 +196,6 @@ func Default() Config {
 						Name:        "GPT 5.6 Luna Max ($0.2/$0.02/$1.2)",
 						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
 						Command:     piCodexLunaMaxCommand,
-					},
-					{
-						Name:        "Gemini 3.8 Flash (antigravity) ($0.1/$0.025/$0.4)",
-						Description: modelDescription(antigravityProvider, antigravityGemini38FlashModel),
-						Command:     piGemini38FlashCommand,
 					},
 					{
 						Name:        "Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)",
