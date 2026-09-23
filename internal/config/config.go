@@ -15,13 +15,13 @@ const (
 	defaultConfigFile = ".hs-tui-launcher.yaml"
 
 	gpt6AstraModel                  = "gpt-6-astra"
+	gpt6SolModel                    = "gpt-6-sol"
+	gpt6LunaModel                   = "gpt-6-luna"
 	gpt56SolModel                   = "gpt-5.6-sol"
 	gpt56LunaModel                  = "gpt-5.6-luna"
 	copilotGPT55Model               = "gpt-5.5"
 	claudeModel                     = "claude-opus-4.8"
-	claudeFable51Model              = "claude-fable-5-1"
 	copilotOpus5Model               = "claude-opus-5"
-	anthropicProvider               = "anthropic"
 	githubCopilotProvider           = "github-copilot"
 	copilotGemini38FlashModel       = "gemini-3.8-flash"
 	selectModel                     = "select model"
@@ -43,13 +43,19 @@ const (
 	ollamaQwen3827BModel            = "qwen3.8:27b"
 	opencodeQwen38Model             = "qwen3.8-max"
 	opencodeGLM53FlashModel         = "glm-5.3-flash"
-	opencodeDeepSeekV4FlashModel    = "deepseek-v4-flash"
 	opencodeDeepSeekV41FlashModel   = "deepseek-v4.1-flash"
 	opencodeMuseSpark13Model        = "muse-spark-1.3-contributor"
+	mimoV26FlashModel               = "mimo-v2.6-flash"
+	mimoV26ProModel                 = "mimo-v2.6-pro"
+	openrouterQwenOmniFlashModel    = "qwen/qwen3.8-omni-flash"
+	openrouterBonsai227BModel       = "prism-ml/ternary-bonsai-2-27b"
+	openrouterGLM53FlashXModel      = "z-ai/glm-5.3-flashx"
 	openrouterKimiK3                = "moonshotai/kimi-k3"
-	openrouterDeepSeekV4FlashModel  = "deepseek/deepseek-v4-flash-0731"
 	openrouterDeepSeekV41FlashModel = "deepseek/deepseek-v4.1-flash"
 	openrouterMuseSpark13Model      = "meta/muse-spark-1.3"
+	openrouterMuseContributorModel  = "meta/muse-spark-1.3-contributor"
+	openrouterOpus55Model           = "anthropic/claude-opus-5.5"
+	openrouterGemini38Model         = "google/gemini-3.8-flash"
 	openrouterMuseSpark12Model      = "meta/muse-spark-1.2"
 	openrouterSeedream50ProModel    = "bytedance-seed/seedream-5-0-pro"
 	qwen38MaxModel                  = "qwen/qwen3.8-max-0902"
@@ -74,46 +80,64 @@ var (
 	codexLunaPreset        = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: defaultServiceTier}
 	codexLunaFastPreset    = modelPreset{Model: gpt56LunaModel, ReasoningEffort: mediumReasoning, ServiceTier: fastServiceTier}
 
-	codexFreshCommand              = codexCommand("", codexPreset)
-	codexResumeCommand             = codexCommand("resume --last", codexPreset)
-	codexResumePickerCommand       = codexCommand("resume", codexPreset)
-	codexSolHighCommand            = codexCommand("", codexSolHighPreset)
-	codexSolHighFastCommand        = codexCommand("", codexSolHighFastPreset)
-	codexLunaCommand               = codexCommand("", codexLunaPreset)
-	codexLunaFastCommand           = codexCommand("", codexLunaFastPreset)
-	copilotGPT55Command            = copilotCommand(copilotGPT55Preset)
-	copilotGPT56SolCommand         = copilotCommand(copilotGPT56SolPreset)
-	copilotOpus5Command            = copilotCommand(copilotOpus5Preset)
-	copilotAutoCommand             = "copilot --allow-all --model auto"
-	opencodeKimiK3Command          = openCodeCommand(opencodeGoProvider, kimiK3Model)
-	opencodeQwen38Command          = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
-	opencodeGLM53FlashCommand      = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
-	opencodeDeepSeekCommand        = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV4FlashModel)
-	opencodeDeepSeekV41Command     = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV41FlashModel)
-	opencodeMuseSpark13Command     = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
-	piGLM53FlashCommand            = piCommand(opencodeGLM53FlashModel)
-	piKimiK3Command                = piCommand(kimiK3Model)
-	piQwen38Command                = piCommand(opencodeQwen38Model)
-	piDeepSeekCommand              = piCommand(opencodeDeepSeekV4FlashModel)
-	piDeepSeekV41Command           = piCommand(opencodeDeepSeekV41FlashModel)
-	piMuseSpark13Command           = piCommand(opencodeMuseSpark13Model)
-	piOpenRouterDeepSeekV41Command = piModelCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
-	piCodexAstraCommand            = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
-	piCodexSolHighCommand          = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
-	piCodexLunaMaxCommand          = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
-	piCopilotGemini38Command       = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
-	piCopilotLunaMaxCommand        = piThinkingCommand(githubCopilotProvider, gpt56LunaModel, maxReasoning)
-	piCopilotSolHighCommand        = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
-	piClaudeFable51Command         = piModelCommand(anthropicProvider, claudeFable51Model)
-	piCopilotAstraCommand          = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
-	openrouterKimiK3Command        = openCodeCommand(openrouterProvider, openrouterKimiK3)
-	openrouterQwen38Command        = openCodeCommand(openrouterProvider, qwen38MaxModel)
-	openrouterGLM53FlashCommand    = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
-	openrouterFusionCommand        = openCodeCommand(openrouterProvider, fusionModel)
-	openrouterDeepSeekCommand      = openCodeCommand(openrouterProvider, openrouterDeepSeekV4FlashModel)
-	openrouterDeepSeekV41Command   = openCodeCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
-	openrouterMuseSpark13Command   = openCodeCommand(openrouterProvider, openrouterMuseSpark13Model)
-	openrouterMuseSpark12Command   = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
+	codexFreshCommand                = codexCommand("", codexPreset)
+	codexResumeCommand               = codexCommand("resume --last", codexPreset)
+	codexResumePickerCommand         = codexCommand("resume", codexPreset)
+	codexSolHighCommand              = codexCommand("", codexSolHighPreset)
+	codexSolHighFastCommand          = codexCommand("", codexSolHighFastPreset)
+	codexLunaCommand                 = codexCommand("", codexLunaPreset)
+	codexLunaFastCommand             = codexCommand("", codexLunaFastPreset)
+	copilotGPT55Command              = copilotCommand(copilotGPT55Preset)
+	copilotGPT56SolCommand           = copilotCommand(copilotGPT56SolPreset)
+	copilotOpus5Command              = copilotCommand(copilotOpus5Preset)
+	copilotAutoCommand               = "copilot --allow-all --model auto"
+	opencodeKimiK3Command            = openCodeCommand(opencodeGoProvider, kimiK3Model)
+	opencodeQwen38Command            = openCodeCommand(opencodeGoProvider, opencodeQwen38Model)
+	opencodeGLM53FlashCommand        = openCodeCommand(opencodeGoProvider, opencodeGLM53FlashModel)
+	opencodeDeepSeekV41Command       = openCodeCommand(opencodeGoProvider, opencodeDeepSeekV41FlashModel)
+	opencodeMuseSpark13Command       = openCodeCommand(opencodeGoProvider, opencodeMuseSpark13Model)
+	opencodeMimoV26FlashCommand      = openCodeCommand(opencodeGoProvider, mimoV26FlashModel)
+	opencodeMimoV26ProCommand        = openCodeCommand(opencodeGoProvider, mimoV26ProModel)
+	piGLM53FlashCommand              = piCommand(opencodeGLM53FlashModel)
+	piDeepSeekV41Command             = piCommand(opencodeDeepSeekV41FlashModel)
+	piMuseSpark13Command             = piCommand(opencodeMuseSpark13Model)
+	piOpenRouterDeepSeekV41Command   = piModelCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
+	piGoMimoV26FlashCommand          = piModelCommand(opencodeGoProvider, mimoV26FlashModel)
+	piGoMimoV26ProCommand            = piModelCommand(opencodeGoProvider, mimoV26ProModel)
+	piRouterMimoV26FlashCommand      = piModelCommand(openrouterProvider, "xiaomi/"+mimoV26FlashModel)
+	piRouterMimoV26ProCommand        = piModelCommand(openrouterProvider, "xiaomi/"+mimoV26ProModel)
+	piRouterQwenOmniFlashCommand     = piModelCommand(openrouterProvider, openrouterQwenOmniFlashModel)
+	piRouterBonsai227BCommand        = piModelCommand(openrouterProvider, openrouterBonsai227BModel)
+	piRouterGLM53FlashXCommand       = piModelCommand(openrouterProvider, openrouterGLM53FlashXModel)
+	piCodexAstraCommand              = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
+	piCodexSol6HighCommand           = piThinkingCommand(openaiCodexProvider, gpt6SolModel, highReasoning)
+	piCodexLuna6MaxCommand           = piThinkingCommand(openaiCodexProvider, gpt6LunaModel, maxReasoning)
+	piCodexSolHighCommand            = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
+	piCodexLunaMaxCommand            = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
+	piCopilotGemini38Command         = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
+	piCopilotLunaMaxCommand          = piThinkingCommand(githubCopilotProvider, gpt56LunaModel, maxReasoning)
+	piCopilotSolHighCommand          = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
+	piCopilotAstraCommand            = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
+	openrouterAstraCommand           = openCodeCommand(openrouterProvider, "openai/"+gpt6AstraModel)
+	openrouterSol6Command            = openCodeCommand(openrouterProvider, "openai/"+gpt6SolModel)
+	openrouterLuna6Command           = openCodeCommand(openrouterProvider, "openai/"+gpt6LunaModel)
+	openrouterSol56Command           = openCodeCommand(openrouterProvider, "openai/"+gpt56SolModel)
+	openrouterLuna56Command          = openCodeCommand(openrouterProvider, "openai/"+gpt56LunaModel)
+	openrouterGemini38Command        = openCodeCommand(openrouterProvider, openrouterGemini38Model)
+	openrouterOpus55Command          = openCodeCommand(openrouterProvider, openrouterOpus55Model)
+	openrouterMuseContributorCommand = openCodeCommand(openrouterProvider, openrouterMuseContributorModel)
+	openrouterKimiK3Command          = openCodeCommand(openrouterProvider, openrouterKimiK3)
+	openrouterQwen38Command          = openCodeCommand(openrouterProvider, qwen38MaxModel)
+	openrouterGLM53FlashCommand      = openCodeCommand(openrouterProvider, openrouterGLM53FlashModel)
+	openrouterFusionCommand          = openCodeCommand(openrouterProvider, fusionModel)
+	openrouterDeepSeekV41Command     = openCodeCommand(openrouterProvider, openrouterDeepSeekV41FlashModel)
+	openrouterMuseSpark13Command     = openCodeCommand(openrouterProvider, openrouterMuseSpark13Model)
+	openrouterMuseSpark12Command     = openCodeCommand(openrouterProvider, openrouterMuseSpark12Model)
+	openrouterMimoV26FlashCommand    = openCodeCommand(openrouterProvider, "xiaomi/"+mimoV26FlashModel)
+	openrouterMimoV26ProCommand      = openCodeCommand(openrouterProvider, "xiaomi/"+mimoV26ProModel)
+	openrouterQwenOmniFlashCommand   = openCodeCommand(openrouterProvider, openrouterQwenOmniFlashModel)
+	openrouterBonsai227BCommand      = openCodeCommand(openrouterProvider, openrouterBonsai227BModel)
+	openrouterGLM53FlashXCommand     = openCodeCommand(openrouterProvider, openrouterGLM53FlashXModel)
 )
 
 type Config struct {
@@ -180,12 +204,22 @@ func Default() Config {
 				Description:     "Open the Pi CLI",
 				Model:           modelMenuPreset.Model,
 				ReasoningEffort: modelMenuPreset.ReasoningEffort,
-				Tags:            []string{"ai", "pi", "openai-codex", "github-copilot", "anthropic", "cli"},
+				Tags:            []string{"ai", "pi", "openai-codex", "github-copilot", "cli"},
 				Choices: []LaunchChoice{
 					{
 						Name:        "GPT 6 Astra ($10/$1/$50)",
 						Description: modelDescription(openaiCodexProvider, gpt6AstraModel) + " at medium reasoning",
 						Command:     piCodexAstraCommand,
+					},
+					{
+						Name:        "GPT 6 Sol High ($2/$0.2/$10)",
+						Description: modelDescription(openaiCodexProvider, gpt6SolModel) + " at high reasoning",
+						Command:     piCodexSol6HighCommand,
+					},
+					{
+						Name:        "GPT 6 Luna Max ($0.1/$0.01/$0.5)",
+						Description: modelDescription(openaiCodexProvider, gpt6LunaModel) + " at max reasoning",
+						Command:     piCodexLuna6MaxCommand,
 					},
 					{
 						Name:        "GPT 5.6 Sol High ($5/$0.5/$30)",
@@ -213,11 +247,6 @@ func Default() Config {
 						Command:     piCopilotSolHighCommand,
 					},
 					{
-						Name:        "Claude Sub: Fable 5.1 ($10/$0.25/$50)",
-						Description: modelDescription(anthropicProvider, claudeFable51Model),
-						Command:     piClaudeFable51Command,
-					},
-					{
 						Name:        "Copilot: GPT 6 Astra Medium ($10/$1/$50)",
 						Description: modelDescription(githubCopilotProvider, gpt6AstraModel) + " at medium reasoning",
 						Command:     piCopilotAstraCommand,
@@ -226,21 +255,6 @@ func Default() Config {
 						Name:        "GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)",
 						Description: modelDescription(opencodeGoProvider, opencodeGLM53FlashModel),
 						Command:     piGLM53FlashCommand,
-					},
-					{
-						Name:        "Kimi K3 ($3/$0.3/$15)",
-						Description: modelDescription(opencodeGoProvider, kimiK3Model),
-						Command:     piKimiK3Command,
-					},
-					{
-						Name:        "Qwen 3.8 Max ($2/$0.25/$6)",
-						Description: modelDescription(opencodeGoProvider, opencodeQwen38Model),
-						Command:     piQwen38Command,
-					},
-					{
-						Name:        "DeepSeek V4 Flash ($0.15/$0.003/$0.6)",
-						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
-						Command:     piDeepSeekCommand,
 					},
 					{
 						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
@@ -256,6 +270,41 @@ func Default() Config {
 						Name:        "OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
 						Description: modelDescription(openrouterProvider, openrouterDeepSeekV41FlashModel),
 						Command:     piOpenRouterDeepSeekV41Command,
+					},
+					{
+						Name:        "MiMo V2.6 Flash ($0.14/$0.0028/$0.28)",
+						Description: modelDescription(opencodeGoProvider, mimoV26FlashModel),
+						Command:     piGoMimoV26FlashCommand,
+					},
+					{
+						Name:        "MiMo V2.6 Pro ($0.435/$0.003625/$0.87)",
+						Description: modelDescription(opencodeGoProvider, mimoV26ProModel),
+						Command:     piGoMimoV26ProCommand,
+					},
+					{
+						Name:        "OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)",
+						Description: modelDescription(openrouterProvider, "xiaomi/"+mimoV26FlashModel),
+						Command:     piRouterMimoV26FlashCommand,
+					},
+					{
+						Name:        "OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)",
+						Description: modelDescription(openrouterProvider, "xiaomi/"+mimoV26ProModel),
+						Command:     piRouterMimoV26ProCommand,
+					},
+					{
+						Name:        "OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)",
+						Description: modelDescription(openrouterProvider, openrouterQwenOmniFlashModel),
+						Command:     piRouterQwenOmniFlashCommand,
+					},
+					{
+						Name:        "OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)",
+						Description: modelDescription(openrouterProvider, openrouterBonsai227BModel),
+						Command:     piRouterBonsai227BCommand,
+					},
+					{
+						Name:        "OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)",
+						Description: modelDescription(openrouterProvider, openrouterGLM53FlashXModel),
+						Command:     piRouterGLM53FlashXCommand,
 					},
 				},
 			},
@@ -371,11 +420,6 @@ func Default() Config {
 						Command:     opencodeQwen38Command,
 					},
 					{
-						Name:        "DeepSeek V4 Flash ($0.15/$0.003/$0.6)",
-						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV4FlashModel),
-						Command:     opencodeDeepSeekCommand,
-					},
-					{
 						Name:        "DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)",
 						Description: modelDescription(opencodeGoProvider, opencodeDeepSeekV41FlashModel),
 						Command:     opencodeDeepSeekV41Command,
@@ -395,6 +439,16 @@ func Default() Config {
 						Description: "amd-ollama/" + ollamaQwen3827BModel,
 						Command:     amdOllamaQwen3827BCommand,
 					},
+					{
+						Name:        "MiMo V2.6 Flash ($0.14/$0.0028/$0.28)",
+						Description: modelDescription(opencodeGoProvider, mimoV26FlashModel),
+						Command:     opencodeMimoV26FlashCommand,
+					},
+					{
+						Name:        "MiMo V2.6 Pro ($0.435/$0.003625/$0.87)",
+						Description: modelDescription(opencodeGoProvider, mimoV26ProModel),
+						Command:     opencodeMimoV26ProCommand,
+					},
 				},
 			},
 			{
@@ -406,7 +460,42 @@ func Default() Config {
 				Tags:            []string{"ai", "openrouter", "opencode", "cli"},
 				Choices: []LaunchChoice{
 					{
-						Name:        "Kimi K3 ($2.1/$0.23/$10.95)",
+						Name:        "GPT 6 Astra ($10/$1/$50)",
+						Description: modelDescription(openrouterProvider, "openai/"+gpt6AstraModel),
+						Command:     openrouterAstraCommand,
+					},
+					{
+						Name:        "GPT 6 Sol ($2/$0.2/$10)",
+						Description: modelDescription(openrouterProvider, "openai/"+gpt6SolModel),
+						Command:     openrouterSol6Command,
+					},
+					{
+						Name:        "GPT 6 Luna ($0.1/$0.01/$0.5)",
+						Description: modelDescription(openrouterProvider, "openai/"+gpt6LunaModel),
+						Command:     openrouterLuna6Command,
+					},
+					{
+						Name:        "GPT 5.6 Sol ($2/$0.2/$10)",
+						Description: modelDescription(openrouterProvider, "openai/"+gpt56SolModel),
+						Command:     openrouterSol56Command,
+					},
+					{
+						Name:        "GPT 5.6 Luna ($0.2/$0.02/$1.2)",
+						Description: modelDescription(openrouterProvider, "openai/"+gpt56LunaModel),
+						Command:     openrouterLuna56Command,
+					},
+					{
+						Name:        "Gemini 3.8 Flash ($0.75/$0.075/$3.75)",
+						Description: modelDescription(openrouterProvider, openrouterGemini38Model),
+						Command:     openrouterGemini38Command,
+					},
+					{
+						Name:        "Claude Opus 5.5 ($4/$0.2/$20)",
+						Description: modelDescription(openrouterProvider, openrouterOpus55Model),
+						Command:     openrouterOpus55Command,
+					},
+					{
+						Name:        "Kimi K3 ($3/$0.3/$15)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
@@ -416,7 +505,7 @@ func Default() Config {
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM-5.3-Flash ($0.09/$0.018/$0.3)",
+						Name:        "GLM-5.3-Flash ($0.15/$0.05/$0.5)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashModel),
 						Command:     openrouterGLM53FlashCommand,
 					},
@@ -424,11 +513,6 @@ func Default() Config {
 						Name:        "Fusion (variable/variable)",
 						Description: modelDescription(openrouterProvider, fusionModel),
 						Command:     openrouterFusionCommand,
-					},
-					{
-						Name:        "DeepSeek V4 Flash 0731 ($0.06/$0.012/$0.12)",
-						Description: modelDescription(openrouterProvider, openrouterDeepSeekV4FlashModel),
-						Command:     openrouterDeepSeekCommand,
 					},
 					{
 						Name:        "DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
@@ -441,9 +525,39 @@ func Default() Config {
 						Command:     openrouterMuseSpark13Command,
 					},
 					{
+						Name:        "Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)",
+						Description: modelDescription(openrouterProvider, openrouterMuseContributorModel),
+						Command:     openrouterMuseContributorCommand,
+					},
+					{
 						Name:        "Muse Spark V1.2 ($1.25/$0.15/$4.25)",
 						Description: modelDescription(openrouterProvider, openrouterMuseSpark12Model),
 						Command:     openrouterMuseSpark12Command,
+					},
+					{
+						Name:        "MiMo V2.6 Flash ($0.14/$0.0028/$0.28)",
+						Description: modelDescription(openrouterProvider, "xiaomi/"+mimoV26FlashModel),
+						Command:     openrouterMimoV26FlashCommand,
+					},
+					{
+						Name:        "MiMo V2.6 Pro ($0.435/$0.0036/$0.87)",
+						Description: modelDescription(openrouterProvider, "xiaomi/"+mimoV26ProModel),
+						Command:     openrouterMimoV26ProCommand,
+					},
+					{
+						Name:        "Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)",
+						Description: modelDescription(openrouterProvider, openrouterQwenOmniFlashModel),
+						Command:     openrouterQwenOmniFlashCommand,
+					},
+					{
+						Name:        "Ternary Bonsai 2 27B ($0.075/n/a/$0.5)",
+						Description: modelDescription(openrouterProvider, openrouterBonsai227BModel),
+						Command:     openrouterBonsai227BCommand,
+					},
+					{
+						Name:        "GLM-5.3-FlashX ($0.37/$0.075/$1.25)",
+						Description: modelDescription(openrouterProvider, openrouterGLM53FlashXModel),
+						Command:     openrouterGLM53FlashXCommand,
 					},
 					{
 						Name:        "Seedream 5.0 Pro ($0.045 1K/$0.09 2K)",

@@ -6,7 +6,7 @@ Terminal launcher overlay for local AI command-line tools.
 
 ## What it does
 
-`hs-tui-launcher` opens a compact numbered menu for Pi, Codex, Antigravity,
+`hs-tui-launcher` opens a compact shortcut menu for Pi, Codex, Antigravity,
 GitHub Copilot, Moonshot AI, OpenCode, OpenRouter, Ollama, Cursor, and
 Claude Code. Each row shows the model and reasoning effort. The platform
 wrapper exits the Go picker before handing off to the selected CLI in the
@@ -70,7 +70,13 @@ items:
     choices:
       - name: GPT 6 Astra ($10/$1/$50)
         description: openai-codex/gpt-6-astra
-        command: pi --model openai-codex/gpt-6-astra
+        command: pi --model openai-codex/gpt-6-astra --thinking medium
+      - name: GPT 6 Sol High ($2/$0.2/$10)
+        description: openai-codex/gpt-6-sol at high reasoning
+        command: pi --model openai-codex/gpt-6-sol --thinking high
+      - name: GPT 6 Luna Max ($0.1/$0.01/$0.5)
+        description: openai-codex/gpt-6-luna at max reasoning
+        command: pi --model openai-codex/gpt-6-luna --thinking max
       - name: GPT 5.6 Sol High ($5/$0.5/$30)
         description: openai-codex/gpt-5.6-sol at high reasoning
         command: pi --model openai-codex/gpt-5.6-sol --thinking high
@@ -86,24 +92,12 @@ items:
       - name: Copilot: GPT 5.6 Sol High ($4/$0.4/$20)
         description: github-copilot/gpt-5.6-sol at high reasoning
         command: pi --model github-copilot/gpt-5.6-sol --thinking high
-      - name: 'Claude Sub: Fable 5.1 ($10/$0.25/$50)'
-        description: anthropic/claude-fable-5-1
-        command: pi --model anthropic/claude-fable-5-1
       - name: Copilot: GPT 6 Astra Medium ($10/$1/$50)
         description: github-copilot/gpt-6-astra at medium reasoning
         command: pi --model github-copilot/gpt-6-astra --thinking medium
       - name: GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)
         description: opencode-go/glm-5.3-flash
         command: pi --model opencode-go/glm-5.3-flash
-      - name: Kimi K3 ($3/$0.3/$15)
-        description: opencode-go/kimi-k3
-        command: pi --model opencode-go/kimi-k3
-      - name: Qwen 3.8 Max ($2/$0.25/$6)
-        description: opencode-go/qwen3.8-max
-        command: pi --model opencode-go/qwen3.8-max
-      - name: DeepSeek V4 Flash ($0.15/$0.003/$0.6)
-        description: opencode-go/deepseek-v4-flash
-        command: pi --model opencode-go/deepseek-v4-flash
       - name: DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)
         description: opencode-go/deepseek-v4.1-flash
         command: pi --model opencode-go/deepseek-v4.1-flash
@@ -113,6 +107,27 @@ items:
       - name: 'OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)'
         description: openrouter/deepseek/deepseek-v4.1-flash
         command: pi --model openrouter/deepseek/deepseek-v4.1-flash
+      - name: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)
+        description: opencode-go/mimo-v2.6-flash
+        command: pi --model opencode-go/mimo-v2.6-flash
+      - name: MiMo V2.6 Pro ($0.435/$0.003625/$0.87)
+        description: opencode-go/mimo-v2.6-pro
+        command: pi --model opencode-go/mimo-v2.6-pro
+      - name: 'OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)'
+        description: openrouter/xiaomi/mimo-v2.6-flash
+        command: pi --model openrouter/xiaomi/mimo-v2.6-flash
+      - name: 'OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)'
+        description: openrouter/xiaomi/mimo-v2.6-pro
+        command: pi --model openrouter/xiaomi/mimo-v2.6-pro
+      - name: 'OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)'
+        description: openrouter/qwen/qwen3.8-omni-flash
+        command: pi --model openrouter/qwen/qwen3.8-omni-flash
+      - name: 'OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)'
+        description: openrouter/prism-ml/ternary-bonsai-2-27b
+        command: pi --model openrouter/prism-ml/ternary-bonsai-2-27b
+      - name: 'OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)'
+        description: openrouter/z-ai/glm-5.3-flashx
+        command: pi --model openrouter/z-ai/glm-5.3-flashx
   - name: Codex
     description: Open the Codex CLI
     model: gpt-6-astra
@@ -206,18 +221,19 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
-led by Codex-subscription models: GPT-6 Astra at medium reasoning, GPT-5.6 Sol
-at high reasoning, and GPT-5.6 Luna at max reasoning. These launch via
+led by Codex-subscription models: GPT-6 Astra at medium reasoning, GPT-6 Sol
+at high reasoning, GPT-6 Luna at max reasoning, and the GPT-5.6 variants.
+These launch via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag.
 Copilot-hosted models include Gemini 3.8 Flash, GPT 5.6 Luna at max reasoning,
 GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning. They launch
 via `pi --model github-copilot/<model>`. Pi removed its Antigravity provider in
 version 0.71.0, so the launcher does not offer Antigravity as a Pi model route.
-The remaining choices are Claude Sub's Fable 5.1 via
-`pi --model anthropic/claude-fable-5-1`, OpenCode Go models via
-`pi --model opencode-go/<model>`, and OpenRouter's DeepSeek V4.1 Flash via
-`pi --model openrouter/deepseek/deepseek-v4.1-flash`. Model choice labels show
-per-million-token prices as `($input/$cached input/$output)`.
+The remaining choices use OpenCode Go or OpenRouter through
+`pi --model <provider>/<model>`. MiMo V2.6 Flash and Pro each have routes through
+both providers; Qwen 3.8 Omni Flash, Ternary Bonsai 2 27B, and GLM-5.3-FlashX
+use OpenRouter. Model choice labels show per-million-token prices as
+`($input/$cached input/$output)`.
 GitHub Copilot opens a model submenu with GPT-5.5, GPT-5.6 Sol, Claude Opus
 5, and Copilot's server-routed Auto mode. Auto is launched through the
 supported Copilot CLI command `copilot --allow-all --model auto`; it is not
@@ -241,8 +257,8 @@ and charges the associated Moonshot API credits. It reads the API key from
 does not write the key or modify the global OpenCode configuration.
 OpenCode opens a model submenu led by GLM-5.3-Flash on OpenCode Go
 (`opencode-go/glm-5.3-flash`), which uses twice the normal OpenCode Go allowance,
-followed by the other OpenCode Go choices, including DeepSeek V4.1 Flash and
-Muse Spark V1.3 Contributor,
+followed by the other OpenCode Go choices, including DeepSeek V4.1 Flash,
+Muse Spark V1.3 Contributor, MiMo V2.6 Flash, and MiMo V2.6 Pro,
 and two machine-specific choices: Qwen 3.8 27B on `home` and Qwen 3.8 27B on
 `amd`.
 The `home` choice uses the local Ollama server with a 131,072-token limit. The
@@ -251,18 +267,23 @@ The `home` choice uses the local Ollama server with a 131,072-token limit. The
 before starting OpenCode and does not depend on SSH or Lemonade. Both OpenCode
 launchers set Qwen's reasoning effort to `medium`; the Copilot-to-AMD launcher
 uses the same default.
-OpenRouter opens a separate submenu ordered as Kimi K3, Qwen 3.8 Max,
-GLM-5.3-Flash, Fusion, DeepSeek V4 Flash 0731, DeepSeek V4.1 Flash,
-Muse Spark V1.3, Muse Spark V1.2, and Seedream 5.0 Pro. DeepSeek V4.1 Flash
-has weekday peak windows, so its displayed rate is a base-to-peak range.
+OpenRouter opens a separate submenu with OpenRouter equivalents for every model
+in the Pi menu, plus Kimi K3, Qwen 3.8 Max, Claude Opus 5.5, Fusion, Muse
+Spark V1.3 and V1.2, MiMo V2.6 Flash and Pro, Qwen 3.8 Omni Flash, Ternary
+Bonsai 2 27B, GLM-5.3-FlashX, and Seedream 5.0 Pro. MiMo Flash and Pro are
+available here and in OpenCode Go. The provider variants in Pi map to one
+OpenRouter entry per model. DeepSeek V4.1 Flash has weekday peak windows, so its displayed rate
+is a base-to-peak range.
 Ollama opens a local-model submenu through OpenCode. Its first choice is
 Qwen 3.8 27B, using the installed `qwen3.8:27b` model at
 `http://localhost:11434/v1`. The OpenCode submenu exposes the same local choice
 so it can be selected beside the AMD-hosted copy. These wrappers inject provider
 definitions for one process and do not modify the global OpenCode configuration.
 Parenthesized prices list current catalog input/cached-input/output rates per
-million tokens. The OpenCode Go GLM-5.3-Flash choice shows its usage-equivalent
-half-rate because that model consumes twice the normal allowance. OpenRouter can
+million tokens at the base tier. `n/a` means the catalog does not publish a
+cached-input rate. OpenRouter rates were checked against the
+[OpenRouter model catalog](https://openrouter.ai/api/v1/models) on September 22, 2026.
+The OpenCode Go GLM-5.3-Flash choice shows its usage-equivalent half-rate because that model consumes twice the normal allowance. OpenRouter can
 apply discounts, scheduled rates, and provider-specific routing, so actual
 charges may differ. Fusion is variable because it
 bills the underlying panel and judge calls. Seedream uses per-image pricing:
@@ -367,9 +388,10 @@ The `-Prompt` argument also accepts a text-file path:
 
 ## Keys
 
-- `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`: launch that numbered target
-- `a`–`z` (case-insensitive): in a choice submenu, launch the tenth choice and
-  beyond (`a` picks the 10th choice, `b` the 11th, and so on)
-- `↑`/`↓` or `j`/`k` + `enter`: pick any visible target with the cursor
+- `1`–`9`: launch the corresponding item in the current menu
+- `a`–`z` (case-insensitive): launch the tenth item and beyond in the main menu
+  or a choice submenu (`a` picks the 10th, `b` the 11th, and so on)
+- `↑`/`↓` or `j`/`k` + `enter`: pick a target with the cursor; moving past
+  either end wraps to the other
 - `q`, `esc`, `ctrl+c`: exit (`esc` returns from a choice submenu to the main
   menu first)
