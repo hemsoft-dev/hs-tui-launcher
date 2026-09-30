@@ -71,18 +71,12 @@ items:
       - name: GPT 6 Astra ($10/$1/$50)
         description: openai-codex/gpt-6-astra
         command: pi --model openai-codex/gpt-6-astra --thinking medium
-      - name: GPT 6 Sol High ($2/$0.2/$10)
-        description: openai-codex/gpt-6-sol at high reasoning
-        command: pi --model openai-codex/gpt-6-sol --thinking high
+      - name: GPT 6.1 Sol High ($2/$0.1/$10)
+        description: openai-codex/gpt-6.1-sol at high reasoning
+        command: pi --model openai-codex/gpt-6.1-sol --thinking high
       - name: GPT 6 Luna Max ($0.1/$0.01/$0.5)
         description: openai-codex/gpt-6-luna at max reasoning
         command: pi --model openai-codex/gpt-6-luna --thinking max
-      - name: GPT 5.6 Sol High ($5/$0.5/$30)
-        description: openai-codex/gpt-5.6-sol at high reasoning
-        command: pi --model openai-codex/gpt-5.6-sol --thinking high
-      - name: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
-        description: openai-codex/gpt-5.6-luna at max reasoning
-        command: pi --model openai-codex/gpt-5.6-luna --thinking max
       - name: Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)
         description: github-copilot/gemini-3.8-flash
         command: pi --model github-copilot/gemini-3.8-flash
@@ -95,6 +89,9 @@ items:
       - name: Copilot: GPT 6 Astra Medium ($10/$1/$50)
         description: github-copilot/gpt-6-astra at medium reasoning
         command: pi --model github-copilot/gpt-6-astra --thinking medium
+      - name: 'Copilot: Opus 5.5 High'
+        description: github-copilot/claude-opus-5.5 at high reasoning
+        command: pi --model github-copilot/claude-opus-5.5 --thinking high
       - name: GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)
         description: opencode-go/glm-5.3-flash
         command: pi --model opencode-go/glm-5.3-flash
@@ -221,13 +218,12 @@ The Codex choices rely on the global Anvil setup in `~/.codex/config.toml` and
 the last session, open the resume picker, or start GPT-5.6 Sol and GPT-5.6 Luna
 with the selected reasoning and service tier. Codex starts in the directory
 where `l` or `run.ps1` was invoked. Pi opens the first menu and a model submenu
-led by Codex-subscription models: GPT-6 Astra at medium reasoning, GPT-6 Sol
-at high reasoning, GPT-6 Luna at max reasoning, and the GPT-5.6 variants.
-These launch via
+led by GPT-6 Astra, GPT-6.1 Sol High, and GPT-6 Luna Max. These
+Codex-subscription models launch via
 `pi --model openai-codex/<model>` with an optional `--thinking <level>` flag.
 Copilot-hosted models include Gemini 3.8 Flash, GPT 5.6 Luna at max reasoning,
-GPT 5.6 Sol at high reasoning, and GPT 6 Astra at medium reasoning. They launch
-via `pi --model github-copilot/<model>`. Pi removed its Antigravity provider in
+GPT 5.6 Sol at high reasoning, GPT 6 Astra at medium reasoning, and Opus 5.5
+at high reasoning. They launch via `pi --model github-copilot/<model>`.  Pi removed its Antigravity provider in
 version 0.71.0, so the launcher does not offer Antigravity as a Pi model route.
 The remaining choices use OpenCode Go or OpenRouter through
 `pi --model <provider>/<model>`. MiMo V2.6 Flash and Pro each have routes through
@@ -270,7 +266,7 @@ uses the same default.
 OpenRouter opens a separate submenu with OpenRouter equivalents for every model
 in the Pi menu, plus Kimi K3, Qwen 3.8 Max, Claude Opus 5.5, Fusion, Muse
 Spark V1.3 and V1.2, MiMo V2.6 Flash and Pro, Qwen 3.8 Omni Flash, Ternary
-Bonsai 2 27B, GLM-5.3-FlashX, and Seedream 5.0 Pro. MiMo Flash and Pro are
+Bonsai 2 27B, GLM-5.3-FlashX, Seedream 5.0 Pro, and Seed Audio 1.0. MiMo Flash and Pro are
 available here and in OpenCode Go. The provider variants in Pi map to one
 OpenRouter entry per model. DeepSeek V4.1 Flash has weekday peak windows, so its displayed rate
 is a base-to-peak range.
@@ -299,6 +295,52 @@ matching single or double quotes are accepted. The script does not persist the
 key or prompt.
 The other wrappers update OpenCode's
 persisted TUI model before launch so the selected model is active immediately.
+
+### Seed Audio voices
+
+OpenRouter choice `M`, immediately after Seedream at `L`, runs
+[Start-OpenRouterAudio.ps1](D:/github/HemSoft/hs-tui-launcher/scripts/Start-OpenRouterAudio.ps1)
+with `bytedance-seed/seed-audio-1-0`. It uses the dedicated speech endpoint,
+shows numbered voice choices with descriptions, asks where to save the MP3,
+and asks for approval before spending credits. Press Enter at the folder prompt
+to use `Music/OpenRouter/SeedAudio`, or enter another folder. New folders are
+created and checked for write access before the paid request. [Seed Audio pricing](https://openrouter.ai/bytedance-seed/seed-audio-1-0)
+is $0.15 per generated minute, up to 120 seconds or $0.30 at the published rate.
+
+Voice profiles `narrator`, `guide`, and `character` are setup slots, not
+provider-supplied voices. The numbered menu shows `1. narrator`, `2. guide`,
+and `3. character` in the default registry. Enter the number to select a voice,
+or press Enter to choose narrator. An unconfigured voice asks for a licensed
+WAV or MP3 reference clip and permission to upload it. The saved profile reuses that
+same clip on subsequent requests. Profiles are stored outside the repository
+in `~/.config/hs-tui-launcher/seed-audio-voices.json`. This is stateless cloning,
+not guaranteed identical output. OpenRouter does not publish a Seed speaker-ID
+list; a known valid ID can also be stored with `-SaveVoice` and `-SpeakerId`.
+
+Configure and preview a reference voice with the
+[audio script](D:/github/HemSoft/hs-tui-launcher/scripts/Start-OpenRouterAudio.ps1):
+
+```powershell
+.\scripts\Start-OpenRouterAudio.ps1 `
+  -SaveVoice narrator -ReferenceAudio 'D:\voices\narrator.wav' `
+  -ReferenceText 'The exact words spoken in the sample.' -Consent
+
+.\scripts\Start-OpenRouterAudio.ps1 `
+  -Voice narrator -Prompt 'Use the reference speaker. Say: Welcome aboard.' -DryRun
+```
+
+Remove `-DryRun` to generate with confirmation. `OPENROUTER_API_KEY` is required
+only for generation. Dry runs do not upload the sample or spend credits.
+`-ListVoices` lists profile status. `-PromptOnly` explicitly opts out of identity
+consistency, and `-NoOpen` suppresses playback. `-OutputDirectory` supplies an
+output folder without prompting; command-line voice names still work with
+`-Voice`. The output sidecar records the
+model, profile, reference hash, and generation ID without saving prompts or
+reference transcripts. No automatic retries are made.
+
+See the [research notes](D:/github/HemSoft/hs-tui-launcher/research/2026-09-29-seed-audio-openrouter.md)
+for API evidence, reference-recording advice, undocumented controls, and live
+testing limits.
 
 `jev.ps1` calls [OpenRouter's Decisions API](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-questions-and-answers-request) with the special
 `~typesafe/jev-latest` model. It accepts a state plus a structured choice,
@@ -385,6 +427,25 @@ The `-Prompt` argument also accepts a text-file path:
   -AspectRatio 16:9 `
   -DryRun
 ```
+
+## Completion audio
+
+The repository-local [Pi completion extension](D:/github/HemSoft/hs-tui-launcher/.pi/extensions/done-sound.ts)
+plays [assets/done.mp3](D:/github/HemSoft/hs-tui-launcher/assets/done.mp3)
+after an interactive task fully settles, including any retries or queued
+follow-ups. It is a Pi lifecycle hook, not a Git hook. Git has no event for an
+assistant finishing work without a commit.
+
+Pi loads it when this trusted project starts or resources are reloaded with
+`/reload`. No global Pi configuration or Git hooks are changed. Other
+repositories, nested repositories, and headless runs do not play the sound.
+Set `HS_TUI_LAUNCHER_DONE_SOUND=0` before starting Pi to mute it.
+
+The [playback script](D:/github/HemSoft/hs-tui-launcher/scripts/Play-DoneSound.ps1)
+uses `ffplay` on Windows and Linux or `afplay` on macOS without opening a player
+window. PowerShell is required. Playback errors produce a warning without
+failing the completed task. Test the extension without playback with
+`node --test .pi/tests/done-sound.test.mjs` on Node.js 24 or newer.
 
 ## Keys
 

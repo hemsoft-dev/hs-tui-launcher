@@ -16,12 +16,14 @@ const (
 
 	gpt6AstraModel                  = "gpt-6-astra"
 	gpt6SolModel                    = "gpt-6-sol"
+	gpt61SolModel                   = "gpt-6.1-sol"
 	gpt6LunaModel                   = "gpt-6-luna"
 	gpt56SolModel                   = "gpt-5.6-sol"
 	gpt56LunaModel                  = "gpt-5.6-luna"
 	copilotGPT55Model               = "gpt-5.5"
 	claudeModel                     = "claude-opus-4.8"
 	copilotOpus5Model               = "claude-opus-5"
+	copilotOpus55Model              = "claude-opus-5.5"
 	githubCopilotProvider           = "github-copilot"
 	copilotGemini38FlashModel       = "gemini-3.8-flash"
 	selectModel                     = "select model"
@@ -58,6 +60,7 @@ const (
 	openrouterGemini38Model         = "google/gemini-3.8-flash"
 	openrouterMuseSpark12Model      = "meta/muse-spark-1.2"
 	openrouterSeedream50ProModel    = "bytedance-seed/seedream-5-0-pro"
+	openrouterSeedAudio10Model      = "bytedance-seed/seed-audio-1-0"
 	qwen38MaxModel                  = "qwen/qwen3.8-max-0902"
 	openrouterGLM53FlashModel       = "z-ai/glm-5.3-flash"
 	fusionModel                     = "openrouter/fusion"
@@ -65,6 +68,7 @@ const (
 	ollamaQwen3827BCommand          = `& "$repoRoot\scripts\Start-Ollama.ps1" qwen3.8:27b`
 	amdOllamaQwen3827BCommand       = `& "$repoRoot\scripts\Start-AmdOllama.ps1" qwen3.8:27b`
 	openrouterSeedreamCommand       = `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"`
+	openrouterSeedAudioCommand      = `& "$repoRoot\scripts\Start-OpenRouterAudio.ps1"`
 )
 
 var (
@@ -110,14 +114,13 @@ var (
 	piRouterBonsai227BCommand        = piModelCommand(openrouterProvider, openrouterBonsai227BModel)
 	piRouterGLM53FlashXCommand       = piModelCommand(openrouterProvider, openrouterGLM53FlashXModel)
 	piCodexAstraCommand              = piThinkingCommand(openaiCodexProvider, gpt6AstraModel, mediumReasoning)
-	piCodexSol6HighCommand           = piThinkingCommand(openaiCodexProvider, gpt6SolModel, highReasoning)
+	piCodexSol61HighCommand          = piThinkingCommand(openaiCodexProvider, gpt61SolModel, highReasoning)
 	piCodexLuna6MaxCommand           = piThinkingCommand(openaiCodexProvider, gpt6LunaModel, maxReasoning)
-	piCodexSolHighCommand            = piThinkingCommand(openaiCodexProvider, gpt56SolModel, highReasoning)
-	piCodexLunaMaxCommand            = piThinkingCommand(openaiCodexProvider, gpt56LunaModel, maxReasoning)
 	piCopilotGemini38Command         = piModelCommand(githubCopilotProvider, copilotGemini38FlashModel)
 	piCopilotLunaMaxCommand          = piThinkingCommand(githubCopilotProvider, gpt56LunaModel, maxReasoning)
 	piCopilotSolHighCommand          = piThinkingCommand(githubCopilotProvider, gpt56SolModel, highReasoning)
 	piCopilotAstraCommand            = piThinkingCommand(githubCopilotProvider, gpt6AstraModel, mediumReasoning)
+	piCopilotOpus55HighCommand       = piThinkingCommand(githubCopilotProvider, copilotOpus55Model, highReasoning)
 	openrouterAstraCommand           = openCodeCommand(openrouterProvider, "openai/"+gpt6AstraModel)
 	openrouterSol6Command            = openCodeCommand(openrouterProvider, "openai/"+gpt6SolModel)
 	openrouterLuna6Command           = openCodeCommand(openrouterProvider, "openai/"+gpt6LunaModel)
@@ -212,24 +215,14 @@ func Default() Config {
 						Command:     piCodexAstraCommand,
 					},
 					{
-						Name:        "GPT 6 Sol High ($2/$0.2/$10)",
-						Description: modelDescription(openaiCodexProvider, gpt6SolModel) + " at high reasoning",
-						Command:     piCodexSol6HighCommand,
+						Name:        "GPT 6.1 Sol High ($2/$0.1/$10)",
+						Description: modelDescription(openaiCodexProvider, gpt61SolModel) + " at high reasoning",
+						Command:     piCodexSol61HighCommand,
 					},
 					{
 						Name:        "GPT 6 Luna Max ($0.1/$0.01/$0.5)",
 						Description: modelDescription(openaiCodexProvider, gpt6LunaModel) + " at max reasoning",
 						Command:     piCodexLuna6MaxCommand,
-					},
-					{
-						Name:        "GPT 5.6 Sol High ($5/$0.5/$30)",
-						Description: modelDescription(openaiCodexProvider, gpt56SolModel) + " at high reasoning",
-						Command:     piCodexSolHighCommand,
-					},
-					{
-						Name:        "GPT 5.6 Luna Max ($0.2/$0.02/$1.2)",
-						Description: modelDescription(openaiCodexProvider, gpt56LunaModel) + " at max reasoning",
-						Command:     piCodexLunaMaxCommand,
 					},
 					{
 						Name:        "Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)",
@@ -250,6 +243,11 @@ func Default() Config {
 						Name:        "Copilot: GPT 6 Astra Medium ($10/$1/$50)",
 						Description: modelDescription(githubCopilotProvider, gpt6AstraModel) + " at medium reasoning",
 						Command:     piCopilotAstraCommand,
+					},
+					{
+						Name:        "Copilot: Opus 5.5 High",
+						Description: modelDescription(githubCopilotProvider, copilotOpus55Model) + " at high reasoning",
+						Command:     piCopilotOpus55HighCommand,
 					},
 					{
 						Name:        "GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)",
@@ -563,6 +561,11 @@ func Default() Config {
 						Name:        "Seedream 5.0 Pro ($0.045 1K/$0.09 2K)",
 						Description: "images/" + openrouterSeedream50ProModel,
 						Command:     openrouterSeedreamCommand,
+					},
+					{
+						Name:        "Seed Audio 1.0 ($0.15/min)",
+						Description: "audio/" + openrouterSeedAudio10Model,
+						Command:     openrouterSeedAudioCommand,
 					},
 				},
 			},

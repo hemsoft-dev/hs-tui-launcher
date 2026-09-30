@@ -91,6 +91,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($0.075/n/a/$0.5)",
 		"($0.37/$0.075/$1.25)",
 		"($0.045 1K/$0.09 2K)",
+		"($0.15/min)",
 	}
 	descriptions := []string{
 		"openrouter/openai/gpt-6-astra",
@@ -114,6 +115,7 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"openrouter/prism-ml/ternary-bonsai-2-27b",
 		"openrouter/z-ai/glm-5.3-flashx",
 		"images/bytedance-seed/seedream-5-0-pro",
+		"audio/bytedance-seed/seed-audio-1-0",
 	}
 	wantDetailColumn := -1
 	wantDescriptionColumn := -1
@@ -177,15 +179,15 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		command string
 	}{
 		{"1", "Pi GPT 6 Astra ($10/$1/$50)", "pi --model openai-codex/gpt-6-astra --thinking medium"},
-		{"2", "Pi GPT 6 Sol High ($2/$0.2/$10)", "pi --model openai-codex/gpt-6-sol --thinking high"},
+		{"2", "Pi GPT 6.1 Sol High ($2/$0.1/$10)", "pi --model openai-codex/gpt-6.1-sol --thinking high"},
 		{"3", "Pi GPT 6 Luna Max ($0.1/$0.01/$0.5)", "pi --model openai-codex/gpt-6-luna --thinking max"},
-		{"4", "Pi GPT 5.6 Sol High ($5/$0.5/$30)", "pi --model openai-codex/gpt-5.6-sol --thinking high"},
-		{"5", "Pi GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model openai-codex/gpt-5.6-luna --thinking max"},
-		{"6", "Pi Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "pi --model github-copilot/gemini-3.8-flash"},
-		{"7", "Pi Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model github-copilot/gpt-5.6-luna --thinking max"},
-		{"8", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
-		{"9", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
-		{"a", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"4", "Pi Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "pi --model github-copilot/gemini-3.8-flash"},
+		{"5", "Pi Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model github-copilot/gpt-5.6-luna --thinking max"},
+		{"6", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
+		{"7", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
+		{"8", "Pi Copilot: Opus 5.5 High", "pi --model github-copilot/claude-opus-5.5 --thinking high"},
+		{"9", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"a", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
 	}
 
 	for _, test := range tests {
@@ -277,18 +279,17 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"a", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
-		{"b", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
-		{"c", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
-		{"d", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
-		{"e", "Pi MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "pi --model opencode-go/mimo-v2.6-flash"},
-		{"f", "Pi MiMo V2.6 Pro ($0.435/$0.003625/$0.87)", "pi --model opencode-go/mimo-v2.6-pro"},
-		{"g", "Pi OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "pi --model openrouter/xiaomi/mimo-v2.6-flash"},
-		{"h", "Pi OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "pi --model openrouter/xiaomi/mimo-v2.6-pro"},
-		{"i", "Pi OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "pi --model openrouter/qwen/qwen3.8-omni-flash"},
-		{"j", "Pi OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "pi --model openrouter/prism-ml/ternary-bonsai-2-27b"},
-		{"k", "Pi OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "pi --model openrouter/z-ai/glm-5.3-flashx"},
-		{"A", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
+		{"a", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
+		{"b", "Pi Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "pi --model opencode-go/muse-spark-1.3-contributor"},
+		{"c", "Pi OpenRouter: DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "pi --model openrouter/deepseek/deepseek-v4.1-flash"},
+		{"d", "Pi MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "pi --model opencode-go/mimo-v2.6-flash"},
+		{"e", "Pi MiMo V2.6 Pro ($0.435/$0.003625/$0.87)", "pi --model opencode-go/mimo-v2.6-pro"},
+		{"f", "Pi OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "pi --model openrouter/xiaomi/mimo-v2.6-flash"},
+		{"g", "Pi OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "pi --model openrouter/xiaomi/mimo-v2.6-pro"},
+		{"h", "Pi OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "pi --model openrouter/qwen/qwen3.8-omni-flash"},
+		{"i", "Pi OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "pi --model openrouter/prism-ml/ternary-bonsai-2-27b"},
+		{"j", "Pi OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "pi --model openrouter/z-ai/glm-5.3-flashx"},
+		{"A", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
 	}
 
 	for _, test := range tests {
@@ -350,15 +351,14 @@ func TestChoiceMenuLabelsChoicesPastNineWithLetters(t *testing.T) {
 		t.Fatalf("first choice line = %q", lines[1])
 	}
 	want := []string{
-		"1. GPT 6 Astra", "2. GPT 6 Sol High", "3. GPT 6 Luna Max",
-		"4. GPT 5.6 Sol High", "5. GPT 5.6 Luna Max", "6. Copilot: Gemini 3.8 Flash",
-		"7. Copilot: GPT 5.6 Luna Max", "8. Copilot: GPT 5.6 Sol High",
-		"9. Copilot: GPT 6 Astra Medium", "A. GLM-5.3-Flash",
-		"B. DeepSeek V4.1 Flash", "C. Muse Spark V1.3 Contributor",
-		"D. OpenRouter: DeepSeek V4.1 Flash", "E. MiMo V2.6 Flash",
-		"F. MiMo V2.6 Pro", "G. OpenRouter: MiMo V2.6 Flash",
-		"H. OpenRouter: MiMo V2.6 Pro", "I. OpenRouter: Qwen 3.8 Omni Flash",
-		"J. OpenRouter: Ternary Bonsai 2 27B", "K. OpenRouter: GLM-5.3-FlashX",
+		"1. GPT 6 Astra", "2. GPT 6.1 Sol High", "3. GPT 6 Luna Max",
+		"4. Copilot: Gemini 3.8 Flash", "5. Copilot: GPT 5.6 Luna Max", "6. Copilot: GPT 5.6 Sol High",
+		"7. Copilot: GPT 6 Astra Medium", "8. Copilot: Opus 5.5 High",
+		"9. GLM-5.3-Flash", "A. DeepSeek V4.1 Flash", "B. Muse Spark V1.3 Contributor",
+		"C. OpenRouter: DeepSeek V4.1 Flash", "D. MiMo V2.6 Flash",
+		"E. MiMo V2.6 Pro", "F. OpenRouter: MiMo V2.6 Flash",
+		"G. OpenRouter: MiMo V2.6 Pro", "H. OpenRouter: Qwen 3.8 Omni Flash",
+		"I. OpenRouter: Ternary Bonsai 2 27B", "J. OpenRouter: GLM-5.3-FlashX",
 	}
 	for index, prefix := range want {
 		if !strings.HasPrefix(lines[index+1], prefix) {
@@ -808,6 +808,20 @@ func TestSelectingOpenRouterSeedream50ProChoiceReturnsImageCommand(t *testing.T)
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenRouterImage.ps1"` {
+		t.Fatalf("Command = %q", item.Command)
+	}
+}
+
+func TestSelectingOpenRouterSeedAudioChoiceReturnsAudioCommand(t *testing.T) {
+	model := chooseOpenRouter(t, key("m"))
+	item, ok := model.SelectedItem()
+	if !ok {
+		t.Fatal("SelectedItem returned no value")
+	}
+	if item.Name != "OpenRouter Seed Audio 1.0 ($0.15/min)" {
+		t.Fatalf("Name = %q", item.Name)
+	}
+	if item.Command != `& "$repoRoot\scripts\Start-OpenRouterAudio.ps1"` {
 		t.Fatalf("Command = %q", item.Command)
 	}
 }

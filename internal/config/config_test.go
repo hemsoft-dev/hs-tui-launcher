@@ -84,8 +84,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if pi.ReasoningEffort != "default" {
 		t.Fatalf("Pi reasoning effort = %q", pi.ReasoningEffort)
 	}
-	if got := len(pi.Choices); got != 20 {
-		t.Fatalf("Pi choices = %d, want 20", got)
+	if got := len(pi.Choices); got != 19 {
+		t.Fatalf("Pi choices = %d, want 19", got)
 	}
 	piChoices := []struct {
 		name        string
@@ -93,14 +93,13 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		command     string
 	}{
 		{"GPT 6 Astra ($10/$1/$50)", "openai-codex/gpt-6-astra at medium reasoning", piCodexAstraCommand},
-		{"GPT 6 Sol High ($2/$0.2/$10)", "openai-codex/gpt-6-sol at high reasoning", piCodexSol6HighCommand},
+		{"GPT 6.1 Sol High ($2/$0.1/$10)", "openai-codex/gpt-6.1-sol at high reasoning", piCodexSol61HighCommand},
 		{"GPT 6 Luna Max ($0.1/$0.01/$0.5)", "openai-codex/gpt-6-luna at max reasoning", piCodexLuna6MaxCommand},
-		{"GPT 5.6 Sol High ($5/$0.5/$30)", "openai-codex/gpt-5.6-sol at high reasoning", piCodexSolHighCommand},
-		{"GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "openai-codex/gpt-5.6-luna at max reasoning", piCodexLunaMaxCommand},
 		{"Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "github-copilot/gemini-3.8-flash", piCopilotGemini38Command},
 		{"Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "github-copilot/gpt-5.6-luna at max reasoning", piCopilotLunaMaxCommand},
 		{"Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "github-copilot/gpt-5.6-sol at high reasoning", piCopilotSolHighCommand},
 		{"Copilot: GPT 6 Astra Medium ($10/$1/$50)", "github-copilot/gpt-6-astra at medium reasoning", piCopilotAstraCommand},
+		{"Copilot: Opus 5.5 High", "github-copilot/claude-opus-5.5 at high reasoning", piCopilotOpus55HighCommand},
 		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
 		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", piDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
@@ -272,8 +271,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 	if got := cfg.Items[6].Env; len(got) != 1 || got[0] != `OPENCODE_PERMISSION={"*":"allow"}` {
 		t.Fatalf("OpenRouter env = %#v", got)
 	}
-	if got := len(cfg.Items[6].Choices); got != 21 {
-		t.Fatalf("OpenRouter choices = %d, want 21", got)
+	if got := len(cfg.Items[6].Choices); got != 22 {
+		t.Fatalf("OpenRouter choices = %d, want 22", got)
 	}
 	openrouterChoices := []struct {
 		name        string
@@ -301,6 +300,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "openrouter/prism-ml/ternary-bonsai-2-27b", openrouterBonsai227BCommand},
 		{"GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "openrouter/z-ai/glm-5.3-flashx", openrouterGLM53FlashXCommand},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
+		{"Seed Audio 1.0 ($0.15/min)", "audio/bytedance-seed/seed-audio-1-0", openrouterSeedAudioCommand},
 	}
 	for index, want := range openrouterChoices {
 		choice := cfg.Items[6].Choices[index]

@@ -18,18 +18,12 @@ items:
       - name: GPT 6 Astra ($10/$1/$50)
         description: openai-codex/gpt-6-astra at medium reasoning
         command: pi --model openai-codex/gpt-6-astra --thinking medium
-      - name: GPT 6 Sol High ($2/$0.2/$10)
-        description: openai-codex/gpt-6-sol at high reasoning
-        command: pi --model openai-codex/gpt-6-sol --thinking high
+      - name: GPT 6.1 Sol High ($2/$0.1/$10)
+        description: openai-codex/gpt-6.1-sol at high reasoning
+        command: pi --model openai-codex/gpt-6.1-sol --thinking high
       - name: GPT 6 Luna Max ($0.1/$0.01/$0.5)
         description: openai-codex/gpt-6-luna at max reasoning
         command: pi --model openai-codex/gpt-6-luna --thinking max
-      - name: GPT 5.6 Sol High ($5/$0.5/$30)
-        description: openai-codex/gpt-5.6-sol at high reasoning
-        command: pi --model openai-codex/gpt-5.6-sol --thinking high
-      - name: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)
-        description: openai-codex/gpt-5.6-luna at max reasoning
-        command: pi --model openai-codex/gpt-5.6-luna --thinking max
       - name: 'Copilot: Gemini 3.8 Flash ($0.75/$0.075/$3.75)'
         description: github-copilot/gemini-3.8-flash
         command: pi --model github-copilot/gemini-3.8-flash
@@ -42,6 +36,9 @@ items:
       - name: 'Copilot: GPT 6 Astra Medium ($10/$1/$50)'
         description: github-copilot/gpt-6-astra at medium reasoning
         command: pi --model github-copilot/gpt-6-astra --thinking medium
+      - name: 'Copilot: Opus 5.5 High'
+        description: github-copilot/claude-opus-5.5 at high reasoning
+        command: pi --model github-copilot/claude-opus-5.5 --thinking high
       - name: GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)
         description: opencode-go/glm-5.3-flash
         command: pi --model opencode-go/glm-5.3-flash
@@ -258,6 +255,9 @@ items:
       - name: Seedream 5.0 Pro ($0.045 1K/$0.09 2K)
         description: images/bytedance-seed/seedream-5-0-pro
         command: '& "$repoRoot\scripts\Start-OpenRouterImage.ps1"'
+      - name: Seed Audio 1.0 ($0.15/min)
+        description: audio/bytedance-seed/seed-audio-1-0
+        command: '& "$repoRoot\scripts\Start-OpenRouterAudio.ps1"'
   - name: Ollama
     description: Open local Ollama models with OpenCode
     model: select model

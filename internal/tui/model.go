@@ -126,17 +126,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.moveCursor(1)
 			return m, nil
 		case "j", "k":
-			if m.choiceParent != nil {
-				if selected, ok := m.launchChoiceForKey(msg.String()); ok {
-					return m.selectChoice(selected)
-				}
-			}
-			if msg.String() == "j" {
-				m.moveCursor(1)
-			} else {
-				m.moveCursor(-1)
-			}
-			return m, nil
+			return m.navigateByKey(msg.String())
 		case "enter":
 			return m.selectCursor()
 		default:
@@ -155,6 +145,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	return m, nil
+}
+
+func (m Model) navigateByKey(key string) (tea.Model, tea.Cmd) {
+	if m.choiceParent != nil {
+		if selected, ok := m.launchChoiceForKey(key); ok {
+			return m.selectChoice(selected)
+		}
+	}
+	if key == "j" {
+		m.moveCursor(1)
+	} else {
+		m.moveCursor(-1)
+	}
 	return m, nil
 }
 
