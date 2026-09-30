@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "voices": [
+    {
+      "name": "narrator",
+      "description": "Your recurring narration voice. Configure a licensed reference clip or verified Seed speaker ID.",
+      "speaker_id": "",
+      "reference_audio": "",
+      "reference_text": "",
+      "consent": false
+    },
+    {
+      "name": "guide",
+      "description": "Your recurring explainer voice. Configure a licensed reference clip or verified Seed speaker ID.",
+      "speaker_id": "",
+      "reference_audio": "",
+      "reference_text": "",
+      "consent": false
+    },
+    {
+      "name": "character",
+      "description": "Your recurring character voice. Configure a licensed reference clip or verified Seed speaker ID.",
+      "speaker_id": "",
+      "reference_audio": "",
+      "reference_text": "",
+      "consent": false
+    }
+  ]
+}

@@ -23,8 +23,8 @@ type launchItem struct {
 
 func (i launchItem) Line() string {
 	return fmt.Sprintf(
-		"%d. %-15s  model: %-18s  effort: %s",
-		i.Number,
+		"%s %-15s  model: %-18s  effort: %s",
+		choiceLabel(i.Number),
 		i.Name,
 		valueOrDefault(i.Model, "default"),
 		valueOrDefault(i.ReasoningEffort, "default"),
@@ -65,8 +65,8 @@ func (c launchChoice) Line(label string, nameWidth int, detailWidth int) string 
 	)
 }
 
-// choiceLabel names a choice for display and keyboard selection: choices 1-9
-// use their number, choices 10 and beyond use letters (10 -> A, 11 -> B, ...)
+// choiceLabel names a menu item for display and keyboard selection: items 1-9
+// use their number, items 10 and beyond use letters (10 -> A, 11 -> B, ...)
 // so every label stays two characters wide and remains a single keypress.
 func choiceLabel(number int) string {
 	if number <= 9 {
@@ -119,12 +119,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			return m, tea.Quit
-		case "up", "k":
+		case "up":
 			m.moveCursor(-1)
 			return m, nil
-		case "down", "j":
+		case "down":
 			m.moveCursor(1)
 			return m, nil
+		case "j", "k":
+			return m.navigateByKey(msg.String())
 		case "enter":
 			return m.selectCursor()
 		default:
@@ -143,6 +145,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	return m, nil
+}
+
+func (m Model) navigateByKey(key string) (tea.Model, tea.Cmd) {
+	if m.choiceParent != nil {
+		if selected, ok := m.launchChoiceForKey(key); ok {
+			return m.selectChoice(selected)
+		}
+	}
+	if key == "j" {
+		m.moveCursor(1)
+	} else {
+		m.moveCursor(-1)
+	}
 	return m, nil
 }
 
@@ -271,8 +287,8 @@ func (m Model) choiceLines() []string {
 }
 
 func (m Model) launchItemForKey(key string) (launchItem, bool) {
-	number, err := strconv.Atoi(key)
-	if err != nil || number < 1 || number > len(m.cfg.Items) || number > 9 {
+	number, ok := choiceNumberForKey(key, len(m.cfg.Items))
+	if !ok {
 		return launchItem{}, false
 	}
 
@@ -343,7 +359,7 @@ func (m *Model) moveCursor(delta int) {
 		return
 	}
 
-	m.cursor = clampCursor(m.cursor+delta, count)
+	m.cursor = (clampCursor(m.cursor, count) + delta + count) % count
 }
 
 func (m Model) selectCursor() (tea.Model, tea.Cmd) {
