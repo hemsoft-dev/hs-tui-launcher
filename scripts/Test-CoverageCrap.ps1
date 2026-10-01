@@ -62,14 +62,14 @@ $textReportPath = Join-Path $outputRoot 'coverage-crap.txt'
 
 Push-Location $repositoryRoot
 try {
-    $modulePathOutput = @(& go list -m 2>&1)
+    $modulePathOutput = @(& go list -m)
     if ($LASTEXITCODE -ne 0 -or $modulePathOutput.Count -ne 1) {
         $modulePathOutput | ForEach-Object { Write-Host $_ }
         throw "go list -m failed or returned an unexpected module path."
     }
     $modulePath = "$($modulePathOutput[0])".Trim()
 
-    $packageOutput = @(& go list -f '{{.ImportPath}}' ./... 2>&1)
+    $packageOutput = @(& go list -f '{{.ImportPath}}' ./...)
     if ($LASTEXITCODE -ne 0) {
         $packageOutput | ForEach-Object { Write-Host $_ }
         throw "go list ./... failed with exit code $LASTEXITCODE."
@@ -82,7 +82,7 @@ try {
     $sourceFiles = [System.Collections.Generic.List[string]]::new()
     $absoluteSourceFiles = [System.Collections.Generic.List[string]]::new()
     foreach ($packagePath in $packagePaths) {
-        $packageJsonOutput = @(& go list -json $packagePath 2>&1)
+        $packageJsonOutput = @(& go list -json $packagePath)
         if ($LASTEXITCODE -ne 0) {
             $packageJsonOutput | ForEach-Object { Write-Host $_ }
             throw "go list -json '$packagePath' failed with exit code $LASTEXITCODE."
@@ -152,7 +152,7 @@ try {
         )
     }
 
-    $coverOutput = @(& go tool cover "-func=$coverageProfilePath" 2>&1)
+    $coverOutput = @(& go tool cover "-func=$coverageProfilePath")
     if ($LASTEXITCODE -ne 0) {
         $coverOutput | ForEach-Object { Write-Host $_ }
         throw "go tool cover failed with exit code $LASTEXITCODE."
@@ -162,9 +162,9 @@ try {
         -RepositoryRoot $repositoryRoot `
         -ModulePath $modulePath
 
-    $cycloOutput = @(& go run $gocyclo @absoluteSourceFiles 2>&1)
+    # Keep go's module-download diagnostics on stderr; only gocyclo's stdout is parseable data.
+    $cycloOutput = @(& go run $gocyclo @absoluteSourceFiles)
     if ($LASTEXITCODE -ne 0) {
-        $cycloOutput | ForEach-Object { Write-Host $_ }
         throw "gocyclo measurement failed with exit code $LASTEXITCODE."
     }
     $complexity = ConvertFrom-GoCycloOutput `
@@ -176,7 +176,7 @@ try {
         -CoverageMeasurements $coverage.Measurements `
         -ComplexityMeasurements $complexity)
 
-    $commitOutput = @(& git rev-parse HEAD 2>&1)
+    $commitOutput = @(& git rev-parse HEAD)
     if ($LASTEXITCODE -ne 0 -or $commitOutput.Count -ne 1) {
         $commitOutput | ForEach-Object { Write-Host $_ }
         throw 'Could not determine the repository commit.'
