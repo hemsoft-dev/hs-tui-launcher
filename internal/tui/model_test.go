@@ -77,9 +77,9 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($0.2/$0.02/$1.2)",
 		"($0.75/$0.075/$3.75)",
 		"($4/$0.2/$20)",
-		"($3/$0.3/$15)",
+		"($0.66/$0.66/$10)",
 		"($2/$0.25/$6)",
-		"($0.15/$0.05/$0.5)",
+		"($0.15/$0.03/$0.5)",
 		"(variable/variable)",
 		"($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)",
 		"($1.25/$0.15/$4.25)",
@@ -88,8 +88,8 @@ func TestChoiceMenuAlignsDetailsAndDescriptions(t *testing.T) {
 		"($0.14/$0.0028/$0.28)",
 		"($0.435/$0.0036/$0.87)",
 		"($0.15/$0.016/$0.47)",
-		"($0.075/n/a/$0.5)",
-		"($0.37/$0.075/$1.25)",
+		"($0.075/$0.0375/$0.5)",
+		"($0.37/$0.09/$1.25)",
 		"($0.045 1K/$0.09 2K)",
 		"($0.15/min)",
 	}
@@ -185,7 +185,7 @@ func TestSelectingPiChoicesReturnsModelCommands(t *testing.T) {
 		{"5", "Pi Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "pi --model github-copilot/gpt-5.6-luna --thinking max"},
 		{"6", "Pi Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "pi --model github-copilot/gpt-5.6-sol --thinking high"},
 		{"7", "Pi Copilot: GPT 6 Astra Medium ($10/$1/$50)", "pi --model github-copilot/gpt-6-astra --thinking medium"},
-		{"8", "Pi Copilot: Opus 5.5 High", "pi --model github-copilot/claude-opus-5.5 --thinking high"},
+		{"8", "Pi Copilot: Opus 5.5 High ($4/$0.2/$20)", "pi --model github-copilot/claude-opus-5.5 --thinking high"},
 		{"9", "Pi GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "pi --model opencode-go/glm-5.3-flash"},
 		{"a", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
 	}
@@ -287,8 +287,8 @@ func TestSelectingPiChoicesPastNineWithLetterKeys(t *testing.T) {
 		{"f", "Pi OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "pi --model openrouter/xiaomi/mimo-v2.6-flash"},
 		{"g", "Pi OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "pi --model openrouter/xiaomi/mimo-v2.6-pro"},
 		{"h", "Pi OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "pi --model openrouter/qwen/qwen3.8-omni-flash"},
-		{"i", "Pi OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "pi --model openrouter/prism-ml/ternary-bonsai-2-27b"},
-		{"j", "Pi OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "pi --model openrouter/z-ai/glm-5.3-flashx"},
+		{"i", "Pi OpenRouter: Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)", "pi --model openrouter/prism-ml/ternary-bonsai-2-27b"},
+		{"j", "Pi OpenRouter: GLM-5.3-FlashX ($0.37/$0.09/$1.25)", "pi --model openrouter/z-ai/glm-5.3-flashx"},
 		{"A", "Pi DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "pi --model opencode-go/deepseek-v4.1-flash"},
 	}
 
@@ -410,8 +410,8 @@ func TestSelectingCodexModelChoicesReturnsExplicitModelCommands(t *testing.T) {
 		name    string
 		command string
 	}{
-		{"4", "Codex GPT 5.6 Sol High ($5/$0.5/$30)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="default"' -c 'model_reasoning_effort="high"'`},
-		{"5", "Codex GPT 5.6 Sol High/Fast ($5/$0.5/$30)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="fast"' -c 'model_reasoning_effort="high"'`},
+		{"4", "Codex GPT 5.6 Sol High ($4/$0.4/$20)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="default"' -c 'model_reasoning_effort="high"'`},
+		{"5", "Codex GPT 5.6 Sol High/Fast ($4/$0.4/$20)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol -c 'service_tier="fast"' -c 'model_reasoning_effort="high"'`},
 		{"6", "Codex GPT 5.6 Luna ($0.2/$0.02/$1.2)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna -c 'service_tier="default"' -c 'model_reasoning_effort="medium"'`},
 		{"7", "Codex GPT 5.6 Luna/Fast ($0.2/$0.02/$1.2)", `codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna -c 'service_tier="fast"' -c 'model_reasoning_effort="medium"'`},
 	}
@@ -664,8 +664,8 @@ func TestSelectingNewTrialModels(t *testing.T) {
 		{"OpenRouter", "g", "MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "openrouter xiaomi/mimo-v2.6-flash"},
 		{"OpenRouter", "h", "MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "openrouter xiaomi/mimo-v2.6-pro"},
 		{"OpenRouter", "i", "Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "openrouter qwen/qwen3.8-omni-flash"},
-		{"OpenRouter", "j", "Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "openrouter prism-ml/ternary-bonsai-2-27b"},
-		{"OpenRouter", "k", "GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "openrouter z-ai/glm-5.3-flashx"},
+		{"OpenRouter", "j", "Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)", "openrouter prism-ml/ternary-bonsai-2-27b"},
+		{"OpenRouter", "k", "GLM-5.3-FlashX ($0.37/$0.09/$1.25)", "openrouter z-ai/glm-5.3-flashx"},
 	}
 	for _, test := range tests {
 		t.Run(test.menu+"/"+test.key, func(t *testing.T) {
@@ -696,7 +696,7 @@ func TestSelectingOpenRouterKimiK3ChoiceReturnsKimiK3Command(t *testing.T) {
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter Kimi K3 ($3/$0.3/$15)" {
+	if item.Name != "OpenRouter Kimi K3 ($0.66/$0.66/$10)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter moonshotai/kimi-k3` {
@@ -729,7 +729,7 @@ func TestSelectingOpenRouterGLM53FlashChoiceReturnsGLM53FlashCommand(t *testing.
 	if !ok {
 		t.Fatal("SelectedItem returned no value")
 	}
-	if item.Name != "OpenRouter GLM-5.3-Flash ($0.15/$0.05/$0.5)" {
+	if item.Name != "OpenRouter GLM-5.3-Flash ($0.15/$0.03/$0.5)" {
 		t.Fatalf("Name = %q", item.Name)
 	}
 	if item.Command != `& "$repoRoot\scripts\Start-OpenCode.ps1" openrouter z-ai/glm-5.3-flash` {
