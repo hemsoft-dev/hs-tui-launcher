@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -11,37 +12,70 @@ import (
 	"github.com/HemSoft/hs-tui-launcher/internal/config"
 )
 
-func TestMainPrintsResolvedConfig(t *testing.T) {
+func TestExecutePrintsResolvedConfigWithoutInteractiveTerminal(t *testing.T) {
 	configPath := filepath.Join(t.TempDir(), "config.yaml")
 	if err := os.WriteFile(configPath, []byte("title: Printed config\n"), 0o600); err != nil {
 		t.Fatalf("write config: %v", err)
 	}
 
-	outputFile, err := os.CreateTemp(t.TempDir(), "stderr-*.txt")
+	var output bytes.Buffer
+	terminalChecked := false
+	err := execute(
+		[]string{"--config", configPath, "--print-config"},
+		&output,
+		func() bool {
+			terminalChecked = true
+			return false
+		},
+	)
 	if err != nil {
-		t.Fatalf("create stderr capture: %v", err)
+		t.Fatalf("execute returned error: %v", err)
 	}
-	originalArgs := os.Args
-	originalStderr := os.Stderr
-	defer func() {
-		os.Args = originalArgs
-		os.Stderr = originalStderr
-		_ = outputFile.Close()
-	}()
+	if terminalChecked {
+		t.Fatal("--print-config checked for an interactive terminal")
+	}
+	if !strings.Contains(output.String(), "title: Printed config") {
+		t.Fatalf("--print-config output = %q", output.String())
+	}
+}
 
-	os.Args = []string{"hs-tui-launcher", "--config", configPath, "--print-config"}
-	os.Stderr = outputFile
-	main()
-	if err := outputFile.Close(); err != nil {
-		t.Fatalf("close stderr capture: %v", err)
+func TestExecuteReturnsConfigLoadError(t *testing.T) {
+	missingPath := filepath.Join(t.TempDir(), "missing.yaml")
+	terminalChecked := false
+
+	err := execute([]string{"--config", missingPath}, &bytes.Buffer{}, func() bool {
+		terminalChecked = true
+		return true
+	})
+
+	if err == nil {
+		t.Fatal("execute returned nil for a missing config")
+	}
+	if terminalChecked {
+		t.Fatal("execute checked the terminal after config loading failed")
+	}
+}
+
+func TestExecuteRejectsNoninteractiveTerminal(t *testing.T) {
+	configPath := filepath.Join(t.TempDir(), "config.yaml")
+	if err := os.WriteFile(configPath, []byte("title: Test config\n"), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
 	}
 
-	output, err := os.ReadFile(outputFile.Name())
-	if err != nil {
-		t.Fatalf("read captured config: %v", err)
+	terminalChecks := 0
+	err := execute([]string{"--config", configPath}, &bytes.Buffer{}, func() bool {
+		terminalChecks++
+		return false
+	})
+
+	if err == nil {
+		t.Fatal("execute returned nil without an interactive terminal")
 	}
-	if !strings.Contains(string(output), "title: Printed config") {
-		t.Fatalf("--print-config output = %q", output)
+	if !strings.Contains(err.Error(), "requires an interactive terminal") {
+		t.Fatalf("error = %q, want interactive-terminal context", err)
+	}
+	if terminalChecks != 1 {
+		t.Fatalf("terminal checks = %d, want 1", terminalChecks)
 	}
 }
 

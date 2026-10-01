@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,6 +16,20 @@ import (
 )
 
 func main() {
+	if err := execute(os.Args[1:], os.Stderr, hasInteractiveTerminal); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func execute(args []string, output io.Writer, hasTerminal func() bool) error {
+	rootCmd := newRootCommand(hasTerminal)
+	rootCmd.SetArgs(args)
+	rootCmd.SetOut(output)
+	return rootCmd.Execute()
+}
+
+func newRootCommand(hasTerminal func() bool) *cobra.Command {
 	var configPath string
 	var printConfig bool
 	var selectionFile string
@@ -39,7 +54,7 @@ func main() {
 				return nil
 			}
 
-			if !hasInteractiveTerminal() {
+			if !hasTerminal() {
 				return fmt.Errorf("hs-tui-launcher requires an interactive terminal; use run.ps1 on PowerShell, run.sh on macOS/Linux, or --print-config")
 			}
 
@@ -74,10 +89,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	return rootCmd
 }
 
 type selectionOutput struct {
