@@ -2,12 +2,13 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
+$isWindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $toolDirectory = Join-Path $repositoryRoot "bin/security-tools"
-$executableSuffix = if ($IsWindows) { ".exe" } else { "" }
+$executableSuffix = if ($isWindowsPlatform) { ".exe" } else { "" }
 $govulncheck = Join-Path $toolDirectory "govulncheck$executableSuffix"
 $gitleaks = Join-Path $toolDirectory "gitleaks$executableSuffix"
 $osvScanner = Join-Path $toolDirectory "osv-scanner$executableSuffix"
-$semgrep = if ($IsWindows) {
+$semgrep = if ($isWindowsPlatform) {
     Join-Path $toolDirectory "python/Scripts/semgrep.exe"
 } else {
     Join-Path $toolDirectory "python/bin/semgrep"

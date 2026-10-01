@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
+$isWindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $toolDirectory = Join-Path $repositoryRoot "bin/security-tools"
 $pythonEnvironment = Join-Path $toolDirectory "python"
 New-Item -ItemType Directory -Force -Path $toolDirectory | Out-Null
@@ -32,7 +33,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Failed to create the Semgrep environment (exit $LASTEXITCODE)."
 }
 
-$environmentPython = if ($IsWindows) {
+$environmentPython = if ($isWindowsPlatform) {
     Join-Path $pythonEnvironment "Scripts/python.exe"
 } else {
     Join-Path $pythonEnvironment "bin/python"

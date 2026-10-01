@@ -16,12 +16,13 @@ function Confirm-ExpectedFinding {
 }
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
+$isWindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $fixtureRoot = Join-Path $repositoryRoot ".github/security/fixtures"
 $toolDirectory = Join-Path $repositoryRoot "bin/security-tools"
-$executableSuffix = if ($IsWindows) { ".exe" } else { "" }
+$executableSuffix = if ($isWindowsPlatform) { ".exe" } else { "" }
 $gitleaks = Join-Path $toolDirectory "gitleaks$executableSuffix"
 $osvScanner = Join-Path $toolDirectory "osv-scanner$executableSuffix"
-$semgrep = if ($IsWindows) {
+$semgrep = if ($isWindowsPlatform) {
     Join-Path $toolDirectory "python/Scripts/semgrep.exe"
 } else {
     Join-Path $toolDirectory "python/bin/semgrep"
@@ -29,8 +30,19 @@ $semgrep = if ($IsWindows) {
 
 Push-Location $repositoryRoot
 try {
-    Confirm-ExpectedFinding "gitleaks" {
+    Confirm-ExpectedFinding "gitleaks sentinel rule" {
         & $gitleaks dir --config (Join-Path $fixtureRoot "gitleaks.toml") --redact --no-banner (Join-Path $fixtureRoot "secret.txt")
+    }
+
+    $defaultRuleFixture = Join-Path $fixtureRoot "default-rule-secret.generated.txt"
+    try {
+        $inertToken = "AK" + "IA" + "QWERTYUIOPASDFGH"
+        Set-Content -LiteralPath $defaultRuleFixture -Value "fixture=$inertToken" -Encoding Ascii -NoNewline
+        Confirm-ExpectedFinding "gitleaks default rules" {
+            & $gitleaks dir --config .gitleaks.toml --redact --no-banner $fixtureRoot
+        }
+    } finally {
+        Remove-Item -LiteralPath $defaultRuleFixture -Force -ErrorAction SilentlyContinue
     }
 
     Confirm-ExpectedFinding "semgrep" {
@@ -50,3 +62,7 @@ try {
 } finally {
     Pop-Location
 }
+
+# The expected scanner findings leave a native exit code of 1; report the
+# fixture harness result, not the last intentionally failing scanner result.
+exit 0
