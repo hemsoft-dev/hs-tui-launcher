@@ -8,9 +8,10 @@ branch protection rule blocks direct changes to `main` and requires the
 missing, or failed check.
 
 The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
-`security` job and has an explicit failure gate, so anything other than a
-successful security result fails the already-required `verify` check. Neither
-job has a path filter. After security passes, `verify` runs these checks:
+`security` and `coverage` jobs and has an explicit failure gate, so a failed,
+cancelled, or skipped prerequisite fails the already-required `verify` check.
+None of these jobs has a path filter. After both prerequisites pass, `verify`
+runs these checks:
 
 ```powershell
 go build ./...
@@ -63,6 +64,48 @@ a fixture or command line, and clear credential environment variables if you
 add scanner debugging. Gitleaks redacts findings, but scanner output should
 still be treated as sensitive and must not be pasted into public logs. The
 scans query public vulnerability data only and make no paid-provider calls.
+
+## Coverage and CRAP gates
+
+Run the repository coverage and CRAP gate from the repository root:
+
+```powershell
+.\scripts\Test-CoverageCrap.ps1
+```
+
+This one command runs `go test ./...` with a single count-mode coverage profile,
+uses `go list ./...` to prove that the profile contains every production Go file
+in every production package, and runs the same pinned gocyclo version as the
+complexity gate. It joins statement coverage and complexity by normalized file
+and function start line, then calculates each function's CRAP score as
+`complexity^2 * (1 - coverage)^3 + complexity`. No production package, file, or
+function is excluded.
+
+The command prints and writes a worst-first report containing the exact file,
+line, function, complexity, statement coverage, and CRAP score. By default,
+`coverage.out`, `coverage-crap.json`, and `coverage-crap.txt` are written to a
+process-specific temporary directory, so generated reports do not dirty the
+checkout. To retain them elsewhere, use `-OutputDirectory <path>`.
+
+`scripts/coverage-crap-baseline.json` maintains three non-regression gates:
+
+- repository statement coverage must remain at least 83.0%;
+- every function must have CRAP at most 30.00;
+- the repository maximum CRAP must not increase above 20.00.
+
+The combined-tree baseline was reproduced twice at 83.8% coverage and a 20.00
+maximum across 45 functions. Coverage is consumed at the one-decimal precision
+emitted by `go tool cover`; the floor retains 0.8 percentage points of headroom
+while preserving the audited 83.0% basis. Reported CRAP is rounded to two
+decimal places, midpoint away from zero, but gates compare the unrounded value.
+The maximum baseline has no upward headroom, so any increase fails. Raise the
+coverage floor or lower the maximum when durable improvements provide a new
+repeatable baseline; never move either gate merely to pass a change.
+
+CI runs the same command in the `coverage` job. It retains the profile and both
+reports for 14 days in an artifact named `coverage-crap-<commit SHA>`; the JSON
+and text reports also identify the checked-out commit. The required `verify`
+status fails unless this job succeeds.
 
 ## Mutation testing
 

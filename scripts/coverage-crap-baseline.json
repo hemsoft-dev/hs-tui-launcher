@@ -2,20 +2,36 @@
   "schemaVersion": 1,
   "repositoryCoverageFloorPercent": 83.0,
   "actionableCrap": 30.0,
-  "maximumCrapBaseline": 31.80,
+  "maximumCrapBaseline": 20.00,
   "evidence": {
-    "commit": "82005a75fb8dcae27cc9f964242b11d71164effb",
-    "coverageBasis": "Statement coverage reported by go test ./... with a single coverage profile",
+    "commit": "a03f84d6c70fd50e214cf37cfc11c220e0f267b8",
+    "coverageBasis": "Statement coverage reported to one decimal place by go test ./... with a single count-mode coverage profile",
+    "observedRepositoryCoveragePercent": 83.8,
+    "observedMaximumCrap": 20.00,
+    "measurementCount": 45,
+    "repeatRuns": 2,
     "knownMeasurements": [
       {
-        "function": "main",
-        "crap": 31.80
+        "file": "main.go",
+        "line": 240,
+        "function": "hasInteractiveTerminal",
+        "complexity": 4,
+        "coveragePercent": 0.0,
+        "crap": 20.00
       },
       {
-        "function": "hasInteractiveTerminal",
-        "crap": 20.00
+        "file": "main.go",
+        "line": 32,
+        "function": "newRootCommand",
+        "complexity": 10,
+        "coveragePercent": 55.9,
+        "crap": 18.58
       }
     ],
-    "note": "Recompute the coverage floor and maximum CRAP from the reproducible integration baseline after the issue #44 production refactor; never lower a gate merely to pass."
+    "rules": {
+      "coverageFloor": "Keep the audited 83.0% floor, giving 0.8 percentage points of headroom below the repeated 83.8% result reported to one decimal place.",
+      "maximumCrap": "Use the repeated maximum rounded to two decimals with no upward headroom, so any increase fails.",
+      "rounding": "Coverage is parsed at the one-decimal precision emitted by go tool cover; reported CRAP uses midpoint-away-from-zero rounding to two decimals, while gates compare unrounded CRAP."
+    }
   }
 }
