@@ -1,0 +1,71 @@
+// This source is copied to a temporary module by Test-LauncherHandoff.ps1.
+// It records only allowlisted fixture values; it never dumps the process environment.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"runtime"
+	"strconv"
+)
+
+type observation struct {
+	SchemaVersion int               `json:"schemaVersion"`
+	Arguments     []string          `json:"arguments"`
+	WorkingDir    string            `json:"workingDirectory"`
+	Environment   map[string]string `json:"environment"`
+	Stdin         string            `json:"stdin"`
+	GOOS          string            `json:"goos"`
+	GOARCH        string            `json:"goarch"`
+}
+
+func main() {
+	stdin, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	workingDir, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	output := os.Getenv("HS_HANDOFF_OUTPUT")
+	if output == "" {
+		fmt.Fprintln(os.Stderr, "HS_HANDOFF_OUTPUT is required")
+		os.Exit(2)
+	}
+
+	observed := observation{
+		SchemaVersion: 1,
+		Arguments:     append([]string(nil), os.Args[1:]...),
+		WorkingDir:    workingDir,
+		Environment: map[string]string{
+			"HS_HANDOFF_SELECTED":  os.Getenv("HS_HANDOFF_SELECTED"),
+			"HS_HANDOFF_EMPTY":     os.Getenv("HS_HANDOFF_EMPTY"),
+			"HS_HANDOFF_EXIT_CODE": os.Getenv("HS_HANDOFF_EXIT_CODE"),
+			"HS_HANDOFF_INHERITED": os.Getenv("HS_HANDOFF_INHERITED"),
+		},
+		Stdin:  string(stdin),
+		GOOS:   runtime.GOOS,
+		GOARCH: runtime.GOARCH,
+	}
+	encoded, err := json.Marshal(observed)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	if err := os.WriteFile(output, append(encoded, '\n'), 0o600); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+
+	exitCode, err := strconv.Atoi(os.Getenv("HS_HANDOFF_EXIT_CODE"))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "HS_HANDOFF_EXIT_CODE must be an integer")
+		os.Exit(2)
+	}
+	os.Exit(exitCode)
+}

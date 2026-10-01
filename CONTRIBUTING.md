@@ -31,6 +31,55 @@ go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
 go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
 
+## Supported-platform handoff qualification
+
+The `platform` CI matrix builds, vets, and tests the production Go launcher on
+native Windows, macOS, and Ubuntu using the version in `go.mod`. It then exercises
+both wrapper modes: a controlled executable at the bundled native-launcher path
+and the documented `go run .` fallback. The fixture writes the same structured
+selection file as the picker and hands off to a controlled child; it never starts
+an AI CLI or makes a paid or network request. `platform-gate` aggregates all three
+matrix legs, and the existing required `verify` job fails through `always()` if
+that aggregate is failed, cancelled, or skipped.
+
+The test orchestrator requires PowerShell 7.2 or newer on every platform. This is
+a CI/test-harness requirement, not a change to `run.ps1`, which remains supported
+on Windows PowerShell 5.1 as well as PowerShell 7. On macOS and Linux, `run.sh`
+also requires Python 3. The fallback mode requires Go; use the version in
+`go.mod` for the production-equivalent check.
+
+From Windows, run:
+
+```powershell
+pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1
+pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1 -NegativeCheck
+```
+
+From macOS or Linux, run the same local equivalent in PowerShell 7:
+
+```sh
+pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1
+pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1 -NegativeCheck
+```
+
+The first command tests native and fallback mode with successful and nonzero
+children. It proves exact arguments (including an empty argument and non-shell
+special data), working directory, selected and inherited environment values,
+stdin, temporary selection-file cleanup, and exit-code propagation. The second
+is a safe synthetic negative route proving that mismatched argv, environment,
+working directory, stdin, and nonzero exit expectations all fail the harness.
+
+By default, reports and generated fixture binaries are written under the system
+temporary directory, not the checkout. Pass `-OutputDirectory <path>` to retain
+reports. CI uploads `launcher-handoff-<target>-<architecture>-<commit>` with
+overwrite semantics. Each bounded JSON report uses `schemaVersion: 1` and records
+the exact commit, native GOOS/GOARCH and Go version, wrapper path and hash,
+launcher mode, selected executable/arguments/working directory/allowlisted
+fixture environment, observed handoff fields, bounded stdout/stderr, and status.
+It never dumps the full environment. No credentials are read or needed; only the
+controlled `HS_HANDOFF_*` variables are recorded. Fixture builds set
+`GOPROXY=off`, `GOSUMDB=off`, and `GOTOOLCHAIN=local`.
+
 ## Security checks
 
 Pull requests and pushes to `main` run the required `security` job before

@@ -1,0 +1,91 @@
+// This source is copied to a temporary module by Test-LauncherHandoff.ps1.
+// Keeping the .txt suffix prevents test fixtures from becoming production Go packages.
+package main
+
+import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"os"
+)
+
+type selection struct {
+	Name       string   `json:"name"`
+	Executable string   `json:"executable"`
+	Args       []string `json:"args"`
+	WorkingDir string   `json:"working_dir"`
+	Env        []string `json:"env"`
+}
+
+type invocation struct {
+	SchemaVersion int      `json:"schemaVersion"`
+	Mode          string   `json:"mode"`
+	Arguments     []string `json:"arguments"`
+	SelectionFile string   `json:"selectionFile"`
+}
+
+func main() {
+	selectionFile := flag.String("selection-file", "", "selection output")
+	mode := flag.String("fixture-mode", "", "expected wrapper mode")
+	child := flag.String("fixture-child", "", "controlled child executable")
+	workingDir := flag.String("fixture-working-dir", "", "controlled child working directory")
+	output := flag.String("fixture-output", "", "controlled child observation output")
+	exitCode := flag.String("fixture-exit-code", "", "controlled child exit code")
+	metadata := flag.String("fixture-metadata", "", "launcher invocation output")
+	flag.Parse()
+
+	if *selectionFile == "" || *child == "" || *workingDir == "" || *output == "" || *exitCode == "" || *metadata == "" {
+		fmt.Fprintln(os.Stderr, "fixture launcher is missing a required argument")
+		os.Exit(2)
+	}
+	if *mode != "native" && *mode != "fallback" {
+		fmt.Fprintln(os.Stderr, "fixture launcher mode must be native or fallback")
+		os.Exit(2)
+	}
+
+	selected := selection{
+		Name:       "deterministic handoff fixture",
+		Executable: *child,
+		Args: []string{
+			"plain",
+			"value with spaces",
+			"",
+			"semi;pipe|amp&angle<>dollar$backtick`quotes'\"",
+			"equals=value",
+			"backslash\\trailing\\",
+			"unicode-雪",
+		},
+		WorkingDir: *workingDir,
+		Env: []string{
+			"HS_HANDOFF_OUTPUT=" + *output,
+			"HS_HANDOFF_EXIT_CODE=" + *exitCode,
+			"HS_HANDOFF_SELECTED=selected value with spaces ; $ & | <>",
+			"HS_HANDOFF_EMPTY=",
+		},
+	}
+	selectionJSON, err := json.Marshal(selected)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	if err := os.WriteFile(*selectionFile, append(selectionJSON, '\n'), 0o600); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+
+	observedInvocation := invocation{
+		SchemaVersion: 1,
+		Mode:          *mode,
+		Arguments:     append([]string(nil), os.Args[1:]...),
+		SelectionFile: *selectionFile,
+	}
+	metadataJSON, err := json.Marshal(observedInvocation)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	if err := os.WriteFile(*metadata, append(metadataJSON, '\n'), 0o600); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+}
