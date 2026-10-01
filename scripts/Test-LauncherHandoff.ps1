@@ -286,6 +286,15 @@ $env:GOSUMDB = 'off'
 
 try {
     New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
+    if ($goos -ne 'windows') {
+        # macOS exposes /var through /private/var. Select the physical path so the
+        # fixture's selected working directory exactly matches os.Getwd().
+        $physicalTempRoot = @(& python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' $tempRoot)
+        if ($LASTEXITCODE -ne 0 -or $physicalTempRoot.Count -ne 1) {
+            throw 'Python could not resolve the fixture temporary directory.'
+        }
+        $tempRoot = "$($physicalTempRoot[0])".Trim()
+    }
     $windowsDriver = Join-Path $tempRoot 'invoke-run-ps1.ps1'
     @'
 param(
@@ -359,14 +368,14 @@ exit $LASTEXITCODE
                 GOSUMDB = 'off'
             }
             if ($goos -eq 'windows') {
-                $hostExecutable = (Get-Command pwsh -CommandType Application -ErrorAction Stop).Source
+                $hostExecutable = (Get-Command pwsh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
                 # run.ps1 intentionally returns to an interactive caller after setting
                 # LASTEXITCODE. The temporary host translates that script contract into
                 # the dedicated pwsh process exit code without changing the wrapper.
                 $hostArguments = @('-NoLogo', '-NoProfile', '-File', $windowsDriver, $wrapperUnderTest) + $launcherArguments
             }
             else {
-                $hostExecutable = (Get-Command sh -CommandType Application -ErrorAction Stop).Source
+                $hostExecutable = (Get-Command sh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
                 $hostArguments = @($wrapperUnderTest) + $launcherArguments
             }
 
