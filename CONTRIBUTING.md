@@ -93,11 +93,13 @@ checkout. To retain them elsewhere, use `-OutputDirectory <path>`.
 - every function must have CRAP at most 30.00;
 - the repository maximum CRAP must not increase above 20.00.
 
-The combined-tree baseline was reproduced twice at 83.8% coverage and a 20.00
-maximum across 45 functions. Coverage is consumed at the one-decimal precision
-emitted by `go tool cover`; the floor retains 0.8 percentage points of headroom
-while preserving the audited 83.0% basis. Reported CRAP is rounded to two
-decimal places, midpoint away from zero, but gates compare the unrounded value.
+The combined-tree Windows baseline was reproduced twice at 83.8% coverage and
+a 20.00 maximum across 45 functions; hosted Ubuntu measured 83.5% with the same
+maximum and function count. Coverage is consumed at the one-decimal precision
+emitted by `go tool cover`; the floor preserves the audited 83.0% basis and
+retains 0.5 percentage points below the lower platform result. Reported CRAP is
+rounded to two decimal places, midpoint away from zero, but gates compare the
+unrounded value.
 The maximum baseline has no upward headroom, so any increase fails. Raise the
 coverage floor or lower the maximum when durable improvements provide a new
 repeatable baseline; never move either gate merely to pass a change.
