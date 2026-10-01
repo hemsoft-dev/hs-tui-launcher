@@ -10,6 +10,11 @@ rules:
           - pattern: exec.Command("cmd", "/c", $COMMAND)
           - pattern: exec.Command("powershell", "-Command", $COMMAND)
           - pattern: exec.Command("pwsh", "-Command", $COMMAND)
+          - pattern: exec.CommandContext($CTX, "sh", "-c", $COMMAND)
+          - pattern: exec.CommandContext($CTX, "bash", "-c", $COMMAND)
+          - pattern: exec.CommandContext($CTX, "cmd", "/c", $COMMAND)
+          - pattern: exec.CommandContext($CTX, "powershell", "-Command", $COMMAND)
+          - pattern: exec.CommandContext($CTX, "pwsh", "-Command", $COMMAND)
       - metavariable-pattern:
           metavariable: $COMMAND
           patterns:
@@ -32,6 +37,10 @@ rules:
           - pattern: $CHILD_PROCESS.exec($COMMAND, ...)
           - pattern: exec($COMMAND, ...)
           - pattern: execSync($COMMAND, ...)
+          - pattern: '$CHILD_PROCESS.spawn($COMMAND, ..., { shell: true, ... })'
+          - pattern: '$CHILD_PROCESS.spawnSync($COMMAND, ..., { shell: true, ... })'
+          - pattern: 'spawn($COMMAND, ..., { shell: true, ... })'
+          - pattern: 'spawnSync($COMMAND, ..., { shell: true, ... })'
       - metavariable-pattern:
           metavariable: $COMMAND
           patterns:

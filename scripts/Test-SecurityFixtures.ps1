@@ -15,6 +15,41 @@ function Confirm-ExpectedFinding {
     Write-Host "$Name fixture produced the expected finding."
 }
 
+function Confirm-SemgrepResult {
+    param(
+        [Parameter(Mandatory)] [string] $Name,
+        [Parameter(Mandatory)] [string] $Target,
+        [Parameter(Mandatory)] [string] $RuleId,
+        [Parameter(Mandatory)] [int] $ExpectedCount
+    )
+
+    $reportPath = Join-Path ([System.IO.Path]::GetTempPath()) ("semgrep-" + [guid]::NewGuid().ToString("N") + ".json")
+    try {
+        & $semgrep scan --config .semgrep.yml --error --metrics off --json --output $reportPath $Target
+        $exitCode = $LASTEXITCODE
+        $expectedExitCode = if ($ExpectedCount -eq 0) { 0 } else { 1 }
+        if ($exitCode -ne $expectedExitCode) {
+            throw "$Name expected scanner exit $expectedExitCode, but scanner exited $exitCode."
+        }
+
+        $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+        $errors = @($report.errors)
+        if ($errors.Count -ne 0) {
+            throw "$Name produced $($errors.Count) Semgrep error(s)."
+        }
+
+        $results = @($report.results)
+        $matchingResults = @($results | Where-Object { $_.check_id -eq $RuleId })
+        if ($results.Count -ne $ExpectedCount -or $matchingResults.Count -ne $ExpectedCount) {
+            $actualRuleIds = @($results | ForEach-Object { $_.check_id }) -join ", "
+            throw "$Name expected $ExpectedCount '$RuleId' finding(s), but received $($results.Count) total: $actualRuleIds"
+        }
+        Write-Host "$Name produced exactly $ExpectedCount '$RuleId' finding(s)."
+    } finally {
+        Remove-Item -LiteralPath $reportPath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $isWindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $fixtureRoot = Join-Path $repositoryRoot ".github/security/fixtures"
@@ -45,9 +80,11 @@ try {
         Remove-Item -LiteralPath $defaultRuleFixture -Force -ErrorAction SilentlyContinue
     }
 
-    Confirm-ExpectedFinding "semgrep" {
-        & $semgrep scan --config .semgrep.yml --error --metrics off (Join-Path $fixtureRoot "unsafe.ts")
-    }
+    Confirm-SemgrepResult "Semgrep dynamic-code fixture" (Join-Path $fixtureRoot "unsafe.ts") "typescript-dynamic-code-execution" 1
+    Confirm-SemgrepResult "Semgrep Go shell positive fixture" (Join-Path $fixtureRoot "go-shell-positive.go") "go-shell-command-from-variable" 2
+    Confirm-SemgrepResult "Semgrep Go shell negative fixture" (Join-Path $fixtureRoot "go-shell-negative.go") "go-shell-command-from-variable" 0
+    Confirm-SemgrepResult "Semgrep TypeScript shell positive fixture" (Join-Path $fixtureRoot "typescript-shell-positive.ts") "typescript-shell-command-from-variable" 5
+    Confirm-SemgrepResult "Semgrep TypeScript shell negative fixture" (Join-Path $fixtureRoot "typescript-shell-negative.ts") "typescript-shell-command-from-variable" 0
 
     $temporaryDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("hs-tui-security-" + [guid]::NewGuid().ToString("N"))
     New-Item -ItemType Directory -Path $temporaryDirectory | Out-Null
