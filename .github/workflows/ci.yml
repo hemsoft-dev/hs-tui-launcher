@@ -35,16 +35,60 @@ jobs:
         shell: pwsh
         run: ./scripts/Test-SecurityFixtures.ps1
 
+  coverage:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos
+          - os: ubuntu-latest
+            target: linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Test coverage and CRAP calculations
+        shell: pwsh
+        run: ./scripts/Test-CoverageCrap.Unit.ps1
+
+      - name: Enforce coverage and CRAP gates
+        shell: pwsh
+        run: ./scripts/Test-CoverageCrap.ps1 -OutputDirectory coverage-crap-artifacts
+
+      - name: Retain coverage and CRAP reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-crap-${{ matrix.target }}-${{ runner.arch }}-${{ github.sha }}
+          path: coverage-crap-artifacts/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
+
   verify:
-    needs: security
+    needs:
+      - security
+      - coverage
     if: ${{ always() }}
     runs-on: windows-latest
 
     steps:
-      - name: Require security success
-        if: needs.security.result != 'success'
+      - name: Require prerequisite success
+        if: ${{ needs.security.result != 'success' || needs.coverage.result != 'success' }}
         shell: pwsh
-        run: throw "The required security job did not succeed."
+        run: |
+          throw "Required job failure: security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}."
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
