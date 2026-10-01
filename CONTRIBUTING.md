@@ -8,10 +8,11 @@ branch protection rule blocks direct changes to `main` and requires the
 missing, or failed check.
 
 The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
-`security` and `coverage` jobs and has an explicit failure gate, so a failed,
-cancelled, or skipped prerequisite fails the already-required `verify` check.
-None of these jobs has a path filter. After both prerequisites pass, `verify`
-runs these checks:
+`security` job and the aggregate result of the Windows, macOS, and Linux
+`coverage` matrix. Its explicit failure gate makes a failed, cancelled, or
+skipped prerequisite fail the already-required `verify` check. None of these
+jobs has a path filter. After both prerequisites pass, `verify` runs these
+checks:
 
 ```powershell
 go build ./...
@@ -75,17 +76,20 @@ Run the repository coverage and CRAP gate from the repository root:
 
 This one command runs `go test ./...` with a single count-mode coverage profile,
 uses `go list ./...` to prove that the profile contains every production Go file
-in every production package, and runs the same pinned gocyclo version as the
-complexity gate. It joins statement coverage and complexity by normalized file
-and function start line, then calculates each function's CRAP score as
-`complexity^2 * (1 - coverage)^3 + complexity`. No production package, file, or
-function is excluded.
+selected for the native `GOOS`/`GOARCH` target, and runs the same pinned gocyclo
+version as the complexity gate. It joins statement coverage and complexity by
+normalized file and function start line, then calculates each function's CRAP
+score as `complexity^2 * (1 - coverage)^3 + complexity`. CI runs the command
+natively on Windows, macOS, and Linux, so the aggregate gate includes production
+files selected by any supported operating system. No selected production
+package, file, or function is excluded.
 
-The command prints and writes a worst-first report containing the exact file,
-line, function, complexity, statement coverage, and CRAP score. By default,
-`coverage.out`, `coverage-crap.json`, and `coverage-crap.txt` are written to a
-process-specific temporary directory, so generated reports do not dirty the
-checkout. To retain them elsewhere, use `-OutputDirectory <path>`.
+The command prints and writes a worst-first report containing the native
+`GOOS`/`GOARCH` target and each function's exact file, line, name, complexity,
+statement coverage, and CRAP score. By default, `coverage.out`,
+`coverage-crap.json`, and `coverage-crap.txt` are written to a process-specific
+temporary directory, so generated reports do not dirty the checkout. To retain
+them elsewhere, use `-OutputDirectory <path>`.
 
 `scripts/coverage-crap-baseline.json` maintains three non-regression gates:
 
@@ -104,10 +108,13 @@ The maximum baseline has no upward headroom, so any increase fails. Raise the
 coverage floor or lower the maximum when durable improvements provide a new
 repeatable baseline; never move either gate merely to pass a change.
 
-CI runs the same command in the `coverage` job. It retains the profile and both
-reports for 14 days in an artifact named `coverage-crap-<commit SHA>`; the JSON
-and text reports also identify the checked-out commit. The required `verify`
-status fails unless this job succeeds.
+Before collecting production metrics, every coverage matrix leg runs
+`Test-CoverageCrap.Unit.ps1` to protect parser, formula, join, and threshold
+behavior. CI retains each target's profile and both reports for 14 days in an
+artifact named `coverage-crap-<target>-<runner architecture>-<commit SHA>`.
+Uploads use overwrite semantics so a same-run retry is safe. The JSON and text
+reports identify both the checked-out commit and native Go target. The required
+`verify` status fails unless all three coverage targets succeed.
 
 ## Mutation testing
 

@@ -9,9 +9,10 @@ source file returned by `go list ./...` occurs in that profile, and measures eve
 production function with the same pinned gocyclo lineage as Test-Complexity.ps1.
 Functions are joined by normalized repository-relative file path plus start line.
 
-The JSON and text reports use statement coverage. CRAP is calculated as
-`complexity^2 * (1 - coverage)^3 + complexity`, where coverage is in [0, 1].
-The checked-in baseline is deliberately not overridable from the command line.
+The JSON and text reports identify the native GOOS/GOARCH target and use statement
+coverage. CRAP is calculated as `complexity^2 * (1 - coverage)^3 + complexity`,
+where coverage is in [0, 1]. The checked-in baseline is deliberately not
+overridable from the command line.
 
 .PARAMETER OutputDirectory
 Directory for coverage.out, coverage-crap.json, and coverage-crap.txt. The default
@@ -32,7 +33,6 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 Import-Module (Join-Path $PSScriptRoot 'CoverageCrap.psm1') -Force
 
 $gocyclo = 'github.com/fzipp/gocyclo/cmd/gocyclo@v0.6.1-0.20251227213109-7b6c7c5e29f1'
-$coverageBasis = 'Statement coverage across every production Go package from go test ./... -covermode=count -coverprofile=<path>.'
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $baselinePath = Join-Path $PSScriptRoot 'coverage-crap-baseline.json'
 $baseline = Get-Content -LiteralPath $baselinePath -Raw | ConvertFrom-Json
@@ -62,6 +62,18 @@ $textReportPath = Join-Path $outputRoot 'coverage-crap.txt'
 
 Push-Location $repositoryRoot
 try {
+    $targetOutput = @(& go env GOOS GOARCH)
+    if ($LASTEXITCODE -ne 0 -or $targetOutput.Count -ne 2) {
+        throw 'go env GOOS GOARCH failed or returned an unexpected target.'
+    }
+    $goos = "$($targetOutput[0])".Trim()
+    $goarch = "$($targetOutput[1])".Trim()
+    if (-not $goos -or -not $goarch) {
+        throw 'go env GOOS GOARCH returned an empty target component.'
+    }
+    $target = "$goos/$goarch"
+    $coverageBasis = "Statement coverage for the native $target target across every production Go package from go test ./... -covermode=count -coverprofile=<path>."
+
     $modulePathOutput = @(& go list -m)
     if ($LASTEXITCODE -ne 0 -or $modulePathOutput.Count -ne 1) {
         $modulePathOutput | ForEach-Object { Write-Host $_ }
@@ -196,6 +208,10 @@ try {
     $report = [ordered]@{
         schemaVersion = 1
         commit = $commit
+        target = [ordered]@{
+            goos = $goos
+            goarch = $goarch
+        }
         generatedAtUtc = [DateTime]::UtcNow.ToString('o')
         repositoryCoverage = [ordered]@{
             basis = $coverageBasis
@@ -215,6 +231,7 @@ try {
 
     $textLines = [System.Collections.Generic.List[string]]::new()
     $textLines.Add("Commit: $commit")
+    $textLines.Add("Target: $target")
     $textLines.Add("Repository coverage basis: $coverageBasis")
     $textLines.Add(
         ('Repository coverage: {0:N1}% (floor: {1:N1}%)' -f

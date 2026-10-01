@@ -16,16 +16,17 @@ import (
 )
 
 func main() {
-	if err := execute(os.Args[1:], os.Stderr, hasInteractiveTerminal); err != nil {
+	if err := execute(os.Args[1:], os.Stdout, os.Stderr, hasInteractiveTerminal); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func execute(args []string, output io.Writer, hasTerminal func() bool) error {
+func execute(args []string, commandOutput, printConfigOutput io.Writer, hasTerminal func() bool) error {
 	rootCmd := newRootCommand(hasTerminal)
 	rootCmd.SetArgs(args)
-	rootCmd.SetOut(output)
+	rootCmd.SetOut(commandOutput)
+	rootCmd.SetErr(printConfigOutput)
 	return rootCmd.Execute()
 }
 
@@ -50,7 +51,7 @@ func newRootCommand(hasTerminal func() bool) *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("marshal config: %w", err)
 				}
-				cmd.Print(string(out))
+				cmd.PrintErr(string(out))
 				return nil
 			}
 

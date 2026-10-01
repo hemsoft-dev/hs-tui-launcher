@@ -36,7 +36,17 @@ jobs:
         run: ./scripts/Test-SecurityFixtures.ps1
 
   coverage:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos
+          - os: ubuntu-latest
+            target: linux
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
     steps:
@@ -48,6 +58,10 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Test coverage and CRAP calculations
+        shell: pwsh
+        run: ./scripts/Test-CoverageCrap.Unit.ps1
+
       - name: Enforce coverage and CRAP gates
         shell: pwsh
         run: ./scripts/Test-CoverageCrap.ps1 -OutputDirectory coverage-crap-artifacts
@@ -56,9 +70,10 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: coverage-crap-${{ github.sha }}
+          name: coverage-crap-${{ matrix.target }}-${{ runner.arch }}-${{ github.sha }}
           path: coverage-crap-artifacts/
           if-no-files-found: error
+          overwrite: true
           retention-days: 14
 
   verify:

@@ -9,7 +9,7 @@ $assertions = 0
 function Assert-Equal {
     param($Expected, $Actual, [string]$Because)
     $script:assertions++
-    if ($Expected -ne $Actual) {
+    if ($Expected -cne $Actual) {
         throw "Assertion failed ($Because): expected '$Expected', got '$Actual'."
     }
 }

@@ -18,11 +18,13 @@ func TestExecutePrintsResolvedConfigWithoutInteractiveTerminal(t *testing.T) {
 		t.Fatalf("write config: %v", err)
 	}
 
-	var output bytes.Buffer
+	var commandOutput bytes.Buffer
+	var printConfigOutput bytes.Buffer
 	terminalChecked := false
 	err := execute(
 		[]string{"--config", configPath, "--print-config"},
-		&output,
+		&commandOutput,
+		&printConfigOutput,
 		func() bool {
 			terminalChecked = true
 			return false
@@ -34,8 +36,35 @@ func TestExecutePrintsResolvedConfigWithoutInteractiveTerminal(t *testing.T) {
 	if terminalChecked {
 		t.Fatal("--print-config checked for an interactive terminal")
 	}
-	if !strings.Contains(output.String(), "title: Printed config") {
-		t.Fatalf("--print-config output = %q", output.String())
+	if commandOutput.Len() != 0 {
+		t.Fatalf("normal command output = %q, want empty", commandOutput.String())
+	}
+	if !strings.Contains(printConfigOutput.String(), "title: Printed config") {
+		t.Fatalf("--print-config output = %q", printConfigOutput.String())
+	}
+}
+
+func TestExecuteWritesHelpToCommandOutput(t *testing.T) {
+	var commandOutput bytes.Buffer
+	var printConfigOutput bytes.Buffer
+	terminalChecked := false
+
+	err := execute([]string{"--help"}, &commandOutput, &printConfigOutput, func() bool {
+		terminalChecked = true
+		return false
+	})
+
+	if err != nil {
+		t.Fatalf("execute returned error: %v", err)
+	}
+	if terminalChecked {
+		t.Fatal("--help checked for an interactive terminal")
+	}
+	if !strings.Contains(commandOutput.String(), "Usage:") {
+		t.Fatalf("normal command output = %q, want help", commandOutput.String())
+	}
+	if printConfigOutput.Len() != 0 {
+		t.Fatalf("print-config output = %q, want empty", printConfigOutput.String())
 	}
 }
 
@@ -43,10 +72,15 @@ func TestExecuteReturnsConfigLoadError(t *testing.T) {
 	missingPath := filepath.Join(t.TempDir(), "missing.yaml")
 	terminalChecked := false
 
-	err := execute([]string{"--config", missingPath}, &bytes.Buffer{}, func() bool {
-		terminalChecked = true
-		return true
-	})
+	err := execute(
+		[]string{"--config", missingPath},
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		func() bool {
+			terminalChecked = true
+			return true
+		},
+	)
 
 	if err == nil {
 		t.Fatal("execute returned nil for a missing config")
@@ -63,10 +97,15 @@ func TestExecuteRejectsNoninteractiveTerminal(t *testing.T) {
 	}
 
 	terminalChecks := 0
-	err := execute([]string{"--config", configPath}, &bytes.Buffer{}, func() bool {
-		terminalChecks++
-		return false
-	})
+	err := execute(
+		[]string{"--config", configPath},
+		&bytes.Buffer{},
+		&bytes.Buffer{},
+		func() bool {
+			terminalChecks++
+			return false
+		},
+	)
 
 	if err == nil {
 		t.Fatal("execute returned nil without an interactive terminal")
