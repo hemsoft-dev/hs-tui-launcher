@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "repositoryCoverageFloorPercent": 83.0,
+  "actionableCrap": 30.0,
+  "maximumCrapBaseline": 31.80,
+  "evidence": {
+    "commit": "82005a75fb8dcae27cc9f964242b11d71164effb",
+    "coverageBasis": "Statement coverage reported by go test ./... with a single coverage profile",
+    "knownMeasurements": [
+      {
+        "function": "main",
+        "crap": 31.80
+      },
+      {
+        "function": "hasInteractiveTerminal",
+        "crap": 20.00
+      }
+    ],
+    "note": "Recompute the coverage floor and maximum CRAP from the reproducible integration baseline after the issue #44 production refactor; never lower a gate merely to pass."
+  }
+}
