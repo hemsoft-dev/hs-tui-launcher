@@ -42,6 +42,8 @@ $expectedArguments = @(
 $expectedStdin = "fixture stdin`nsecond line with spaces & | <> `$`n"
 $expectedSelected = 'selected value with spaces ; $ & | <>'
 $expectedInherited = 'inherited value with spaces'
+$reportSchemaVersion = 2
+$observationSchemaVersion = 2
 
 function Get-NativeOutputName {
     param([Parameter(Mandatory)][string]$BaseName, [Parameter(Mandatory)][string]$GOOS)
@@ -89,10 +91,19 @@ function Assert-ExactHandoff {
     if ([string]$Observed.workingDirectory -cne $ExpectedWorkingDirectory) {
         $failures.Add('workingDirectory')
     }
-    if ([string]$Observed.environment.HS_HANDOFF_SELECTED -cne $expectedSelected -or
-        [string]$Observed.environment.HS_HANDOFF_EMPTY -cne '' -or
-        [string]$Observed.environment.HS_HANDOFF_EXIT_CODE -cne "$ExpectedExitCode" -or
-        [string]$Observed.environment.HS_HANDOFF_INHERITED -cne $expectedInherited) {
+    if ([int]$Observed.schemaVersion -ne $observationSchemaVersion) {
+        $failures.Add('observationSchemaVersion')
+    }
+    if (-not [bool]$Observed.environment.HS_HANDOFF_SELECTED.present -or
+        -not [bool]$Observed.environment.HS_HANDOFF_EMPTY.present -or
+        -not [bool]$Observed.environment.HS_HANDOFF_EXIT_CODE.present -or
+        -not [bool]$Observed.environment.HS_HANDOFF_INHERITED.present) {
+        $failures.Add('environmentPresence')
+    }
+    if ([string]$Observed.environment.HS_HANDOFF_SELECTED.value -cne $expectedSelected -or
+        [string]$Observed.environment.HS_HANDOFF_EMPTY.value -cne '' -or
+        [string]$Observed.environment.HS_HANDOFF_EXIT_CODE.value -cne "$ExpectedExitCode" -or
+        [string]$Observed.environment.HS_HANDOFF_INHERITED.value -cne $expectedInherited) {
         $failures.Add('environment')
     }
     if ([string]$Observed.stdin -cne $expectedStdin) {
@@ -193,7 +204,8 @@ $wrapperName = if ($goos -eq 'windows') { 'run.ps1' } else { 'run.sh' }
 $wrapperSource = Join-Path $repositoryRoot $wrapperName
 
 $report = [ordered]@{
-    schemaVersion = 1
+    schemaVersion = $reportSchemaVersion
+    observationSchemaVersion = $observationSchemaVersion
     commit = $commit
     target = [ordered]@{ goos = $goos; goarch = $goarch; goVersion = $goVersion }
     wrapper = [ordered]@{
@@ -224,13 +236,14 @@ function Write-Report {
 if ($NegativeCheck) {
     try {
         $baseline = [pscustomobject]@{
+            schemaVersion = $observationSchemaVersion
             arguments = @($expectedArguments)
             workingDirectory = '/expected/working directory'
             environment = [pscustomobject]@{
-                HS_HANDOFF_SELECTED = $expectedSelected
-                HS_HANDOFF_EMPTY = ''
-                HS_HANDOFF_EXIT_CODE = '23'
-                HS_HANDOFF_INHERITED = $expectedInherited
+                HS_HANDOFF_SELECTED = [pscustomobject]@{ value = $expectedSelected; present = $true }
+                HS_HANDOFF_EMPTY = [pscustomobject]@{ value = ''; present = $true }
+                HS_HANDOFF_EXIT_CODE = [pscustomobject]@{ value = '23'; present = $true }
+                HS_HANDOFF_INHERITED = [pscustomobject]@{ value = $expectedInherited; present = $true }
             }
             stdin = $expectedStdin
             goos = $goos
@@ -244,8 +257,13 @@ if ($NegativeCheck) {
             -Observed $observed -ExpectedWorkingDirectory $baseline.workingDirectory -ObservedExitCode 23 -ExpectedExitCode 23))
 
         $observed = ($baseline | ConvertTo-Json -Depth 5 | ConvertFrom-Json)
-        $observed.environment.HS_HANDOFF_SELECTED = 'wrong'
+        $observed.environment.HS_HANDOFF_SELECTED.value = 'wrong'
         $negativeCases.Add((Assert-NegativeCaseRejected -Name 'mismatched environment' -ExpectedFailure 'environment' `
+            -Observed $observed -ExpectedWorkingDirectory $baseline.workingDirectory -ObservedExitCode 23 -ExpectedExitCode 23))
+
+        $observed = ($baseline | ConvertTo-Json -Depth 5 | ConvertFrom-Json)
+        $observed.environment.HS_HANDOFF_EMPTY.present = $false
+        $negativeCases.Add((Assert-NegativeCaseRejected -Name 'missing empty environment variable' -ExpectedFailure 'environmentPresence' `
             -Observed $observed -ExpectedWorkingDirectory $baseline.workingDirectory -ObservedExitCode 23 -ExpectedExitCode 23))
 
         $observed = ($baseline | ConvertTo-Json -Depth 5 | ConvertFrom-Json)

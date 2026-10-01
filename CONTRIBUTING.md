@@ -67,17 +67,20 @@ children. It proves exact arguments (including an empty argument and non-shell
 special data), working directory, selected and inherited environment values,
 stdin, temporary selection-file cleanup, and exit-code propagation. The second
 is a safe synthetic negative route proving that mismatched argv, environment,
-working directory, stdin, and nonzero exit expectations all fail the harness.
+empty-variable presence, working directory, stdin, and nonzero exit expectations
+all fail the harness.
 
 By default, reports and generated fixture binaries are written under the system
 temporary directory, not the checkout. Pass `-OutputDirectory <path>` to retain
 reports. CI uploads `launcher-handoff-<target>-<architecture>-<commit>` with
-overwrite semantics. Each bounded JSON report uses `schemaVersion: 1` and records
+overwrite semantics. Each bounded JSON report uses `schemaVersion: 2` and records
 the exact commit, native GOOS/GOARCH and Go version, wrapper path and hash,
 launcher mode, selected executable/arguments/working directory/allowlisted
 fixture environment, observed handoff fields, bounded stdout/stderr, and status.
-It never dumps the full environment. No credentials are read or needed; only the
-controlled `HS_HANDOFF_*` variables are recorded. Fixture builds set
+Observed allowlisted environment entries record both `value` and `present`, so an
+absent variable cannot be mistaken for a present variable with an empty value.
+The report never dumps the full environment. No credentials are read or needed;
+only the controlled `HS_HANDOFF_*` variables are recorded. Fixture builds set
 `GOPROXY=off`, `GOSUMDB=off`, and `GOTOOLCHAIN=local`.
 
 ## Security checks
