@@ -41,6 +41,26 @@ rules:
           - pattern: '$CHILD_PROCESS.spawnSync($COMMAND, ..., { shell: true, ... })'
           - pattern: 'spawn($COMMAND, ..., { shell: true, ... })'
           - pattern: 'spawnSync($COMMAND, ..., { shell: true, ... })'
+          - pattern: spawn("sh", ["-c", $COMMAND], ...)
+          - pattern: spawnSync("sh", ["-c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawn("sh", ["-c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawnSync("sh", ["-c", $COMMAND], ...)
+          - pattern: spawn("bash", ["-c", $COMMAND], ...)
+          - pattern: spawnSync("bash", ["-c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawn("bash", ["-c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawnSync("bash", ["-c", $COMMAND], ...)
+          - pattern: spawn("cmd", ["/c", $COMMAND], ...)
+          - pattern: spawnSync("cmd", ["/c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawn("cmd", ["/c", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawnSync("cmd", ["/c", $COMMAND], ...)
+          - pattern: spawn("powershell", ["-Command", $COMMAND], ...)
+          - pattern: spawnSync("powershell", ["-Command", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawn("powershell", ["-Command", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawnSync("powershell", ["-Command", $COMMAND], ...)
+          - pattern: spawn("pwsh", ["-Command", $COMMAND], ...)
+          - pattern: spawnSync("pwsh", ["-Command", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawn("pwsh", ["-Command", $COMMAND], ...)
+          - pattern: $CHILD_PROCESS.spawnSync("pwsh", ["-Command", $COMMAND], ...)
       - metavariable-pattern:
           metavariable: $COMMAND
           patterns:

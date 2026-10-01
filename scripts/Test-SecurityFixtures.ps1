@@ -83,7 +83,7 @@ try {
     Confirm-SemgrepResult "Semgrep dynamic-code fixture" (Join-Path $fixtureRoot "unsafe.ts") "typescript-dynamic-code-execution" 1
     Confirm-SemgrepResult "Semgrep Go shell positive fixture" (Join-Path $fixtureRoot "go-shell-positive.go") "go-shell-command-from-variable" 2
     Confirm-SemgrepResult "Semgrep Go shell negative fixture" (Join-Path $fixtureRoot "go-shell-negative.go") "go-shell-command-from-variable" 0
-    Confirm-SemgrepResult "Semgrep TypeScript shell positive fixture" (Join-Path $fixtureRoot "typescript-shell-positive.ts") "typescript-shell-command-from-variable" 5
+    Confirm-SemgrepResult "Semgrep TypeScript shell positive fixture" (Join-Path $fixtureRoot "typescript-shell-positive.ts") "typescript-shell-command-from-variable" 10
     Confirm-SemgrepResult "Semgrep TypeScript shell negative fixture" (Join-Path $fixtureRoot "typescript-shell-negative.ts") "typescript-shell-command-from-variable" 0
 
     $temporaryDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("hs-tui-security-" + [guid]::NewGuid().ToString("N"))
