@@ -4,18 +4,31 @@
   "actionableCrap": 30.0,
   "maximumCrapBaseline": 20.00,
   "evidence": {
-    "commit": "a03f84d6c70fd50e214cf37cfc11c220e0f267b8",
-    "coverageBasis": "Statement coverage reported to one decimal place by go test ./... with a single count-mode coverage profile",
-    "baselinePlatform": "windows/amd64",
-    "observedRepositoryCoveragePercent": 83.8,
-    "hostedUbuntuObservationPercent": 83.5,
+    "commit": "826dea818dd26896e35821d3e2449079724849c0",
+    "coverageBasis": "Native-target statement coverage reported to one decimal place by go test ./... with a single count-mode coverage profile",
+    "platformObservations": [
+      {
+        "target": "windows/amd64",
+        "repositoryCoveragePercent": 83.8,
+        "runs": 2
+      },
+      {
+        "target": "darwin/arm64",
+        "repositoryCoveragePercent": 83.6,
+        "runs": 1
+      },
+      {
+        "target": "linux/amd64",
+        "repositoryCoveragePercent": 83.6,
+        "runs": 1
+      }
+    ],
     "observedMaximumCrap": 20.00,
-    "measurementCount": 45,
-    "repeatRuns": 2,
+    "measurementCountPerTarget": 45,
     "knownMeasurements": [
       {
         "file": "main.go",
-        "line": 240,
+        "line": 241,
         "function": "hasInteractiveTerminal",
         "complexity": 4,
         "coveragePercent": 0.0,
@@ -23,7 +36,7 @@
       },
       {
         "file": "main.go",
-        "line": 32,
+        "line": 33,
         "function": "newRootCommand",
         "complexity": 10,
         "coveragePercent": 55.9,
@@ -31,7 +44,7 @@
       }
     ],
     "rules": {
-      "coverageFloor": "Keep the audited 83.0% floor; this gives 0.8 percentage points below repeated Windows results and 0.5 below the hosted Ubuntu observation, all reported to one decimal place.",
+      "coverageFloor": "Keep the audited 83.0% floor; this gives 0.6 percentage points below the lower hosted macOS/Linux result and 0.8 below repeated Windows results, all reported to one decimal place.",
       "maximumCrap": "Use the repeated maximum rounded to two decimals with no upward headroom, so any increase fails.",
       "rounding": "Coverage is parsed at the one-decimal precision emitted by go tool cover; reported CRAP uses midpoint-away-from-zero rounding to two decimals, while gates compare unrounded CRAP."
     }
