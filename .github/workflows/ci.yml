@@ -6,11 +6,46 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Install pinned security scanners
+        shell: pwsh
+        run: ./scripts/Install-SecurityTools.ps1
+
+      - name: Security scans
+        shell: pwsh
+        run: ./scripts/Test-Security.ps1
+
+      - name: Prove controlled fixtures are rejected
+        shell: pwsh
+        run: ./scripts/Test-SecurityFixtures.ps1
+
   verify:
+    needs: security
+    if: ${{ always() }}
     runs-on: windows-latest
 
     steps:
+      - name: Require security success
+        if: needs.security.result != 'success'
+        shell: pwsh
+        run: throw "The required security job did not succeed."
+
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

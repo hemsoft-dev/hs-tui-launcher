@@ -1,0 +1,10 @@
+title = "hs-tui-launcher secret scanning"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore locally installed scanner binaries."
+paths = [
+  '''(^|[\\/])bin[\\/]security-tools[\\/]''',
+]
