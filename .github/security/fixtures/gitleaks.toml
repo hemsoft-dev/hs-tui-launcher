@@ -1,0 +1,7 @@
+title = "Controlled secret-scanner failure fixture"
+
+[[rules]]
+id = "controlled-fixture-secret"
+description = "Detect the inert fixture sentinel used by Test-SecurityFixtures.ps1."
+regex = '''HS_TUI_TEST_SECRET\s*=\s*"fixture-not-a-real-secret"'''
+tags = ["test"]

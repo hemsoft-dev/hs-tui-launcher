@@ -7,7 +7,10 @@ branch protection rule blocks direct changes to `main` and requires the
 `verify` and `mutation` status checks before merge. Do not bypass a pending,
 missing, or failed check.
 
-The `verify` job is defined in `.github/workflows/ci.yml`. It runs these checks:
+The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
+`security` job and has an explicit failure gate, so anything other than a
+successful security result fails the already-required `verify` check. Neither
+job has a path filter. After security passes, `verify` runs these checks:
 
 ```powershell
 go build ./...
@@ -25,6 +28,41 @@ analysis tools first so local checks use the same versions as CI:
 go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
 go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
+
+## Security checks
+
+Pull requests and pushes to `main` run the required `security` job before
+`verify`. It uses read-only repository permissions and performs four checks:
+
+- `govulncheck ./...` reports reachable vulnerabilities in Go call paths.
+- Gitleaks scans the working tree for credentials and other secrets.
+- Semgrep applies the repository's `.semgrep.yml` rules to Go and TypeScript.
+- OSV-Scanner checks all recognized dependency manifests in the repository, so
+  a pull request that changes a manifest is reviewed against the OSV database.
+
+Install the same pinned scanner versions used by CI, then run the scans and the
+controlled failure fixtures:
+
+```powershell
+.\scripts\Install-SecurityTools.ps1
+.\scripts\Test-Security.ps1
+.\scripts\Test-SecurityFixtures.ps1
+```
+
+`Install-SecurityTools.ps1` installs `govulncheck` v1.8.0, Gitleaks v8.30.1,
+OSV-Scanner v2.4.0, and Semgrep 1.178.0 under the ignored
+`bin/security-tools` directory; it does not alter a system Python environment.
+The last command confirms that the secret, static-analysis, and dependency
+scanners reject inert examples. The
+secret fixture is a repository-specific sentinel, not a usable credential. The
+dependency fixture is lockfile metadata only; it never downloads or publishes
+the package.
+
+Run these commands from the repository root. Never paste a real API key into
+a fixture or command line, and clear credential environment variables if you
+add scanner debugging. Gitleaks redacts findings, but scanner output should
+still be treated as sensitive and must not be pasted into public logs. The
+scans query public vulnerability data only and make no paid-provider calls.
 
 ## Mutation testing
 

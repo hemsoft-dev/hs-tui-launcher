@@ -1,0 +1,40 @@
+rules:
+  - id: go-shell-command-from-variable
+    message: Do not pass a variable command string to a shell; invoke the intended executable with an argument array.
+    severity: ERROR
+    languages: [go]
+    patterns:
+      - pattern-either:
+          - pattern: exec.Command("sh", "-c", $COMMAND)
+          - pattern: exec.Command("bash", "-c", $COMMAND)
+          - pattern: exec.Command("cmd", "/c", $COMMAND)
+          - pattern: exec.Command("powershell", "-Command", $COMMAND)
+          - pattern: exec.Command("pwsh", "-Command", $COMMAND)
+      - metavariable-pattern:
+          metavariable: $COMMAND
+          patterns:
+            - pattern-not: '"..."'
+
+  - id: typescript-dynamic-code-execution
+    message: Dynamic JavaScript execution can turn untrusted input into code.
+    severity: ERROR
+    languages: [typescript]
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+
+  - id: typescript-shell-command-from-variable
+    message: Do not execute a variable through a shell; use an executable plus an argument array.
+    severity: ERROR
+    languages: [typescript]
+    patterns:
+      - pattern-either:
+          - pattern: $CHILD_PROCESS.exec($COMMAND, ...)
+          - pattern: exec($COMMAND, ...)
+          - pattern: execSync($COMMAND, ...)
+      - metavariable-pattern:
+          metavariable: $COMMAND
+          patterns:
+            - pattern-not: '"..."'
+            - pattern-not: "'...'"
+            - pattern-not: '`...`'

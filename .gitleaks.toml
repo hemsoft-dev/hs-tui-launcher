@@ -1,0 +1,11 @@
+title = "hs-tui-launcher secret scanning"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore controlled fixtures and locally installed scanner binaries."
+paths = [
+  '''(^|[\\/])\.github[\\/]security[\\/]fixtures[\\/]''',
+  '''(^|[\\/])bin[\\/]security-tools[\\/]''',
+]
