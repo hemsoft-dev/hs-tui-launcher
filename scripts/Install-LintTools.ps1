@@ -86,10 +86,17 @@ function Test-PSScriptAnalyzerCache {
         return $false
     }
     try {
-        $module = Import-Module $moduleManifest -Force -PassThru -ErrorAction Stop
-        $valid = $module.Version.ToString() -eq $Version
-        Remove-Module $module.Name -Force -ErrorAction SilentlyContinue
-        return $valid
+        # Validate in a child process so importing a staged module cannot leave
+        # PowerShell's module-analysis cache bound to a directory that is moved.
+        $pwsh = [Environment]::ProcessPath
+        $quotedManifest = "'$($moduleManifest.Replace("'", "''"))'"
+        $quotedVersion = "'$($Version.Replace("'", "''"))'"
+        $validationCommand = "`$ErrorActionPreference = 'Stop'; " +
+            "`$module = Import-Module $quotedManifest -Force -PassThru -ErrorAction Stop; " +
+            "if (`$module.Version.ToString() -ne $quotedVersion) { exit 1 }; " +
+            'Get-Command Invoke-ScriptAnalyzer -ErrorAction Stop | Out-Null'
+        & $pwsh -NoProfile -NonInteractive -Command $validationCommand *> $null
+        return $LASTEXITCODE -eq 0
     }
     catch {
         return $false
