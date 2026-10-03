@@ -117,10 +117,39 @@ function Publish-ToolDirectory {
     Move-Item -LiteralPath $StagingDirectory -Destination $Destination
 }
 
+function Enter-ToolCacheLock {
+    param(
+        [Parameter(Mandatory)][string] $Root,
+        [int] $TimeoutSeconds = 300
+    )
+
+    # Keep the lock file in place: deleting it after releasing the handle can
+    # race with the next waiter and create two independently locked files.
+    $lockPath = Join-Path $Root '.install.lock'
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    while ($true) {
+        try {
+            return [System.IO.File]::Open(
+                $lockPath,
+                [System.IO.FileMode]::OpenOrCreate,
+                [System.IO.FileAccess]::ReadWrite,
+                [System.IO.FileShare]::None
+            )
+        }
+        catch [System.IO.IOException] {
+            if ([DateTime]::UtcNow -ge $deadline) {
+                throw "Timed out waiting for the lint-tool cache lock '$lockPath'."
+            }
+            Start-Sleep -Milliseconds 200
+        }
+    }
+}
+
 $manifest = Import-PowerShellDataFile (Join-Path $PSScriptRoot 'lint-tools.psd1')
 $platform = Get-PlatformKey
 $root = [System.IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Path $root -Force | Out-Null
+$cacheLock = Enter-ToolCacheLock -Root $root
 $temp = Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-lint-$([guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory -Path $temp | Out-Null
 
@@ -188,6 +217,7 @@ try {
 }
 finally {
     Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    $cacheLock.Dispose()
 }
 
 Write-Host "Pinned lint tools are available under '$root'."
