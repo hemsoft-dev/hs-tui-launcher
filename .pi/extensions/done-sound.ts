@@ -1,7 +1,24 @@
 import { existsSync, realpathSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type {
+	AgentSettledEvent,
+	ExtensionAPI,
+	ExtensionUIContext,
+} from "@earendil-works/pi-coding-agent";
+
+export interface DoneSoundContext {
+	hasUI: boolean;
+	cwd: string;
+	ui: Pick<ExtensionUIContext, "notify">;
+}
+
+export interface DoneSoundAPI extends Pick<ExtensionAPI, "exec"> {
+	on(
+		event: "agent_settled",
+		handler: (event: AgentSettledEvent, context: DoneSoundContext) => Promise<void> | void,
+	): () => void;
+}
 
 const repositoryRoot = realpathSync(fileURLToPath(new URL("../../", import.meta.url)));
 const playbackScript = join(repositoryRoot, "scripts", "Play-DoneSound.ps1");
@@ -22,7 +39,7 @@ export function belongsToRepository(cwd: string): boolean {
 	}
 }
 
-export default function doneSound(pi: ExtensionAPI) {
+export function doneSound(pi: DoneSoundAPI) {
 	let playing = false;
 
 	// Unlike agent_end, this runs only after retries and queued follow-ups finish.
@@ -46,3 +63,7 @@ export default function doneSound(pi: ExtensionAPI) {
 		}
 	});
 }
+
+// Keep the narrow test boundary assignable from Pi's complete extension API.
+const doneSoundExtension: (pi: ExtensionAPI) => void = doneSound;
+export default doneSoundExtension;

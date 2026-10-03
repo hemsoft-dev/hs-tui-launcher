@@ -5,28 +5,31 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { test } from "node:test";
-import doneSound, { belongsToRepository } from "../extensions/done-sound.ts";
+import { belongsToRepository, doneSound } from "../extensions/done-sound.ts";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const success = { code: 0, killed: false, stdout: "", stderr: "" };
 
-/** @typedef {import("@earendil-works/pi-coding-agent").ExtensionAPI} ExtensionAPI */
-/** @typedef {(event: unknown, context: any) => Promise<void>} SettledHandler */
-/** @typedef {(...args: any[]) => Promise<any>} Exec */
+/** @typedef {import("../extensions/done-sound.ts").DoneSoundAPI} DoneSoundAPI */
+/** @typedef {Parameters<DoneSoundAPI["on"]>[1]} SettledHandler */
+/** @typedef {DoneSoundAPI["exec"]} Exec */
 
 /** @param {Exec} [exec] */
 function harness(exec = async () => success) {
 	/** @type {Map<string, SettledHandler>} */
 	const handlers = new Map();
-	/** @type {any[][]} */
+	/** @type {Parameters<DoneSoundAPI["exec"]>[]} */
 	const calls = [];
 	/** @type {any[][]} */
 	const warnings = [];
-	const pi = {
-		on: (/** @type {string} */ name, /** @type {SettledHandler} */ handler) => handlers.set(name, handler),
-		exec: async (/** @type {any[]} */ ...args) => { calls.push(args); return exec(...args); },
-	};
-	doneSound(/** @type {ExtensionAPI} */ (/** @type {unknown} */ (pi)));
+	const pi = /** @satisfies {DoneSoundAPI} */ ({
+		on: (name, handler) => {
+			handlers.set(name, handler);
+			return () => { handlers.delete(name); };
+		},
+		exec: async (...args) => { calls.push(args); return exec(...args); },
+	});
+	doneSound(pi);
 	const ctx = { cwd: root, hasUI: true, ui: { notify: (/** @type {any[]} */ ...args) => warnings.push(args) } };
 	return {
 		handlers,
@@ -36,7 +39,7 @@ function harness(exec = async () => success) {
 		settle: () => {
 			const handler = handlers.get("agent_settled");
 			assert.ok(handler);
-			return handler({}, ctx);
+			return handler({ type: "agent_settled" }, ctx);
 		},
 	};
 }
@@ -46,9 +49,11 @@ test("only the fully settled event plays the repository's clip", async () => {
 	assert.deepEqual([...h.handlers.keys()], ["agent_settled"]);
 	await h.settle();
 	assert.equal(h.calls.length, 1);
-	assert.equal(h.calls[0][0], "pwsh");
-	assert.deepEqual(h.calls[0][1], ["-NoProfile", "-File", join(root, "scripts", "Play-DoneSound.ps1")]);
-	assert.equal(h.calls[0][2].timeout, 15000);
+	const call = h.calls[0];
+	assert.ok(call);
+	assert.equal(call[0], "pwsh");
+	assert.deepEqual(call[1], ["-NoProfile", "-File", join(root, "scripts", "Play-DoneSound.ps1")]);
+	assert.equal(call[2]?.timeout, 15000);
 	assert.deepEqual(h.warnings, []);
 });
 

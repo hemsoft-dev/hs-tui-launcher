@@ -10,7 +10,7 @@
   "scripts": {
     "typecheck": "tsc --project tsconfig.json",
     "test:jev": "node --experimental-strip-types --test pi/jev-decide/*.test.ts",
-    "test:done-sound": "node --test .pi/tests/done-sound.test.mjs",
+    "test:done-sound": "node --test .pi/tests/*.test.mjs",
     "test": "pwsh -NoProfile -File ./scripts/Test-NodeTests.ps1"
   },
   "devDependencies": {

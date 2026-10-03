@@ -51,8 +51,8 @@ $jevOutput = @(& node --experimental-strip-types --test pi/jev-decide/*.test.ts 
 $jevExitCode = $LASTEXITCODE
 Assert-NodeTestSummary -Suite 'Jev' -Output $jevOutput -ExitCode $jevExitCode -ExpectedTests 5
 
-$doneSoundOutput = @(& node --test .pi/tests/done-sound.test.mjs 2>&1)
+$doneSoundOutput = @(& node --test .pi/tests/*.test.mjs 2>&1)
 $doneSoundExitCode = $LASTEXITCODE
-Assert-NodeTestSummary -Suite 'done sound' -Output $doneSoundOutput -ExitCode $doneSoundExitCode -ExpectedTests 6
+Assert-NodeTestSummary -Suite '.pi tests' -Output $doneSoundOutput -ExitCode $doneSoundExitCode -ExpectedTests 6
 
 Write-Host 'Node test guard passed: 11 tests, 11 passed, 0 failed/cancelled/skipped/todo.'

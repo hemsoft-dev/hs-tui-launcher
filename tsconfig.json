@@ -13,10 +13,9 @@
     "types": ["node"]
   },
   "include": [
-    ".pi/extensions/done-sound.ts",
-    ".pi/tests/done-sound.test.mjs",
-    "pi/jev-decide/index.ts",
-    "pi/jev-decide/jev-core.ts",
-    "pi/jev-decide/jev-core.test.ts"
+    ".pi/extensions/**/*.ts",
+    ".pi/tests/**/*.test.mjs",
+    ".pi/tests/**/*.test.ts",
+    "pi/**/*.ts"
   ]
 }
