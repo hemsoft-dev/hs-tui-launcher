@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": true,
+    "erasableSyntaxOnly": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2024",
+    "types": ["node"]
+  },
+  "include": [
+    ".pi/extensions/**/*.ts",
+    ".pi/tests/**/*.test.mjs",
+    ".pi/tests/**/*.test.ts",
+    "pi/**/*.ts"
+  ]
+}

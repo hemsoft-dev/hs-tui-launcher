@@ -10,6 +10,30 @@ permissions:
   contents: read
 
 jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install locked Node.js dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Type-check TypeScript and JavaScript integration sources
+        run: npm run typecheck
+
+      - name: Run guarded Node.js suites
+        shell: pwsh
+        run: ./scripts/Test-NodeTests.ps1
+
   security:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -158,6 +182,7 @@ jobs:
 
   verify:
     needs:
+      - typescript
       - security
       - coverage
       - platform-gate
@@ -166,10 +191,10 @@ jobs:
 
     steps:
       - name: Require prerequisite success
-        if: ${{ needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' }}
+        if: ${{ needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' }}
         shell: pwsh
         run: |
-          throw "Required job failure: security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}."
+          throw "Required job failure: typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}."
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
