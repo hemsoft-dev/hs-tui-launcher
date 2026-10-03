@@ -245,7 +245,7 @@ func Default() Config {
 						Command:     piCopilotAstraCommand,
 					},
 					{
-						Name:        "Copilot: Opus 5.5 High",
+						Name:        "Copilot: Opus 5.5 High ($4/$0.2/$20)",
 						Description: modelDescription(githubCopilotProvider, copilotOpus55Model) + " at high reasoning",
 						Command:     piCopilotOpus55HighCommand,
 					},
@@ -295,12 +295,12 @@ func Default() Config {
 						Command:     piRouterQwenOmniFlashCommand,
 					},
 					{
-						Name:        "OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)",
+						Name:        "OpenRouter: Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)",
 						Description: modelDescription(openrouterProvider, openrouterBonsai227BModel),
 						Command:     piRouterBonsai227BCommand,
 					},
 					{
-						Name:        "OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)",
+						Name:        "OpenRouter: GLM-5.3-FlashX ($0.37/$0.09/$1.25)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashXModel),
 						Command:     piRouterGLM53FlashXCommand,
 					},
@@ -329,12 +329,12 @@ func Default() Config {
 						Command:     codexResumePickerCommand,
 					},
 					{
-						Name:        "GPT 5.6 Sol High ($5/$0.5/$30)",
+						Name:        "GPT 5.6 Sol High ($4/$0.4/$20)",
 						Description: "Start Codex with GPT-5.6 Sol at high reasoning",
 						Command:     codexSolHighCommand,
 					},
 					{
-						Name:        "GPT 5.6 Sol High/Fast ($5/$0.5/$30)",
+						Name:        "GPT 5.6 Sol High/Fast ($4/$0.4/$20)",
 						Description: "Start Codex with GPT-5.6 Sol at high reasoning and fast service",
 						Command:     codexSolHighFastCommand,
 					},
@@ -493,7 +493,7 @@ func Default() Config {
 						Command:     openrouterOpus55Command,
 					},
 					{
-						Name:        "Kimi K3 ($3/$0.3/$15)",
+						Name:        "Kimi K3 ($0.66/$0.66/$10)",
 						Description: modelDescription(openrouterProvider, openrouterKimiK3),
 						Command:     openrouterKimiK3Command,
 					},
@@ -503,7 +503,7 @@ func Default() Config {
 						Command:     openrouterQwen38Command,
 					},
 					{
-						Name:        "GLM-5.3-Flash ($0.15/$0.05/$0.5)",
+						Name:        "GLM-5.3-Flash ($0.15/$0.03/$0.5)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashModel),
 						Command:     openrouterGLM53FlashCommand,
 					},
@@ -548,12 +548,12 @@ func Default() Config {
 						Command:     openrouterQwenOmniFlashCommand,
 					},
 					{
-						Name:        "Ternary Bonsai 2 27B ($0.075/n/a/$0.5)",
+						Name:        "Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)",
 						Description: modelDescription(openrouterProvider, openrouterBonsai227BModel),
 						Command:     openrouterBonsai227BCommand,
 					},
 					{
-						Name:        "GLM-5.3-FlashX ($0.37/$0.075/$1.25)",
+						Name:        "GLM-5.3-FlashX ($0.37/$0.09/$1.25)",
 						Description: modelDescription(openrouterProvider, openrouterGLM53FlashXModel),
 						Command:     openrouterGLM53FlashXCommand,
 					},

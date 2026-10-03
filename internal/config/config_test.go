@@ -51,8 +51,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		description string
 		command     string
 	}{
-		{"GPT 5.6 Sol High ($5/$0.5/$30)", "Start Codex with GPT-5.6 Sol at high reasoning", codexSolHighCommand},
-		{"GPT 5.6 Sol High/Fast ($5/$0.5/$30)", "Start Codex with GPT-5.6 Sol at high reasoning and fast service", codexSolHighFastCommand},
+		{"GPT 5.6 Sol High ($4/$0.4/$20)", "Start Codex with GPT-5.6 Sol at high reasoning", codexSolHighCommand},
+		{"GPT 5.6 Sol High/Fast ($4/$0.4/$20)", "Start Codex with GPT-5.6 Sol at high reasoning and fast service", codexSolHighFastCommand},
 		{"GPT 5.6 Luna ($0.2/$0.02/$1.2)", "Start Codex with GPT-5.6 Luna at medium reasoning", codexLunaCommand},
 		{"GPT 5.6 Luna/Fast ($0.2/$0.02/$1.2)", "Start Codex with GPT-5.6 Luna at medium reasoning and fast service", codexLunaFastCommand},
 	}
@@ -99,7 +99,7 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"Copilot: GPT 5.6 Luna Max ($0.2/$0.02/$1.2)", "github-copilot/gpt-5.6-luna at max reasoning", piCopilotLunaMaxCommand},
 		{"Copilot: GPT 5.6 Sol High ($4/$0.4/$20)", "github-copilot/gpt-5.6-sol at high reasoning", piCopilotSolHighCommand},
 		{"Copilot: GPT 6 Astra Medium ($10/$1/$50)", "github-copilot/gpt-6-astra at medium reasoning", piCopilotAstraCommand},
-		{"Copilot: Opus 5.5 High", "github-copilot/claude-opus-5.5 at high reasoning", piCopilotOpus55HighCommand},
+		{"Copilot: Opus 5.5 High ($4/$0.2/$20)", "github-copilot/claude-opus-5.5 at high reasoning", piCopilotOpus55HighCommand},
 		{"GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)", "opencode-go/glm-5.3-flash", piGLM53FlashCommand},
 		{"DeepSeek V4.1 Flash ($0.15/$0.003/$0.6)", "opencode-go/deepseek-v4.1-flash", piDeepSeekV41Command},
 		{"Muse Spark V1.3 Contributor ($0.1/$0.002/$0.2)", "opencode-go/muse-spark-1.3-contributor", piMuseSpark13Command},
@@ -109,8 +109,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"OpenRouter: MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "openrouter/xiaomi/mimo-v2.6-flash", piRouterMimoV26FlashCommand},
 		{"OpenRouter: MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "openrouter/xiaomi/mimo-v2.6-pro", piRouterMimoV26ProCommand},
 		{"OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "openrouter/qwen/qwen3.8-omni-flash", piRouterQwenOmniFlashCommand},
-		{"OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "openrouter/prism-ml/ternary-bonsai-2-27b", piRouterBonsai227BCommand},
-		{"OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "openrouter/z-ai/glm-5.3-flashx", piRouterGLM53FlashXCommand},
+		{"OpenRouter: Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)", "openrouter/prism-ml/ternary-bonsai-2-27b", piRouterBonsai227BCommand},
+		{"OpenRouter: GLM-5.3-FlashX ($0.37/$0.09/$1.25)", "openrouter/z-ai/glm-5.3-flashx", piRouterGLM53FlashXCommand},
 	}
 	for index, want := range piChoices {
 		choice := pi.Choices[index]
@@ -286,9 +286,9 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"GPT 5.6 Luna ($0.2/$0.02/$1.2)", "openrouter/openai/gpt-5.6-luna", openrouterLuna56Command},
 		{"Gemini 3.8 Flash ($0.75/$0.075/$3.75)", "openrouter/google/gemini-3.8-flash", openrouterGemini38Command},
 		{"Claude Opus 5.5 ($4/$0.2/$20)", "openrouter/anthropic/claude-opus-5.5", openrouterOpus55Command},
-		{"Kimi K3 ($3/$0.3/$15)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
+		{"Kimi K3 ($0.66/$0.66/$10)", "openrouter/moonshotai/kimi-k3", openrouterKimiK3Command},
 		{"Qwen 3.8 Max ($2/$0.25/$6)", "openrouter/qwen/qwen3.8-max-0902", openrouterQwen38Command},
-		{"GLM-5.3-Flash ($0.15/$0.05/$0.5)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
+		{"GLM-5.3-Flash ($0.15/$0.03/$0.5)", "openrouter/z-ai/glm-5.3-flash", openrouterGLM53FlashCommand},
 		{"Fusion (variable/variable)", "openrouter/openrouter/fusion", openrouterFusionCommand},
 		{"DeepSeek V4.1 Flash ($0.15-$0.3/$0.003-$0.006/$0.6-$1.2)", "openrouter/deepseek/deepseek-v4.1-flash", openrouterDeepSeekV41Command},
 		{"Muse Spark V1.3 ($1.25/$0.15/$4.25)", "openrouter/meta/muse-spark-1.3", openrouterMuseSpark13Command},
@@ -297,8 +297,8 @@ func TestLoadReturnsDefaultsWhenNoConfigFileExists(t *testing.T) {
 		{"MiMo V2.6 Flash ($0.14/$0.0028/$0.28)", "openrouter/xiaomi/mimo-v2.6-flash", openrouterMimoV26FlashCommand},
 		{"MiMo V2.6 Pro ($0.435/$0.0036/$0.87)", "openrouter/xiaomi/mimo-v2.6-pro", openrouterMimoV26ProCommand},
 		{"Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)", "openrouter/qwen/qwen3.8-omni-flash", openrouterQwenOmniFlashCommand},
-		{"Ternary Bonsai 2 27B ($0.075/n/a/$0.5)", "openrouter/prism-ml/ternary-bonsai-2-27b", openrouterBonsai227BCommand},
-		{"GLM-5.3-FlashX ($0.37/$0.075/$1.25)", "openrouter/z-ai/glm-5.3-flashx", openrouterGLM53FlashXCommand},
+		{"Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)", "openrouter/prism-ml/ternary-bonsai-2-27b", openrouterBonsai227BCommand},
+		{"GLM-5.3-FlashX ($0.37/$0.09/$1.25)", "openrouter/z-ai/glm-5.3-flashx", openrouterGLM53FlashXCommand},
 		{"Seedream 5.0 Pro ($0.045 1K/$0.09 2K)", "images/bytedance-seed/seedream-5-0-pro", openrouterSeedreamCommand},
 		{"Seed Audio 1.0 ($0.15/min)", "audio/bytedance-seed/seed-audio-1-0", openrouterSeedAudioCommand},
 	}

@@ -92,7 +92,7 @@ items:
       - name: Copilot: GPT 6 Astra Medium ($10/$1/$50)
         description: github-copilot/gpt-6-astra at medium reasoning
         command: pi --model github-copilot/gpt-6-astra --thinking medium
-      - name: 'Copilot: Opus 5.5 High'
+      - name: 'Copilot: Opus 5.5 High ($4/$0.2/$20)'
         description: github-copilot/claude-opus-5.5 at high reasoning
         command: pi --model github-copilot/claude-opus-5.5 --thinking high
       - name: GLM-5.3-Flash (2x usage) ($0.075/$0.015/$0.25)
@@ -122,10 +122,10 @@ items:
       - name: 'OpenRouter: Qwen 3.8 Omni Flash ($0.15/$0.016/$0.47)'
         description: openrouter/qwen/qwen3.8-omni-flash
         command: pi --model openrouter/qwen/qwen3.8-omni-flash
-      - name: 'OpenRouter: Ternary Bonsai 2 27B ($0.075/n/a/$0.5)'
+      - name: 'OpenRouter: Ternary Bonsai 2 27B ($0.075/$0.0375/$0.5)'
         description: openrouter/prism-ml/ternary-bonsai-2-27b
         command: pi --model openrouter/prism-ml/ternary-bonsai-2-27b
-      - name: 'OpenRouter: GLM-5.3-FlashX ($0.37/$0.075/$1.25)'
+      - name: 'OpenRouter: GLM-5.3-FlashX ($0.37/$0.09/$1.25)'
         description: openrouter/z-ai/glm-5.3-flashx
         command: pi --model openrouter/z-ai/glm-5.3-flashx
   - name: Codex
@@ -157,13 +157,13 @@ items:
           -m gpt-6-astra
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
-      - name: GPT 5.6 Sol High ($5/$0.5/$30)
+      - name: GPT 5.6 Sol High ($4/$0.4/$20)
         description: Start Codex with GPT-5.6 Sol at high reasoning
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol
           -c 'service_tier="default"'
           -c 'model_reasoning_effort="high"'
-      - name: GPT 5.6 Sol High/Fast ($5/$0.5/$30)
+      - name: GPT 5.6 Sol High/Fast ($4/$0.4/$20)
         description: Start Codex with GPT-5.6 Sol at high reasoning and fast service
         command: >-
           codex --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol
@@ -281,7 +281,7 @@ definitions for one process and do not modify the global OpenCode configuration.
 Parenthesized prices list current catalog input/cached-input/output rates per
 million tokens at the base tier. `n/a` means the catalog does not publish a
 cached-input rate. OpenRouter rates were checked against the
-[OpenRouter model catalog](https://openrouter.ai/api/v1/models) on September 22, 2026.
+[OpenRouter model catalog](https://openrouter.ai/api/v1/models) on October 1, 2026.
 The OpenCode Go GLM-5.3-Flash choice shows its usage-equivalent half-rate because that model consumes twice the normal allowance. OpenRouter can
 apply discounts, scheduled rates, and provider-specific routing, so actual
 charges may differ. Fusion is variable because it
