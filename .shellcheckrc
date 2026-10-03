@@ -1,0 +1,3 @@
+# All maintained POSIX wrappers target /bin/sh rather than a specific extended shell.
+shell=sh
+severity=warning

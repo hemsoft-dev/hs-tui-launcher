@@ -1,0 +1,2 @@
+# All workflow diagnostics are enforced. This file intentionally defines no ignores;
+# actionlint's defaults cover every tracked workflow under .github/workflows.

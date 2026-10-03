@@ -3,6 +3,7 @@
 > **Evidence note (2026-09-18).** Local wrapper claims are based on the repository's checked-in `README.md` and `scripts/jev.ps1`. Web claims are based on the linked first-party OpenRouter and TypeSafe documentation fetched during this research. Community implementations are labeled as implementation references. Claims marked *inference* are design guidance, not statements verified from those pages.
 
 ## Summary
+
 TypeSafe Jev is exposed in this project as OpenRouter's Decisions API model `~typesafe/jev-latest`, rather than a normal chat-completions model. A request supplies a `state` and a non-empty object of named `questions`; each question has a type (`choice`, `noul`, or `score`), instructions, and type-specific criteria. The resulting JSON contains answers, resolved model information, and usage, making it suitable as a bounded decision tool that a chat model or coding agent calls before acting.
 
 The strongest use is a narrow, consequential fork: provide the current facts and explicit alternatives, ask Jev for a machine-readable decision, then let the agent validate and execute it. Do not use it as an unrestricted autonomous planner or as a substitute for tests, security review, or human approval.

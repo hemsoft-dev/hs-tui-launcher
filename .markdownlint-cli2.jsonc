@@ -1,0 +1,13 @@
+{
+  "config": {
+    "default": true,
+    // Commands, research citations, and prose contain meaningful long lines.
+    "MD013": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "node_modules/**",
+    // bin is gitignored and contains only generated, third-party tool caches.
+    "bin/**",
+  ],
+}

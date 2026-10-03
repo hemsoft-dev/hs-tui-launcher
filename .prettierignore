@@ -1,0 +1,7 @@
+# Generated dependency resolution; npm owns its serialization.
+package-lock.json
+
+# Deliberately malformed or vulnerable security fixtures must retain exact content.
+.github/security/fixtures/typescript-shell-negative.ts
+.github/security/fixtures/typescript-shell-positive.ts
+.github/security/fixtures/unsafe.ts

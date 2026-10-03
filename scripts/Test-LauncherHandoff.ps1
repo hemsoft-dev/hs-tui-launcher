@@ -144,6 +144,11 @@ function Assert-NegativeCaseRejected {
 }
 
 function New-ProcessResult {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'This test helper captures a child process result and does not change system state.'
+    )]
     param(
         [Parameter(Mandatory)][string]$FileName,
         [Parameter(Mandatory)][string[]]$Arguments,

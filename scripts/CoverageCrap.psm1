@@ -193,6 +193,11 @@ function Merge-CoverageAndComplexity {
 }
 
 function Test-CrapGates {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseSingularNouns',
+        '',
+        Justification = 'The function evaluates all independent coverage and CRAP gates as one operation.'
+    )]
     param(
         [Parameter(Mandatory)][object[]]$Measurements,
         [Parameter(Mandatory)][double]$RepositoryCoveragePercent,

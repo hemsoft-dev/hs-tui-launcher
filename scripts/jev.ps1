@@ -143,6 +143,11 @@ function Get-ObjectPropertyValue {
 }
 
 function Set-ObjectPropertyValue {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'This private helper mutates only the in-memory request object supplied by its caller.'
+    )]
     param(
         [Parameter(Mandatory = $true)]
         [object] $Object,
@@ -222,6 +227,25 @@ function ConvertTo-CriteriaMap {
 }
 
 function New-ConvenienceQuestions {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'This private constructor returns data and does not change external state.'
+    )]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseSingularNouns',
+        '',
+        Justification = 'The Decisions API field is named questions and this function builds that collection.'
+    )]
+    param(
+        [string] $Question,
+        [string] $QuestionId,
+        [string] $Type,
+        [string[]] $Criteria,
+        [string] $TrueCriteria,
+        [string] $FalseCriteria
+    )
+
     if ([string]::IsNullOrWhiteSpace($Question)) {
         throw 'A question is required unless -QuestionsJson, -QuestionsFile, or a request input is supplied.'
     }
@@ -348,7 +372,8 @@ try {
             $questions = ConvertTo-JsonValue -Text $questionsText -Source "questions file '$QuestionsFile'"
         }
         else {
-            $questions = New-ConvenienceQuestions
+            $questions = New-ConvenienceQuestions -Question $Question -QuestionId $QuestionId `
+                -Type $Type -Criteria $Criteria -TrueCriteria $TrueCriteria -FalseCriteria $FalseCriteria
         }
         Assert-QuestionsObject -Questions $questions
 
