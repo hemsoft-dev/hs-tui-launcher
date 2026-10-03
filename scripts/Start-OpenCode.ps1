@@ -20,6 +20,11 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 function Ensure-Property {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseApprovedVerbs',
+        '',
+        Justification = 'Ensure describes the helper exactly: it adds only a missing or null property.'
+    )]
     param(
         [Parameter(Mandatory = $true)]
         [pscustomobject] $Object,

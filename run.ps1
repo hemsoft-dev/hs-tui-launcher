@@ -41,6 +41,11 @@ function Test-NonInteractiveRequest {
 }
 
 function Set-TemporaryEnvironment {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'This helper changes only process-local variables and always restores them.'
+    )]
     param([string[]] $Entries)
 
     $previousValues = @{}

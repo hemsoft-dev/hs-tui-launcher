@@ -8,7 +8,7 @@ branch protection rule blocks direct changes to `main` and requires the
 missing, or failed check.
 
 The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
-`typescript` and `security` jobs and the aggregate results of the Windows,
+`lint`, `typescript`, and `security` jobs and the aggregate results of the Windows,
 macOS, and Linux `coverage` and `platform` matrices. Its explicit failure gate
 makes a failed, cancelled, or skipped prerequisite fail the already-required
 `verify` check. None of these jobs has a path filter. After all prerequisites
@@ -30,6 +30,44 @@ analysis tools first so local checks use the same versions as CI:
 go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
 go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
+
+## Formatting and lint
+
+Run the complete non-writing quality policy from the repository root with:
+
+```powershell
+pwsh -NoProfile -File ./scripts/Test-Lint.ps1
+```
+
+The command restores the locked npm dependencies and installs checksum-pinned
+ShellCheck 0.11.0, PSScriptAnalyzer 1.24.0, and actionlint 1.7.7 under the ignored
+`bin/lint-tools` cache. Cache entries are staged, validated, and marked complete
+before publication; a missing marker or unusable tool is repaired automatically.
+It then runs every check even when an earlier check fails, including setup
+failures: `gofmt` diff mode, ShellCheck through style severity,
+PSScriptAnalyzer warnings/errors, actionlint, markdownlint-cli2 0.23.3, Prettier
+3.9.9 for maintained YAML, JSON, TypeScript, and JavaScript extensions, and the
+TypeScript compiler. A setup-dependent check reports a clear failure while
+independent checks continue. The command never formats files or updates
+`package-lock.json`.
+
+Configuration lives in `.shellcheckrc`, `PSScriptAnalyzerSettings.psd1`,
+`.github/actionlint.yaml`, `.markdownlint-cli2.jsonc`, `.prettierrc.json`, and
+`tsconfig.json`. Markdown line-length is not enforced because commands, research
+citations, and prose contain meaningful long lines. Prettier excludes only npm's
+generated lockfile and three deliberately vulnerable TypeScript security
+fixtures whose exact source is test data. Markdown ignores only dependency and
+lint-tool caches. PowerShell warning suppressions are attached to the exact
+private functions and explain why their names do not imply external state
+changes. `.gitattributes` keeps POSIX shell and maintained text LF-terminated,
+PowerShell scripts CRLF-terminated, and MP3 assets binary.
+
+The pinned tools support x64 Windows and x64/ARM64 Linux and macOS. Windows
+ARM64 is rejected with a precise message because ShellCheck 0.11.0 does not
+publish a native binary and the repository does not assume x64 emulation.
+
+CI runs this same command in `lint`; the required `verify` aggregate rejects a
+failed, cancelled, or skipped lint job.
 
 ## TypeScript validation
 

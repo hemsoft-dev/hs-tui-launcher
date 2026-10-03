@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repositoryCoverageFloorPercent": 83.0,
   "actionableCrap": 30.0,
-  "maximumCrapBaseline": 20.00,
+  "maximumCrapBaseline": 20.0,
   "evidence": {
     "commit": "826dea818dd26896e35821d3e2449079724849c0",
     "coverageBasis": "Native-target statement coverage reported to one decimal place by go test ./... with a single count-mode coverage profile",
@@ -23,7 +23,7 @@
         "runs": 1
       }
     ],
-    "observedMaximumCrap": 20.00,
+    "observedMaximumCrap": 20.0,
     "measurementCountPerTarget": 45,
     "knownMeasurements": [
       {
@@ -32,7 +32,7 @@
         "function": "hasInteractiveTerminal",
         "complexity": 4,
         "coveragePercent": 0.0,
-        "crap": 20.00
+        "crap": 20.0
       },
       {
         "file": "main.go",

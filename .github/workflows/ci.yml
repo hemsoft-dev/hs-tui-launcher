@@ -10,6 +10,29 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Check formatting and lint policy
+        shell: pwsh
+        run: ./scripts/Test-Lint.ps1
+
   typescript:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -182,6 +205,7 @@ jobs:
 
   verify:
     needs:
+      - lint
       - typescript
       - security
       - coverage
@@ -191,10 +215,10 @@ jobs:
 
     steps:
       - name: Require prerequisite success
-        if: ${{ needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' }}
+        if: ${{ needs.lint.result != 'success' || needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' }}
         shell: pwsh
         run: |
-          throw "Required job failure: typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}."
+          throw "Required job failure: lint=${{ needs.lint.result }}, typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}."
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -23,6 +23,11 @@ function Assert-Near {
 }
 
 function Assert-Throws {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseSingularNouns',
+        '',
+        Justification = 'Assert-Throws is the conventional test-helper name for an exception assertion.'
+    )]
     param([scriptblock]$Action, [string]$MessagePattern, [string]$Because)
     $script:assertions++
     try {

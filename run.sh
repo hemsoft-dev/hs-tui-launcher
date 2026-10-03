@@ -2,7 +2,7 @@
 
 set -eu
 
-repo_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repo_root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 native_launcher="$repo_root/hs-tui-launcher"
 launcher_mode=native
 
