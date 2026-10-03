@@ -10,16 +10,35 @@ import doneSound, { belongsToRepository } from "../extensions/done-sound.ts";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const success = { code: 0, killed: false, stdout: "", stderr: "" };
 
+/** @typedef {import("@earendil-works/pi-coding-agent").ExtensionAPI} ExtensionAPI */
+/** @typedef {(event: unknown, context: any) => Promise<void>} SettledHandler */
+/** @typedef {(...args: any[]) => Promise<any>} Exec */
+
+/** @param {Exec} [exec] */
 function harness(exec = async () => success) {
+	/** @type {Map<string, SettledHandler>} */
 	const handlers = new Map();
+	/** @type {any[][]} */
 	const calls = [];
+	/** @type {any[][]} */
 	const warnings = [];
-	doneSound({
-		on: (name, handler) => handlers.set(name, handler),
-		exec: async (...args) => { calls.push(args); return exec(...args); },
-	});
-	const ctx = { cwd: root, hasUI: true, ui: { notify: (...args) => warnings.push(args) } };
-	return { handlers, calls, warnings, ctx, settle: () => handlers.get("agent_settled")({}, ctx) };
+	const pi = {
+		on: (/** @type {string} */ name, /** @type {SettledHandler} */ handler) => handlers.set(name, handler),
+		exec: async (/** @type {any[]} */ ...args) => { calls.push(args); return exec(...args); },
+	};
+	doneSound(/** @type {ExtensionAPI} */ (/** @type {unknown} */ (pi)));
+	const ctx = { cwd: root, hasUI: true, ui: { notify: (/** @type {any[]} */ ...args) => warnings.push(args) } };
+	return {
+		handlers,
+		calls,
+		warnings,
+		ctx,
+		settle: () => {
+			const handler = handlers.get("agent_settled");
+			assert.ok(handler);
+			return handler({}, ctx);
+		},
+	};
 }
 
 test("only the fully settled event plays the repository's clip", async () => {
@@ -76,7 +95,8 @@ test("playback failures warn without failing task completion", async () => {
 });
 
 test("overlapping notifications cannot start two players", async () => {
-	let finish;
+	/** @type {(value: typeof success) => void} */
+	let finish = () => {};
 	const pending = new Promise((resolve) => { finish = resolve; });
 	const h = harness(() => pending);
 	const first = h.settle();

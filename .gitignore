@@ -4,4 +4,5 @@ hs-tui-launcher.exe
 coverage.out
 dist/
 bin/
+node_modules/
 .env

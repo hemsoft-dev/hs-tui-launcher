@@ -8,11 +8,11 @@ branch protection rule blocks direct changes to `main` and requires the
 missing, or failed check.
 
 The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
-`security` job and the aggregate result of the Windows, macOS, and Linux
-`coverage` matrix. Its explicit failure gate makes a failed, cancelled, or
-skipped prerequisite fail the already-required `verify` check. None of these
-jobs has a path filter. After both prerequisites pass, `verify` runs these
-checks:
+`typescript` and `security` jobs and the aggregate results of the Windows,
+macOS, and Linux `coverage` and `platform` matrices. Its explicit failure gate
+makes a failed, cancelled, or skipped prerequisite fail the already-required
+`verify` check. None of these jobs has a path filter. After all prerequisites
+pass, `verify` runs these checks:
 
 ```powershell
 go build ./...
@@ -30,6 +30,40 @@ analysis tools first so local checks use the same versions as CI:
 go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
 go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
+
+## TypeScript validation
+
+Node.js 24.12.0 is the supported version for repository validation. The exact
+version is pinned in `.node-version`; use a version manager that reads that file
+or install that version directly. From the repository root, restore the pinned
+development dependencies, type-check without emitting files, and run both test
+suites with:
+
+```powershell
+npm ci --ignore-scripts
+npm run typecheck
+npm test
+```
+
+`npm ci` uses the committed `package-lock.json`, removes an existing
+`node_modules` directory before installation, and does not update the lockfile.
+The type-check covers `.pi/extensions/done-sound.ts`, both files under
+`pi/jev-decide`, and both test files. `tsconfig.json` sets `noEmit`, so the
+command writes no compiled JavaScript into the checkout.
+
+`npm test` runs these required commands:
+
+```powershell
+node --experimental-strip-types --test pi/jev-decide/*.test.ts
+node --test .pi/tests/done-sound.test.mjs
+```
+
+The repository test guard requires exactly five Jev tests and six done-sound
+tests. It fails on a nonzero process exit, a missing summary, a changed count,
+or any failed, cancelled, skipped, or todo test. CI runs installation,
+type-checking, and this guard in the `typescript` job. The required `verify`
+aggregate fails through `always()` unless that job succeeds, including when it
+is failed, cancelled, or skipped.
 
 ## Supported-platform handoff qualification
 
