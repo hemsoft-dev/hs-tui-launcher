@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string] $OutputDirectory = (Join-Path $PSScriptRoot '..\bin\lint-tools')
+    [string] $OutputDirectory = (Join-Path (Join-Path $PSScriptRoot '..') 'bin/lint-tools')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,6 +13,9 @@ function Get-PlatformKey {
         default { throw "Unsupported lint-tool architecture: $($_)." }
     }
 
+    if ($IsWindows -and $architecture -eq 'arm64') {
+        throw 'Windows ARM64 is unsupported: ShellCheck 0.11.0 does not publish a Windows ARM64 binary, and this repository does not assume x64 emulation.'
+    }
     if ($IsWindows) { return "windows-$architecture" }
     if ($IsLinux) { return "linux-$architecture" }
     if ($IsMacOS) { return "macos-$architecture" }
@@ -51,6 +54,62 @@ function Expand-ToolArchive {
     }
 }
 
+function Test-ExecutableCache {
+    param(
+        [Parameter(Mandatory)][string] $Directory,
+        [Parameter(Mandatory)][string] $ExecutableName
+    )
+
+    $executable = Join-Path $Directory $ExecutableName
+    if (-not (Test-Path -LiteralPath (Join-Path $Directory '.complete') -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $executable -PathType Leaf)) {
+        return $false
+    }
+    try {
+        & $executable --version *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    catch {
+        return $false
+    }
+}
+
+function Test-PSScriptAnalyzerCache {
+    param(
+        [Parameter(Mandatory)][string] $Directory,
+        [Parameter(Mandatory)][string] $Version
+    )
+
+    $moduleManifest = Join-Path $Directory 'PSScriptAnalyzer.psd1'
+    if (-not (Test-Path -LiteralPath (Join-Path $Directory '.complete') -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $moduleManifest -PathType Leaf)) {
+        return $false
+    }
+    try {
+        $module = Import-Module $moduleManifest -Force -PassThru -ErrorAction Stop
+        $valid = $module.Version.ToString() -eq $Version
+        Remove-Module $module.Name -Force -ErrorAction SilentlyContinue
+        return $valid
+    }
+    catch {
+        return $false
+    }
+}
+
+function Publish-ToolDirectory {
+    param(
+        [Parameter(Mandatory)][string] $StagingDirectory,
+        [Parameter(Mandatory)][string] $Destination
+    )
+
+    $parent = Split-Path -Parent $Destination
+    New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    if (Test-Path -LiteralPath $Destination) {
+        Remove-Item -LiteralPath $Destination -Recurse -Force
+    }
+    Move-Item -LiteralPath $StagingDirectory -Destination $Destination
+}
+
 $manifest = Import-PowerShellDataFile (Join-Path $PSScriptRoot 'lint-tools.psd1')
 $platform = Get-PlatformKey
 $root = [System.IO.Path]::GetFullPath($OutputDirectory)
@@ -60,12 +119,22 @@ New-Item -ItemType Directory -Path $temp | Out-Null
 
 try {
     $pssaRoot = Join-Path $root "PSScriptAnalyzer/$($manifest.PSScriptAnalyzer.Version)"
-    $pssaManifest = Join-Path $pssaRoot 'PSScriptAnalyzer.psd1'
-    if (-not (Test-Path -LiteralPath $pssaManifest -PathType Leaf)) {
+    if (-not (Test-PSScriptAnalyzerCache -Directory $pssaRoot -Version $manifest.PSScriptAnalyzer.Version)) {
         $package = Join-Path $temp 'PSScriptAnalyzer.zip'
         Invoke-VerifiedDownload -Uri $manifest.PSScriptAnalyzer.Uri -Destination $package `
             -Sha256 $manifest.PSScriptAnalyzer.Sha256
-        Expand-ToolArchive -Archive $package -Destination $pssaRoot
+        $stage = Join-Path (Split-Path -Parent $pssaRoot) ".staging-$([guid]::NewGuid().ToString('N'))"
+        try {
+            Expand-ToolArchive -Archive $package -Destination $stage
+            New-Item -ItemType File -Path (Join-Path $stage '.complete') | Out-Null
+            if (-not (Test-PSScriptAnalyzerCache -Directory $stage -Version $manifest.PSScriptAnalyzer.Version)) {
+                throw 'The staged PSScriptAnalyzer module failed completion validation.'
+            }
+            Publish-ToolDirectory -StagingDirectory $stage -Destination $pssaRoot
+        }
+        finally {
+            Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
     foreach ($toolName in @('ShellCheck', 'Actionlint')) {
@@ -77,8 +146,7 @@ try {
         $executableName = if ($toolName -eq 'ShellCheck') { 'shellcheck' } else { 'actionlint' }
         if ($IsWindows) { $executableName += '.exe' }
         $toolRoot = Join-Path $root "$toolName/$($tool.Version)/$platform"
-        $executable = Join-Path $toolRoot $executableName
-        if (Test-Path -LiteralPath $executable -PathType Leaf) { continue }
+        if (Test-ExecutableCache -Directory $toolRoot -ExecutableName $executableName) { continue }
 
         $archive = Join-Path $temp $asset.Name
         $repository = if ($toolName -eq 'ShellCheck') { 'koalaman/shellcheck' } else { 'rhysd/actionlint' }
@@ -90,11 +158,24 @@ try {
             Where-Object Name -eq $executableName |
             Select-Object -First 1
         if (-not $source) { throw "$executableName was not present in '$($asset.Name)'." }
-        New-Item -ItemType Directory -Path $toolRoot -Force | Out-Null
-        Copy-Item -LiteralPath $source.FullName -Destination $executable
-        if (-not $IsWindows) {
-            & chmod +x $executable
-            if ($LASTEXITCODE -ne 0) { throw "chmod failed for '$executable'." }
+
+        $stage = Join-Path (Split-Path -Parent $toolRoot) ".staging-$([guid]::NewGuid().ToString('N'))"
+        try {
+            New-Item -ItemType Directory -Path $stage -Force | Out-Null
+            $stagedExecutable = Join-Path $stage $executableName
+            Copy-Item -LiteralPath $source.FullName -Destination $stagedExecutable
+            if (-not $IsWindows) {
+                & chmod +x $stagedExecutable
+                if ($LASTEXITCODE -ne 0) { throw "chmod failed for '$stagedExecutable'." }
+            }
+            New-Item -ItemType File -Path (Join-Path $stage '.complete') | Out-Null
+            if (-not (Test-ExecutableCache -Directory $stage -ExecutableName $executableName)) {
+                throw "The staged $toolName executable failed completion validation."
+            }
+            Publish-ToolDirectory -StagingDirectory $stage -Destination $toolRoot
+        }
+        finally {
+            Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 }

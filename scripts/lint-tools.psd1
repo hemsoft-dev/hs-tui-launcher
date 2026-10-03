@@ -8,6 +8,7 @@
     ShellCheck = @{
         Version = '0.11.0'
         Assets = @{
+            # Windows ARM64 is intentionally absent; the scripts reject it rather than assume x64 emulation.
             'windows-x64' = @{ Name = 'shellcheck-v0.11.0.zip'; Sha256 = '8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e' }
             'linux-x64' = @{ Name = 'shellcheck-v0.11.0.linux.x86_64.tar.gz'; Sha256 = 'b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6' }
             'linux-arm64' = @{ Name = 'shellcheck-v0.11.0.linux.aarch64.tar.gz'; Sha256 = '68a8133197a50beb8803f8d42f9908d1af1c5540d4bb05fdfca8c1fa47decefc' }
