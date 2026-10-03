@@ -25,8 +25,11 @@ On macOS and Linux:
 ```
 
 Both wrappers use a bundled native executable when present and fall back to
-`go run .`. The Unix wrapper also requires Python 3 to validate the launcher's
-structured selection and start the selected CLI without shell evaluation.
+`go run .`. `run.ps1` retains Windows PowerShell 5.1 compatibility; PowerShell 7
+(`pwsh`) is also supported. The Unix wrapper requires Python 3 to validate the
+launcher's structured selection and start the selected CLI without shell
+evaluation. Building or using the fallback requires the Go version declared in
+`go.mod`.
 
 Direct Go execution opens the picker without the PowerShell handoff:
 
