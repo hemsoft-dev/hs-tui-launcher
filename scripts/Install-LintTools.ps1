@@ -150,10 +150,11 @@ $platform = Get-PlatformKey
 $root = [System.IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Path $root -Force | Out-Null
 $cacheLock = Enter-ToolCacheLock -Root $root
-$temp = Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-lint-$([guid]::NewGuid().ToString('N'))"
-New-Item -ItemType Directory -Path $temp | Out-Null
-
+$temp = $null
 try {
+    $temp = Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-lint-$([guid]::NewGuid().ToString('N'))"
+    New-Item -ItemType Directory -Path $temp | Out-Null
+
     $pssaRoot = Join-Path $root "PSScriptAnalyzer/$($manifest.PSScriptAnalyzer.Version)"
     if (-not (Test-PSScriptAnalyzerCache -Directory $pssaRoot -Version $manifest.PSScriptAnalyzer.Version)) {
         $package = Join-Path $temp 'PSScriptAnalyzer.zip'
@@ -216,7 +217,9 @@ try {
     }
 }
 finally {
-    Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    if ($temp) {
+        Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    }
     $cacheLock.Dispose()
 }
 
