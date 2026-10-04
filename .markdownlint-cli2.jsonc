@@ -6,7 +6,9 @@
   },
   "globs": ["**/*.md"],
   "ignores": [
-    "node_modules/**",
+    "**/node_modules/**",
+    // Stryker copies source into disposable mutation sandboxes.
+    ".stryker-tmp/**",
     // bin is gitignored and contains only generated, third-party tool caches.
     "bin/**",
   ],
