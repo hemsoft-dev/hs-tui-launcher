@@ -1,0 +1,15 @@
+{
+  "name": "hs-tui-launcher-mutation-tools",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Pinned TypeScript mutation-testing toolchain for hs-tui-launcher",
+  "type": "module",
+  "devDependencies": {
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/typescript-checker": "10.0.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "qs": "6.16.0"
+  }
+}

@@ -252,8 +252,11 @@ jobs:
       - name: Deadcode
         run: deadcode ./...
 
-  mutation:
+  mutation-go:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MUTATION_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
 
     steps:
       - name: Check out
@@ -264,6 +267,67 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Mutation test
+      - name: Prove mutation policy failures
         shell: pwsh
-        run: ./scripts/Test-Mutations.ps1
+        run: ./scripts/Test-MutationPolicy.Unit.ps1
+
+      - name: Mutate Go production code
+        shell: pwsh
+        run: ./scripts/Test-Mutations.ps1 -OutputDirectory mutation-artifacts
+
+      - name: Retain complete Go mutation report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mutation-go-${{ github.event.pull_request.head.sha || github.sha }}
+          path: mutation-artifacts/go/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
+
+  mutation-typescript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MUTATION_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            scripts/mutation-tools/package-lock.json
+
+      - name: Mutate the TypeScript decision core
+        shell: pwsh
+        run: ./scripts/Test-TypeScriptMutations.ps1 -OutputDirectory mutation-artifacts
+
+      - name: Retain complete TypeScript mutation report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mutation-typescript-${{ github.event.pull_request.head.sha || github.sha }}
+          path: mutation-artifacts/typescript/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
+
+  mutation:
+    needs:
+      - mutation-go
+      - mutation-typescript
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require every mutation target
+        if: ${{ needs.mutation-go.result != 'success' || needs.mutation-typescript.result != 'success' }}
+        shell: pwsh
+        run: |
+          throw "Required mutation failure: go=${{ needs.mutation-go.result }}, typescript=${{ needs.mutation-typescript.result }}."

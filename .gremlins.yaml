@@ -2,6 +2,7 @@ silent: false
 unleash:
   workers: 1
   timeout-coefficient: 10
+  coverpkg: ./...
   threshold:
     efficacy: 75
     mutant-coverage: 10

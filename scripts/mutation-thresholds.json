@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "go": {
+    "break": {
+      "minimumGenerated": 193,
+      "minimumTestEfficacy": 86.39,
+      "minimumMutantCoverage": 87.56,
+      "maximumLived": 23,
+      "maximumUncovered": 24,
+      "maximumTimedOut": 0,
+      "maximumNonViable": 0,
+      "maximumSkipped": 0
+    },
+    "improvement": {
+      "minimumTestEfficacy": 90.0,
+      "minimumMutantCoverage": 90.0,
+      "maximumLived": 0
+    },
+    "baseline": {
+      "environment": "GitHub Actions ubuntu-latest on 2026-10-03",
+      "generated": 193,
+      "killed": 146,
+      "lived": 23,
+      "uncovered": 24,
+      "timedOut": 0,
+      "nonViable": 0,
+      "skipped": 0,
+      "testEfficacy": 86.39,
+      "mutantCoverage": 87.56
+    }
+  },
+  "typescript": {
+    "break": {
+      "minimumGenerated": 828,
+      "minimumMutationScore": 25.77,
+      "maximumLived": 383,
+      "maximumUncovered": 0,
+      "maximumTimedOut": 6,
+      "maximumNonViable": 312,
+      "maximumSkipped": 0
+    },
+    "improvement": {
+      "minimumMutationScore": 30.0,
+      "maximumLived": 300
+    },
+    "baseline": {
+      "environment": "Windows x64 and GitHub Actions Ubuntu x64, Node.js 24.12.0, StrykerJS/checker 10.0.0, TypeScript 5.9.3",
+      "qualificationRun": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37167504905",
+      "qualificationCommit": "48c835f68fc031c01cf80ceb5e80df688718047c",
+      "generated": 828,
+      "killed": 127,
+      "lived": 383,
+      "uncovered": 0,
+      "timedOut": 6,
+      "nonViable": 312,
+      "skipped": 0,
+      "mutationScore": 25.78
+    }
+  }
+}

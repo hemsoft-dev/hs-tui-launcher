@@ -247,24 +247,90 @@ reports identify both the checked-out commit and native Go target. The required
 
 ## Mutation testing
 
-The `mutation` job runs [Gremlins](https://github.com/go-gremlins/gremlins)
-against all production Go code in the repository:
+The required `mutation` status aggregates `mutation-go` and
+`mutation-typescript`. A failed, cancelled, or skipped target fails that status.
+Both jobs run once in each PR workflow. Feature-branch pushes do not trigger a
+second workflow; pushes to `main` qualify the actual merged revision separately.
+
+Run the language targets from the repository root with PowerShell 7.2 or newer:
 
 ```powershell
-.\scripts\Test-Mutations.ps1
+pwsh -NoProfile -File ./scripts/Test-MutationPolicy.Unit.ps1
+pwsh -NoProfile -File ./scripts/Test-Mutations.ps1
+pwsh -NoProfile -File ./scripts/Test-TypeScriptMutations.ps1
 ```
 
-The script pins Gremlins to v0.6.0, prints the generated, killed, lived,
-uncovered, and non-viable mutation counts, and fails if the tool reports an
-error or generates no mutations. `.gremlins.yaml` enforces two maintained
-floors: 75% test efficacy (killed mutations divided by killed plus lived
-mutations) and 10% mutant coverage. The initial Ubuntu CI baseline is 78.95%
-efficacy and 84.18% mutant coverage; Gremlins' initial Windows baseline is 100%
-efficacy and 10.76% mutant coverage.
+Go uses [Gremlins v0.6.0](https://github.com/go-gremlins/gremlins) against every
+production Go file selected on the native platform. `.gremlins.yaml` has no file
+exclusions and uses all-package coverage. TypeScript uses
+[StrykerJS 10.0.0](https://stryker-mutator.io/docs/stryker-js/configuration/), with
+its matching TypeScript checker and TypeScript 5.9.3. The separate manifest and
+lockfile under `scripts/mutation-tools` pin the full tool dependency tree without
+replacing the repository's TypeScript compiler. Installation uses `npm ci
+--ignore-scripts` for both locked dependency trees. Node.js remains pinned by
+`.node-version`.
 
-The scan has no file exclusions. Keep that scope unless a documented technical
-reason requires a narrow exclusion. Raise either threshold when better tests
-provide durable headroom; do not lower one merely to make CI pass.
+`stryker.config.json` mutates only `pi/jev-decide/jev-core.ts` and runs all five
+existing Jev tests with Node's type stripping and command runner. The extension
+entry point is outside this target because it binds Pi's external runtime;
+there are no excluded lines or operators within the decision core. The tests
+inject fake authentication and fetch responses. An unmutated preload rejects
+real fetch, HTTP, TCP, TLS, UDP, and DNS connections, and a negative fixture proves
+those rejections before the run. Package installation can access the registry;
+the test processes cannot call a paid provider. Command-runner coverage analysis
+is unavailable, so every viable mutant runs the full suite. Stryker copies
+sandbox dependencies instead of symlinking them to a live npm installation;
+concurrent lint/setup work must not replace the mutation tool's own dependencies.
+Its `uncovered`
+count is zero by construction, not proof of per-line coverage.
+
+`scripts/mutation-thresholds.json` defines the maintained break thresholds and
+higher improvement targets. `scripts/mutation-survivors.json` records the exact
+allowed survivor identities. A new survivor fails even when another survivor
+was killed and the total lived count did not increase. Go identities include
+file, line, column, and operator; TypeScript also includes the end location and
+replacement. Source movement therefore requires a reviewed baseline update,
+not silent acceptance of new survivors.
+
+| Target | Reproduced baseline | Break thresholds | Improvement target |
+| --- | --- | --- | --- |
+| Go on Ubuntu | 193 generated, 146 killed, 23 lived, 24 uncovered, 0 timed-out, 0 non-viable | At least 193 generated, 86.39% efficacy, 87.56% mutant coverage; at most 23 lived, 24 uncovered, 0 timed-out/non-viable; no new survivors | 90% efficacy, 90% coverage, 0 lived |
+| TypeScript | 828 generated, 127 killed, 383 lived, 0 uncovered, 6 timed-out, 312 non-viable | At least 828 generated and 25.77% score; at most 383 lived, 0 uncovered, 6 timed-out, 312 non-viable; no new survivors | 30% score, at most 300 lived |
+
+The Go baseline comes from main CI run `37147395390` at commit
+`7dfd1f05244f9c8db3a45ca34bd5d7763955774f`. The TypeScript baseline uses the same
+source on Windows x64 with Node.js 24.12.0 and was reproduced without any changed
+outcomes on Ubuntu x64 in [PR CI run 37167504905](https://github.com/HemSoft/hs-tui-launcher/actions/runs/37167504905). Stryker reports compile errors as
+non-viable and computes score as killed plus timed-out divided by killed plus
+lived plus timed-out plus uncovered. The TypeScript baseline is 25.775% before
+rounding; its 25.77% floor truncates to two decimals rather than adding upward
+headroom. Go efficacy is killed divided by killed plus lived. The 87.56%
+coverage floor preserves both the audited 10.88% result and the newer Ubuntu
+baseline. Gremlins' native Windows coverage discovery produced only 10.36% on
+this tree and is not a passing qualification; use Ubuntu CI for the maintained
+Go mutation gate. Native platform build, unit, handoff, and CRAP gates still
+cover Windows and macOS without exclusions.
+
+Both scripts require nonzero generated and executed counts and reject tool
+errors or incomplete reports. They retain raw per-mutant JSON, tool output, and
+a summary with every outcome count, scores, tool version, native target,
+checked-out commit, PR head when supplied by CI, dirty-tree status, thresholds,
+and improvement-target status. Policy parsing fails closed on missing, mistyped, or out-of-bounds thresholds.
+Summary reports remain available when policy qualification fails. Reports default to a unique temporary directory; pass
+`-OutputDirectory <path>` to retain them in a known location. CI uploads
+`mutation-go-<PR head or main commit>` and
+`mutation-typescript-<PR head or main commit>` for 14 days, including on failure.
+The checked-out commit can be GitHub's synthetic PR merge revision; the
+separate PR-head field identifies the reviewed source commit.
+
+The policy unit command proves every break threshold rejects a regression and
+that swapping in a new survivor fails with an unchanged lived count. To prove
+the real command path fails, temporarily set the TypeScript break score to
+99% and its improvement target to 100% in an isolated test branch, run its mutation command, verify the nonzero
+exit and retained reports, then restore the policy before committing. Never
+lower a floor or add an exclusion merely to pass CI. Kill retained survivors
+with focused tests, remove their identities, and raise floors when repeated
+runs establish an improved baseline.
 
 ## Cyclomatic complexity
 
