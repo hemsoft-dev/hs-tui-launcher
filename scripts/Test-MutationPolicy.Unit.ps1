@@ -70,4 +70,48 @@ foreach ($language in @('go', 'typescript')) {
     if (-not $failed) { throw "$language accepted a new survivor at an unchanged lived count." }
     $assertions++
 }
+$temporaryPolicy = Join-Path ([IO.Path]::GetTempPath()) "mutation-policy-$([guid]::NewGuid().ToString('N')).json"
+try {
+    foreach ($language in @('go', 'typescript')) {
+        foreach ($property in $thresholds.$language.break.PSObject.Properties) {
+            $invalid = $thresholds | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+            $invalid.$language.break.PSObject.Properties.Remove($property.Name)
+            $invalid | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $temporaryPolicy -Encoding utf8
+            $failed = $false
+            try { Get-MutationThreshold -Path $temporaryPolicy | Out-Null }
+            catch {
+                if ($_.Exception.Message -notlike '*threshold*missing*') { throw }
+                $failed = $true
+            }
+            if (-not $failed) { throw "Missing $language.$($property.Name) threshold was accepted." }
+            $assertions++
+        }
+    }
+    foreach ($value in @($null, $true, '23', -1, 1.5)) {
+        $invalid = $thresholds | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+        $invalid.go.break.maximumLived = $value
+        $invalid | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $temporaryPolicy -Encoding utf8
+        $failed = $false
+        try { Get-MutationThreshold -Path $temporaryPolicy | Out-Null }
+        catch { $failed = $true }
+        if (-not $failed) { throw 'Invalid count threshold was accepted.' }
+        $assertions++
+    }
+}
+finally {
+    if (Test-Path -LiteralPath $temporaryPolicy) { Remove-Item -LiteralPath $temporaryPolicy -Force }
+}
+
+$counts = [pscustomobject]@{ Killed = 146; Lived = 23; NonViable = 0 }
+Assert-GoMutationTotal -Result ([pscustomobject]@{ mutants_total = 169 }) -Counts $counts
+$assertions++
+$failed = $false
+try { Assert-GoMutationTotal -Result ([pscustomobject]@{ mutants_total = 193 }) -Counts $counts }
+catch {
+    if ($_.Exception.Message -notlike '*mutants_total*') { throw }
+    $failed = $true
+}
+if (-not $failed) { throw 'Incorrect Gremlins executed total was accepted.' }
+$assertions++
+
 Write-Host "Mutation policy unit checks passed ($assertions assertions)."

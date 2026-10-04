@@ -275,10 +275,13 @@ existing Jev tests with Node's type stripping and command runner. The extension
 entry point is outside this target because it binds Pi's external runtime;
 there are no excluded lines or operators within the decision core. The tests
 inject fake authentication and fetch responses. An unmutated preload rejects
-real fetch, HTTP, TCP, TLS, and UDP connections, and a negative fixture proves
+real fetch, HTTP, TCP, TLS, UDP, and DNS connections, and a negative fixture proves
 those rejections before the run. Package installation can access the registry;
 the test processes cannot call a paid provider. Command-runner coverage analysis
-is unavailable, so every viable mutant runs the full suite. Its `uncovered`
+is unavailable, so every viable mutant runs the full suite. Stryker copies
+sandbox dependencies instead of symlinking them to a live npm installation;
+concurrent lint/setup work must not replace the mutation tool's own dependencies.
+Its `uncovered`
 count is zero by construction, not proof of per-line coverage.
 
 `scripts/mutation-thresholds.json` defines the maintained break thresholds and
@@ -296,7 +299,8 @@ not silent acceptance of new survivors.
 
 The Go baseline comes from main CI run `37147395390` at commit
 `7dfd1f05244f9c8db3a45ca34bd5d7763955774f`. The TypeScript baseline uses the same
-source on Windows x64 with Node.js 24.12.0. Stryker reports compile errors as
+source on Windows x64 with Node.js 24.12.0 and was reproduced without any changed
+outcomes on Ubuntu x64 in [PR CI run 37167504905](https://github.com/HemSoft/hs-tui-launcher/actions/runs/37167504905). Stryker reports compile errors as
 non-viable and computes score as killed plus timed-out divided by killed plus
 lived plus timed-out plus uncovered. The TypeScript baseline is 25.775% before
 rounding; its 25.77% floor truncates to two decimals rather than adding upward
@@ -311,8 +315,8 @@ Both scripts require nonzero generated and executed counts and reject tool
 errors or incomplete reports. They retain raw per-mutant JSON, tool output, and
 a summary with every outcome count, scores, tool version, native target,
 checked-out commit, PR head when supplied by CI, dirty-tree status, thresholds,
-and improvement-target status. Summary reports remain available when policy
-qualification fails. Reports default to a unique temporary directory; pass
+and improvement-target status. Policy parsing fails closed on missing, mistyped, or out-of-bounds thresholds.
+Summary reports remain available when policy qualification fails. Reports default to a unique temporary directory; pass
 `-OutputDirectory <path>` to retain them in a known location. CI uploads
 `mutation-go-<PR head or main commit>` and
 `mutation-typescript-<PR head or main commit>` for 14 days, including on failure.
@@ -322,7 +326,7 @@ separate PR-head field identifies the reviewed source commit.
 The policy unit command proves every break threshold rejects a regression and
 that swapping in a new survivor fails with an unchanged lived count. To prove
 the real command path fails, temporarily set the TypeScript break score to
-100% in an isolated test branch, run its mutation command, verify the nonzero
+99% and its improvement target to 100% in an isolated test branch, run its mutation command, verify the nonzero
 exit and retained reports, then restore the policy before committing. Never
 lower a floor or add an exclusion merely to pass CI. Kill retained survivors
 with focused tests, remove their identities, and raise floors when repeated

@@ -8,6 +8,7 @@
   "checkers": ["typescript"],
   "tsconfigFile": "tsconfig.json",
   "coverageAnalysis": "off",
+  "symlinkNodeModules": false,
   "concurrency": 4,
   "timeoutMS": 5000,
   "cleanTempDir": "always",

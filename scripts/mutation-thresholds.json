@@ -44,7 +44,9 @@
       "maximumLived": 300
     },
     "baseline": {
-      "environment": "Node.js 24.12.0, StrykerJS 10.0.0, TypeScript checker 5.9.3 on Windows x64",
+      "environment": "Windows x64 and GitHub Actions Ubuntu x64, Node.js 24.12.0, StrykerJS/checker 10.0.0, TypeScript 5.9.3",
+      "qualificationRun": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37167504905",
+      "qualificationCommit": "48c835f68fc031c01cf80ceb5e80df688718047c",
       "generated": 828,
       "killed": 127,
       "lived": 383,

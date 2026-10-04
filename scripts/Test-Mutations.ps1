@@ -95,6 +95,8 @@ if ($policyResult.Killed -ne [int]$result.mutants_killed -or
     throw 'Gremlins aggregate counts do not match its per-mutant statuses.'
 }
 
+Assert-GoMutationTotal -Result $result -Counts $policyResult
+
 $survivingMutants = @($result.files | ForEach-Object {
     $file = $_.file_name.Replace('\', '/')
     foreach ($mutant in $_.mutations) {
