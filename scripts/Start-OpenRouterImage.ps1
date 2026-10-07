@@ -153,6 +153,28 @@ if (-not $Force) {
     }
 }
 
+# Reject unusable destinations before sending a paid request. Remove the probe
+# before the request so later provider failures cannot leave preflight artifacts.
+New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
+$probePath = Join-Path $OutputDirectory ('.seedream-{0}.tmp' -f [Guid]::NewGuid().ToString('N'))
+$probeFailure = $null
+try {
+    [IO.File]::WriteAllBytes($probePath, [byte[]]@())
+}
+catch {
+    $probeFailure = $_
+}
+finally {
+    try {
+        [IO.File]::Delete($probePath)
+    }
+    catch {
+        if ($null -eq $probeFailure) { throw }
+        Write-Warning 'Image output preflight cleanup also failed.'
+    }
+}
+if ($null -ne $probeFailure) { throw $probeFailure }
+
 $headers = @{
     Authorization = "Bearer $apiKey"
 }
@@ -211,7 +233,6 @@ catch {
     throw "OpenRouter returned invalid base64 image data: $($_.Exception.Message)"
 }
 
-New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
 $outputPath = Join-Path $OutputDirectory "seedream-5-0-pro-$timestamp.$extension"
 if (Test-Path -LiteralPath $outputPath) {

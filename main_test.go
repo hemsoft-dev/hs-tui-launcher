@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -589,8 +590,10 @@ func TestStartOpenRouterImageSavesMockedPngResponse(t *testing.T) {
 	scriptPath := filepath.Join(workingDir, "scripts", "Start-OpenRouterImage.ps1")
 	wrapperPath := filepath.Join(tempDir, "invoke-mocked-image.ps1")
 	wrapper := `param([string] $TargetScript, [string] $OutputDirectory)
+$global:HS_IMAGE_TEST_REQUESTS = 0
 function Invoke-RestMethod {
     param($Uri, $Method, $Headers, $ContentType, $Body)
+    $global:HS_IMAGE_TEST_REQUESTS++
     $request = $Body | ConvertFrom-Json
     if ($Uri -ne 'https://openrouter.ai/api/v1/images' -or
         $Method -ne 'Post' -or
@@ -605,6 +608,8 @@ function Invoke-RestMethod {
     }
 }
 & $TargetScript -Prompt 'mock prompt' -Resolution 1K -AspectRatio 1:1 -OutputDirectory $OutputDirectory -Force -NoOpen
+if ($global:HS_IMAGE_TEST_REQUESTS -ne 1) { throw 'Expected exactly one request.' }
+if (@(Get-ChildItem -LiteralPath $OutputDirectory -Force).Count -ne 1) { throw 'Unexpected preflight artifacts.' }
 `
 	if err := os.WriteFile(wrapperPath, []byte(wrapper), 0o600); err != nil {
 		t.Fatalf("write wrapper: %v", err)
@@ -639,6 +644,78 @@ function Invoke-RestMethod {
 	}
 	if string(content) != string([]byte{1, 2, 3}) {
 		t.Fatalf("image bytes = %v", content)
+	}
+}
+
+func TestStartOpenRouterImagePreflightAndCleanup(t *testing.T) {
+	workingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	scenarios := []string{"file", "blocked-parent", "request-failure", "invalid-response", "cancel", "dry-run"}
+	if runtime.GOOS == "windows" {
+		scenarios = append(scenarios, "unwritable")
+	}
+	for _, scenario := range scenarios {
+		t.Run(scenario, func(t *testing.T) {
+			tempDir := t.TempDir()
+			wrapperPath := filepath.Join(tempDir, "mock-image.ps1")
+			wrapper := `param([string]$TargetScript, [string]$Root, [string]$Scenario)
+$ErrorActionPreference = 'Stop'
+$global:HS_IMAGE_TEST_REQUESTS = 0
+function Invoke-RestMethod {
+    $global:HS_IMAGE_TEST_REQUESTS++
+    if ($Scenario -eq 'request-failure') { throw 'Controlled provider failure' }
+    return [pscustomobject]@{ data = @([pscustomobject]@{ b64_json = 'not base64' }) }
+}
+function Read-Host { return 'n' }
+$destination = Join-Path $Root 'images'
+$originalAcl = $null
+if ($Scenario -eq 'unwritable') {
+    New-Item -ItemType Directory -Path $destination | Out-Null
+    $originalAcl = Get-Acl -LiteralPath $destination
+    $deniedAcl = Get-Acl -LiteralPath $destination
+    $rule = [Security.AccessControl.FileSystemAccessRule]::new(
+        [Security.Principal.WindowsIdentity]::GetCurrent().Name,
+        'Write', 'ContainerInherit,ObjectInherit', 'None', 'Deny')
+    $deniedAcl.AddAccessRule($rule)
+    Set-Acl -LiteralPath $destination -AclObject $deniedAcl
+}
+if ($Scenario -in @('file', 'blocked-parent')) {
+    [IO.File]::WriteAllText($destination, 'preserve this file')
+    if ($Scenario -eq 'blocked-parent') { $destination = Join-Path $destination 'child' }
+}
+$options = @{ Force = $true; NoOpen = $true }
+if ($Scenario -eq 'cancel') { $options.Force = $false }
+if ($Scenario -eq 'dry-run') { $options.DryRun = $true }
+$failure = $null
+try { & $TargetScript -Prompt 'inert test' -Resolution 1K -AspectRatio '1:1' -OutputDirectory $destination @options | Out-Null }
+catch { $failure = $_.Exception.Message }
+finally { if ($null -ne $originalAcl) { Set-Acl -LiteralPath $destination -AclObject $originalAcl } }
+$expectedRequests = if ($Scenario -in @('request-failure', 'invalid-response')) { 1 } else { 0 }
+if ($global:HS_IMAGE_TEST_REQUESTS -ne $expectedRequests) { throw "Requests=$global:HS_IMAGE_TEST_REQUESTS, expected=$expectedRequests" }
+if ($Scenario -in @('cancel', 'dry-run')) {
+    if ($null -ne $failure -or (Test-Path -LiteralPath $destination)) { throw 'Cancel/dry-run changed the destination or failed.' }
+} elseif ($null -eq $failure) { throw 'Expected a controlled failure.' }
+if ($Scenario -in @('file', 'blocked-parent')) {
+    if ([IO.File]::ReadAllText((Join-Path $Root 'images')) -cne 'preserve this file') { throw 'Input file changed.' }
+} elseif (Test-Path -LiteralPath $destination) {
+    if (@(Get-ChildItem -LiteralPath $destination -Force).Count -ne 0) { throw 'Preflight artifacts remain.' }
+}
+Write-Output "Verified $Scenario requests=$global:HS_IMAGE_TEST_REQUESTS"
+`
+			if err := os.WriteFile(wrapperPath, []byte(wrapper), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			command := exec.Command("pwsh", "-NoProfile", "-File", wrapperPath,
+				"-TargetScript", filepath.Join(workingDir, "scripts", "Start-OpenRouterImage.ps1"),
+				"-Root", tempDir, "-Scenario", scenario)
+			command.Env = append(os.Environ(), "OPENROUTER_API_KEY=inert-test-key")
+			output, err := command.CombinedOutput()
+			if err != nil || !strings.Contains(string(output), "Verified "+scenario+" requests=") {
+				t.Fatalf("preflight %s: %v\n%s", scenario, err, output)
+			}
+		})
 	}
 }
 
