@@ -236,7 +236,7 @@ function sensitiveKey(key: string): boolean {
 function redactString(value: string): { value: string; changed: boolean } {
   let result = value;
   result = result.replace(
-    /-----BEGIN [^-\r\n]+ PRIVATE KEY-----[\s\S]*?-----END [^-\r\n]+ PRIVATE KEY-----/gi,
+    /-----BEGIN (?:[^-\r\n]+ )?PRIVATE KEY-----[\s\S]*?-----END (?:[^-\r\n]+ )?PRIVATE KEY-----/gi,
     REDACTED,
   );
   result = result.replace(/\bBearer\s+[A-Za-z0-9._~+/=-]{12,}/gi, 'Bearer ' + REDACTED);
