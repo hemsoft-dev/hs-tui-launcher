@@ -5,7 +5,7 @@ Qualifies run.ps1 or run.sh with deterministic native and go-run launcher fixtur
 .DESCRIPTION
 Requires PowerShell 7.5 or newer. Fixture modules and binaries are created below the
 system temporary directory. The controlled child records only its arguments, working
-directory, stdin, target, and four allowlisted HS_HANDOFF_* variables. No provider CLI
+directory, stdin, target, four HS_HANDOFF_* variables and the Windows child OS override. No provider CLI
 is started, no credential is required, and Go network access is disabled.
 
 .PARAMETER OutputDirectory
@@ -32,6 +32,7 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 & (Join-Path $PSScriptRoot 'Test-LauncherEnvironment.Unit.ps1')
 & (Join-Path $PSScriptRoot 'Test-LauncherNativeArgument.Unit.ps1')
+& (Join-Path $PSScriptRoot 'Test-LauncherHandoffCleanup.Unit.ps1') -OutputDirectory $OutputDirectory
 $expectedArguments = @(
     'plain',
     'value with spaces',
@@ -44,8 +45,8 @@ $expectedArguments = @(
 $expectedStdin = "fixture stdin`nsecond line with spaces & | <> `$`n"
 $expectedSelected = 'selected value with spaces ; $ & | <>'
 $expectedInherited = 'inherited value with spaces'
-$reportSchemaVersion = 3
-$observationSchemaVersion = 2
+$reportSchemaVersion = 4
+$observationSchemaVersion = 3
 
 function Get-NativeOutputName {
     param([Parameter(Mandatory)][string]$BaseName, [Parameter(Mandatory)][string]$GOOS)
@@ -75,6 +76,56 @@ function ConvertTo-BoundedText {
     if ($null -eq $Value) { return '' }
     if ($Value.Length -le 4096) { return $Value }
     return $Value.Substring(0, 4096) + "`n[truncated]"
+}
+
+function Complete-HandoffReport {
+    param(
+        [Parameter(Mandatory)][System.Collections.IDictionary]$Report,
+        [Parameter(Mandatory)][string]$ReportPath,
+        [Parameter(Mandatory)][string]$TemporaryDirectory,
+        [Parameter(Mandatory)][string]$OwnedCleanupTarget,
+        [Parameter(Mandatory)][string]$OwnedTempLeaf,
+        [AllowNull()][Management.Automation.ErrorRecord]$PrimaryError
+    )
+
+    $cleanupError = $null
+    try {
+        $cleanupTarget = [IO.Path]::GetFullPath($TemporaryDirectory)
+        if ($cleanupTarget -cne $OwnedCleanupTarget -or
+            [IO.Path]::GetFileName($cleanupTarget) -cne $OwnedTempLeaf -or
+            $OwnedTempLeaf -notmatch '^hs-tui-launcher-handoff-\d+-[a-f0-9]{32}$') {
+            throw 'Refusing cleanup outside the owned handoff fixture directory.'
+        }
+        if (Test-Path -LiteralPath $cleanupTarget) {
+            Remove-Item -LiteralPath $cleanupTarget -Recurse -Force -ErrorAction Stop
+        }
+        if (Test-Path -LiteralPath $cleanupTarget) { throw 'Handoff fixture cleanup left its temporary directory.' }
+        $Report.temporaryDirectoryRemoved = $true
+    }
+    catch {
+        $cleanupError = $_
+        $Report.temporaryDirectoryRemoved = $false
+        $Report.cleanupError = ConvertTo-BoundedText -Value $_.Exception.Message
+        if (-not $PrimaryError) { $Report.error = $Report.cleanupError }
+    }
+
+    $Report.status = if ($PrimaryError -or $cleanupError) { 'failed' } else { 'passed' }
+    try {
+        $Report.generatedAtUtc = [DateTime]::UtcNow.ToString('o')
+        $Report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $ReportPath -Encoding utf8NoBOM -ErrorAction Stop
+    }
+    catch {
+        if (-not $PrimaryError -and -not $cleanupError) {
+            $Report.status = 'failed'
+            $Report.error = ConvertTo-BoundedText -Value $_.Exception.Message
+            throw
+        }
+        Write-Warning 'Handoff report write failed; preserving the original qualification or cleanup error.'
+    }
+    if ($cleanupError) {
+        if (-not $PrimaryError) { throw $cleanupError }
+        Write-Warning 'Handoff cleanup failed; preserving the original qualification error.'
+    }
 }
 
 function Assert-ExactHandoff {
@@ -240,7 +291,7 @@ $report = [ordered]@{
         }
     }
     networkAccess = 'GOPROXY=off and GOSUMDB=off for fixture builds and go run'
-    credentials = 'not required or read; only allowlisted HS_HANDOFF_* values are recorded'
+    credentials = 'not required or read; only allowlisted HS_HANDOFF_* values and the Windows child OS override are recorded'
     status = 'running'
     cases = @()
 }
@@ -364,6 +415,13 @@ if (-not $restoredEnvironment.Contains('HS_HANDOFF_EMPTY') -or $restoredEnvironm
 if (Test-Path -LiteralPath Env:HS_HANDOFF_OUTPUT) {
     throw 'Repeated override did not restore an originally absent variable.'
 }
+if ($initialEnvironment.Contains('OS') -ne $restoredEnvironment.Contains('OS') -or
+    $initialEnvironment['OS'] -cne $restoredEnvironment['OS']) {
+    throw 'The child OS override did not restore the caller environment.'
+}
+$hostMetadata.callerEnvironmentRestored = $true
+[IO.File]::WriteAllText($env:HS_HANDOFF_HOST_METADATA,
+    ($hostMetadata | ConvertTo-Json -Compress), [Text.UTF8Encoding]::new($false))
 exit $childExitCode
 '@ | Set-Content -LiteralPath $windowsDriver -Encoding utf8NoBOM
 
@@ -379,11 +437,16 @@ exit $childExitCode
 
     $childName = Get-NativeOutputName -BaseName 'handoff-child' -GOOS $goos
     $launcherName = Get-NativeOutputName -BaseName 'hs-tui-launcher' -GOOS $goos
-    $childBinary = Join-Path $buildRoot $childName
+    $childDirectory = Join-Path $buildRoot 'child tools[1]'
+    [void] [IO.Directory]::CreateDirectory($childDirectory)
+    $childBinary = Join-Path $childDirectory $childName
     $launcherBinary = Join-Path $buildRoot $launcherName
     $report.fixtureSelection.executable = $childBinary
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'handoff-fixtures/child.go.txt') -Destination (Join-Path $buildRoot 'main.go')
     Invoke-Go -Arguments @('build', '-trimpath', '-o', $childBinary, '.') -WorkingDirectory $buildRoot
+    $collisionDirectory = Join-Path $buildRoot 'child tools1'
+    [void] [IO.Directory]::CreateDirectory($collisionDirectory)
+    [IO.File]::Copy($childBinary, (Join-Path $collisionDirectory $childName))
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'handoff-fixtures/launcher.go.txt') -Destination (Join-Path $buildRoot 'main.go') -Force
     Invoke-Go -Arguments @('build', '-trimpath', '-o', $launcherBinary, '.') -WorkingDirectory $buildRoot
 
@@ -416,9 +479,10 @@ exit $childExitCode
             New-Item -ItemType Directory -Path $workingDirectory -Force | Out-Null
             $observationPath = Join-Path $caseRoot 'observed.json'
             $metadataPath = Join-Path $caseRoot 'launcher.json'
+            $selectedChild = if ($goos -eq 'windows' -and $expectedExitCode -eq 23) { $childName } else { $childBinary }
             $launcherArguments = @(
                 '--fixture-mode', $mode,
-                '--fixture-child', $childBinary,
+                '--fixture-child', $selectedChild,
                 '--fixture-working-dir', $workingDirectory,
                 '--fixture-output', $observationPath,
                 '--fixture-exit-code', "$expectedExitCode",
@@ -432,6 +496,7 @@ exit $childExitCode
                 GOSUMDB = 'off'
             }
             if ($goos -eq 'windows') {
+                $processEnvironment.PATH = $childDirectory + [IO.Path]::PathSeparator + $env:PATH
                 $hostExecutable = $hostChoice.executable
                 $hostMetadataPath = Join-Path $caseRoot 'host.json'
                 $processEnvironment.HS_HANDOFF_HOST_METADATA = $hostMetadataPath
@@ -469,6 +534,13 @@ exit $childExitCode
             }
             Assert-ExactHandoff -Observed $observed -ExpectedWorkingDirectory $workingDirectory `
                 -ObservedExitCode $processResult.exitCode -ExpectedExitCode $expectedExitCode
+            if ([string]$observed.executable -cne $childBinary) {
+                throw 'Handoff mismatch: executable. The selected literal path resolved to a different program.'
+            }
+            if ($goos -eq 'windows' -and
+                (-not $observed.environment.OS.present -or $observed.environment.OS.value -cne '')) {
+                throw 'The selected child did not retain its explicit empty OS override.'
+            }
             if ($processResult.stdout.Trim() -cne 'HS_HANDOFF_STDOUT_SENTINEL' -or
                 $processResult.stderr.Trim() -cne 'HS_HANDOFF_STDERR_SENTINEL') {
                 throw 'The selected native child did not inherit both bounded output streams.'
@@ -487,8 +559,16 @@ exit $childExitCode
                 $hostObserved.version = $hostData.version
                 $hostObserved.edition = $hostData.edition
                 $hostObserved.home = $hostData.home
+                if (-not $hostData.callerEnvironmentRestored) { throw 'Caller environment restoration was not confirmed by the actual host.' }
+                $hostObserved.callerEnvironmentRestored = $true
             }
 
+            $selectedEnvironment = [ordered]@{
+                HS_HANDOFF_SELECTED = $expectedSelected
+                HS_HANDOFF_EMPTY = ''
+                HS_HANDOFF_EXIT_CODE = "$expectedExitCode"
+            }
+            if ($goos -eq 'windows') { $selectedEnvironment.OS = '' }
             $caseReports.Add([ordered]@{
                 launcherMode = $mode
                 host = $hostObserved
@@ -501,14 +581,10 @@ exit $childExitCode
                     arguments = @($launcherObserved.arguments)
                 }
                 selected = [ordered]@{
-                    executable = $childBinary
+                    executable = $selectedChild
                     arguments = @($expectedArguments)
                     workingDirectory = $workingDirectory
-                    environment = [ordered]@{
-                        HS_HANDOFF_SELECTED = $expectedSelected
-                        HS_HANDOFF_EMPTY = ''
-                        HS_HANDOFF_EXIT_CODE = "$expectedExitCode"
-                    }
+                    environment = $selectedEnvironment
                 }
                 observed = $observed
                 stdout = $processResult.stdout
@@ -521,9 +597,8 @@ exit $childExitCode
     }
 
     $report.cases = @($caseReports)
-    $report.status = 'passed'
+    $report.status = 'pending-cleanup'
     Write-Report
-    Write-Host "Launcher handoff qualification passed. Report: $reportPath"
 }
 catch {
     $primaryError = $_
@@ -538,22 +613,7 @@ finally {
     $env:GOTOOLCHAIN = $previousGoToolchain
     $env:GOPROXY = $previousGoProxy
     $env:GOSUMDB = $previousGoSumDB
-    try {
-        $cleanupTarget = [IO.Path]::GetFullPath($tempRoot)
-        if ($cleanupTarget -cne $ownedCleanupTarget -or
-            [IO.Path]::GetFileName($cleanupTarget) -cne $ownedTempLeaf -or
-            $ownedTempLeaf -notmatch '^hs-tui-launcher-handoff-\d+-[a-f0-9]{32}$') {
-            throw 'Refusing cleanup outside the owned handoff fixture directory.'
-        }
-        if (Test-Path -LiteralPath $cleanupTarget) {
-            Remove-Item -LiteralPath $cleanupTarget -Recurse -Force -ErrorAction Stop
-        }
-        if (Test-Path -LiteralPath $cleanupTarget) { throw 'Handoff fixture cleanup left its temporary directory.' }
-        $report.temporaryDirectoryRemoved = $true
-        if (-not $primaryError) { Write-Report }
-    }
-    catch {
-        if (-not $primaryError) { throw }
-        Write-Warning 'Handoff cleanup failed; preserving the original qualification error.'
-    }
+    Complete-HandoffReport -Report $report -ReportPath $reportPath -TemporaryDirectory $tempRoot `
+        -OwnedCleanupTarget $ownedCleanupTarget -OwnedTempLeaf $ownedTempLeaf -PrimaryError $primaryError
 }
+Write-Host "Launcher handoff qualification passed. Report: $reportPath"

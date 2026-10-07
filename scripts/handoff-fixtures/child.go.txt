@@ -18,6 +18,7 @@ type environmentValue struct {
 
 type observation struct {
 	SchemaVersion int                         `json:"schemaVersion"`
+	Executable    string                      `json:"executable"`
 	Arguments     []string                    `json:"arguments"`
 	WorkingDir    string                      `json:"workingDirectory"`
 	Environment   map[string]environmentValue `json:"environment"`
@@ -42,6 +43,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
+	executable, err := os.Executable()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
 	output := os.Getenv("HS_HANDOFF_OUTPUT")
 	if output == "" {
 		fmt.Fprintln(os.Stderr, "HS_HANDOFF_OUTPUT is required")
@@ -49,7 +55,8 @@ func main() {
 	}
 
 	observed := observation{
-		SchemaVersion: 2,
+		SchemaVersion: 3,
+		Executable:    executable,
 		Arguments:     append([]string(nil), os.Args[1:]...),
 		WorkingDir:    workingDir,
 		Environment: map[string]environmentValue{
@@ -61,6 +68,9 @@ func main() {
 		Stdin:  string(stdin),
 		GOOS:   runtime.GOOS,
 		GOARCH: runtime.GOARCH,
+	}
+	if runtime.GOOS == "windows" {
+		observed.Environment["OS"] = observeEnvironment("OS")
 	}
 	encoded, err := json.Marshal(observed)
 	if err != nil {

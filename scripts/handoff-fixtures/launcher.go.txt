@@ -68,7 +68,7 @@ func main() {
 		},
 	}
 	if runtime.GOOS == "windows" {
-		selected.Env = append(selected.Env, "hs_handoff_selected=selected value with spaces ; $ & | <>")
+		selected.Env = append(selected.Env, "hs_handoff_selected=selected value with spaces ; $ & | <>", "OS=")
 	}
 	selectionJSON, err := json.Marshal(selected)
 	if err != nil {

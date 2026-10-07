@@ -221,12 +221,25 @@ function ConvertTo-WindowsNativeArgument {
 function Invoke-SelectedCommand {
     param([string] $Executable, [AllowEmptyCollection()][string[]] $Arguments)
 
-    if ($PSVersionTable.PSVersion.Major -lt 7 -and $env:OS -eq 'Windows_NT') {
-        $command = Get-Command $Executable -ErrorAction Stop | Select-Object -First 1
-        if ($command.CommandType -eq 'Application' -and
-            [IO.Path]::GetExtension($command.Source) -ieq '.exe') {
+    if ($PSVersionTable.PSVersion.Major -lt 7 -and
+        [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+        $nativeExecutable = $null
+        if ([IO.Path]::IsPathRooted($Executable) -or $Executable.Contains('\') -or $Executable.Contains('/')) {
+            $item = Get-Item -LiteralPath $Executable -Force -ErrorAction Stop
+            if ($item -is [IO.FileInfo] -and $item.Extension -ieq '.exe') {
+                $nativeExecutable = $item.FullName
+            }
+        }
+        else {
+            $command = Get-Command ([WildcardPattern]::Escape($Executable)) -ErrorAction Stop | Select-Object -First 1
+            if ($command.CommandType -eq 'Application' -and
+                [IO.Path]::GetExtension($command.Source) -ieq '.exe') {
+                $nativeExecutable = $command.Source
+            }
+        }
+        if ($nativeExecutable) {
             $start = New-Object System.Diagnostics.ProcessStartInfo
-            $start.FileName = $command.Source
+            $start.FileName = $nativeExecutable
             $start.UseShellExecute = $false
             $start.WorkingDirectory = (Get-Location).ProviderPath
             $start.Arguments = (@($Arguments | ForEach-Object {
