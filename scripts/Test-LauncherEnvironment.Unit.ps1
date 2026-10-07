@@ -23,10 +23,11 @@ foreach ($name in @('Set-ProcessEnvironmentValue', 'Set-TemporaryEnvironment', '
 $names = @('HS_ENV_TEST_REPEATED', 'HS_ENV_TEST_EMPTY', 'HS_ENV_TEST_ABSENT', 'hs_env_test_repeated')
 $callerComparer = if ($IsWindows) { [StringComparer]::OrdinalIgnoreCase } else { [StringComparer]::Ordinal }
 $callerValues = [Collections.Generic.Dictionary[string, object]]::new($callerComparer)
-foreach ($name in $names) { $callerValues[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
+foreach ($name in $names) { $callerValues[$name] = [Environment]::GetEnvironmentVariables('Process')[$name] }
 try {
     Set-Item -LiteralPath Env:HS_ENV_TEST_REPEATED -Value 'original'
-    Set-Item -LiteralPath Env:HS_ENV_TEST_EMPTY -Value ''
+    Set-ProcessEnvironmentValue -Name 'HS_ENV_TEST_EMPTY' -Value ''
+    if (-not (Test-Path Env:HS_ENV_TEST_EMPTY)) { throw 'Empty-value setup did not create a present variable.' }
     Remove-Item -LiteralPath Env:HS_ENV_TEST_ABSENT -ErrorAction SilentlyContinue
     if (-not $IsWindows) { Set-Item -LiteralPath Env:hs_env_test_repeated -Value 'distinct original' }
     $snapshot = Set-TemporaryEnvironment -Entries @(
@@ -50,7 +51,7 @@ try {
 finally {
     foreach ($name in $names) {
         if ($null -eq $callerValues[$name]) { Remove-Item -LiteralPath "Env:$name" -ErrorAction SilentlyContinue }
-        else { Set-Item -LiteralPath "Env:$name" -Value $callerValues[$name] }
+        else { Set-ProcessEnvironmentValue -Name $name -Value $callerValues[$name] }
     }
 }
 Write-Host 'Wrapper environment snapshot checks passed.'

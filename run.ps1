@@ -65,6 +65,22 @@ public static class HsTuiLauncherProcessEnvironment {
             throw [ComponentModel.Win32Exception]::new([Runtime.InteropServices.Marshal]::GetLastWin32Error())
         }
     }
+    elseif ($Value -eq '') {
+        if (-not ('HsTuiLauncherUnixEnvironment' -as [type])) {
+            Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+public static class HsTuiLauncherUnixEnvironment {
+    [DllImport("libc", EntryPoint = "setenv", SetLastError = true)]
+    public static extern int SetValue(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string name,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string value, int overwrite);
+}
+'@
+        }
+        if ([HsTuiLauncherUnixEnvironment]::SetValue($Name, $Value, 1) -ne 0) {
+            throw [ComponentModel.Win32Exception]::new([Runtime.InteropServices.Marshal]::GetLastWin32Error())
+        }
+    }
     else {
         Set-Item -LiteralPath "Env:$Name" -Value $Value
     }

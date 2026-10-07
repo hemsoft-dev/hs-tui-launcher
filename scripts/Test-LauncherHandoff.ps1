@@ -326,7 +326,7 @@ param(
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$WrapperArguments
 )
 $env:HS_HANDOFF_SELECTED = 'original value'
-Set-Item -LiteralPath Env:HS_HANDOFF_EMPTY -Value ''
+if (-not (Test-Path Env:HS_HANDOFF_EMPTY)) { throw 'The fixture host must inherit an empty variable.' }
 Remove-Item -LiteralPath Env:HS_HANDOFF_OUTPUT -ErrorAction SilentlyContinue
 & $Wrapper @WrapperArguments
 $childExitCode = $LASTEXITCODE
@@ -400,6 +400,7 @@ exit $childExitCode
             )
             $processEnvironment = @{
                 HS_HANDOFF_INHERITED = $expectedInherited
+                HS_HANDOFF_EMPTY = ''
                 GOTOOLCHAIN = 'local'
                 GOPROXY = 'off'
                 GOSUMDB = 'off'
