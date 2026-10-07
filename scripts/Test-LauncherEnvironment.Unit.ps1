@@ -1,4 +1,4 @@
-#requires -Version 7.2
+#requires -Version 7.5
 [CmdletBinding()]
 param()
 

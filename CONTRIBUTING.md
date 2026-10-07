@@ -132,7 +132,13 @@ pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1
 pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1 -NegativeCheck
 ```
 
-From macOS or Linux, run the same local equivalent in PowerShell 7:
+The handoff qualification harness requires PowerShell 7.5 or newer so the
+portable environment-provider assertions can distinguish empty and absent
+variables. On Windows it also starts a real Windows PowerShell 5.1 process to
+check inherited empty values and culture-independent name matching. This test
+prerequisite does not change the shipped Windows wrapper's 5.1 support.
+
+From macOS or Linux, run the same local equivalent in PowerShell 7.5 or newer:
 
 ```sh
 pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1

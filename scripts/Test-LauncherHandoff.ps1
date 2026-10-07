@@ -3,7 +3,7 @@
 Qualifies run.ps1 or run.sh with deterministic native and go-run launcher fixtures.
 
 .DESCRIPTION
-Requires PowerShell 7.2 or newer. Fixture modules and binaries are created below the
+Requires PowerShell 7.5 or newer. Fixture modules and binaries are created below the
 system temporary directory. The controlled child records only its arguments, working
 directory, stdin, target, and four allowlisted HS_HANDOFF_* variables. No provider CLI
 is started, no credential is required, and Go network access is disabled.
@@ -16,7 +16,7 @@ repository. CI supplies an artifact staging directory.
 Runs safe synthetic checks proving that argv, environment, working-directory, stdin,
 and expected-exit mismatches are rejected by the same assertion function.
 #>
-#requires -Version 7.2
+#requires -Version 7.5
 [CmdletBinding()]
 param(
     [string]$OutputDirectory = (Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-launcher-handoff-$PID"),
