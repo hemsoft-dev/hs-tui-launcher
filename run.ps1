@@ -221,7 +221,8 @@ function ConvertTo-WindowsNativeArgument {
 function Invoke-SelectedCommand {
     param([string] $Executable, [AllowEmptyCollection()][string[]] $Arguments)
 
-    if ($PSVersionTable.PSVersion.Major -lt 7 -and
+    $argumentMode = Get-Variable PSNativeCommandArgumentPassing -ValueOnly -ErrorAction SilentlyContinue
+    if (($PSVersionTable.PSVersion -lt [version]'7.3' -or $argumentMode -eq 'Legacy') -and
         [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
         $nativeExecutable = $null
         if ([IO.Path]::IsPathRooted($Executable) -or $Executable.Contains('\') -or $Executable.Contains('/')) {
@@ -241,7 +242,7 @@ function Invoke-SelectedCommand {
             $start = New-Object System.Diagnostics.ProcessStartInfo
             $start.FileName = $nativeExecutable
             $start.UseShellExecute = $false
-            $start.WorkingDirectory = (Get-Location).ProviderPath
+            $start.WorkingDirectory = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation.ProviderPath
             $start.Arguments = (@($Arguments | ForEach-Object {
                 ConvertTo-WindowsNativeArgument -Argument $_
             }) -join ' ')

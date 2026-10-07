@@ -45,7 +45,7 @@ $expectedArguments = @(
 $expectedStdin = "fixture stdin`nsecond line with spaces & | <> `$`n"
 $expectedSelected = 'selected value with spaces ; $ & | <>'
 $expectedInherited = 'inherited value with spaces'
-$reportSchemaVersion = 4
+$reportSchemaVersion = 5
 $observationSchemaVersion = 3
 
 function Get-NativeOutputName {
@@ -257,9 +257,14 @@ $goarch = "$($targetParts[1])".Trim()
 $goVersion = "$($targetParts[2])".Trim()
 $targetName = "$goos-$goarch"
 if ($goos -eq 'windows') {
+    $legacyCore = Join-Path $repositoryRoot 'bin/handoff-pwsh-7.2.24/pwsh.exe'
+    if (-not (Test-Path -LiteralPath $legacyCore -PathType Leaf)) {
+        throw 'Run scripts/Install-HandoffPowerShell.ps1 before Windows handoff qualification.'
+    }
     $hosts = @(
         [ordered]@{ name = 'pwsh'; executable = (Get-Command pwsh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source },
-        [ordered]@{ name = 'powershell'; executable = (Get-Command powershell.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source }
+        [ordered]@{ name = 'powershell'; executable = (Get-Command powershell.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source },
+        [ordered]@{ name = 'pwsh-7.2'; executable = $legacyCore }
     )
 }
 else {
@@ -392,10 +397,15 @@ param(
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$WrapperArguments
 )
 $env:HS_HANDOFF_SELECTED = 'original value'
+if ($env:HS_HANDOFF_ARGUMENT_MODE -eq 'Legacy') { $PSNativeCommandArgumentPassing = 'Legacy' }
+if ($env:HS_HANDOFF_PROVIDER -eq 'Registry') { Set-Location -LiteralPath HKCU:\ }
+$initialLocation = (Get-Location).Path
 $hostMetadata = [ordered]@{
     version = $PSVersionTable.PSVersion.ToString()
     edition = $PSVersionTable.PSEdition
     home = $PSHOME
+    provider = (Get-Location).Provider.Name
+    argumentMode = if (Test-Path variable:PSNativeCommandArgumentPassing) { [string]$PSNativeCommandArgumentPassing } else { 'Legacy' }
 }
 [IO.File]::WriteAllText($env:HS_HANDOFF_HOST_METADATA,
     ($hostMetadata | ConvertTo-Json -Compress), [Text.UTF8Encoding]::new($false))
@@ -405,6 +415,9 @@ if (-not $initialEnvironment.Contains('HS_HANDOFF_EMPTY') -or
 Remove-Item -LiteralPath Env:HS_HANDOFF_OUTPUT -ErrorAction SilentlyContinue
 & $Wrapper @WrapperArguments
 $childExitCode = $LASTEXITCODE
+if ((Get-Location).Path -cne $initialLocation) { throw 'The wrapper did not restore the caller provider location.' }
+$hostMetadata.callerLocationRestored = $true
+$hostMetadata.currentFileSystemLocation = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation.ProviderPath
 if ([Environment]::GetEnvironmentVariable('HS_HANDOFF_SELECTED', 'Process') -cne 'original value') {
     throw 'Repeated override did not restore the original value.'
 }
@@ -480,6 +493,8 @@ exit $childExitCode
             $observationPath = Join-Path $caseRoot 'observed.json'
             $metadataPath = Join-Path $caseRoot 'launcher.json'
             $selectedChild = if ($goos -eq 'windows' -and $expectedExitCode -eq 23) { $childName } else { $childBinary }
+            $providerCase = $goos -eq 'windows' -and $hostChoice.name -eq 'powershell' -and $expectedExitCode -eq 23
+            $expectedWorkingDirectory = if ($providerCase) { $sandbox } else { $workingDirectory }
             $launcherArguments = @(
                 '--fixture-mode', $mode,
                 '--fixture-child', $selectedChild,
@@ -488,6 +503,7 @@ exit $childExitCode
                 '--fixture-exit-code', "$expectedExitCode",
                 '--fixture-metadata', $metadataPath
             )
+            if ($providerCase) { $launcherArguments += '--fixture-omit-working-dir' }
             $processEnvironment = @{
                 HS_HANDOFF_INHERITED = $expectedInherited
                 HS_HANDOFF_EMPTY = ''
@@ -500,10 +516,17 @@ exit $childExitCode
                 $hostExecutable = $hostChoice.executable
                 $hostMetadataPath = Join-Path $caseRoot 'host.json'
                 $processEnvironment.HS_HANDOFF_HOST_METADATA = $hostMetadataPath
+                if ($providerCase) { $processEnvironment.HS_HANDOFF_PROVIDER = 'Registry' }
+                if ($hostChoice.name -eq 'pwsh' -and $expectedExitCode -eq 23) {
+                    $processEnvironment.HS_HANDOFF_ARGUMENT_MODE = 'Legacy'
+                }
                 if ($hostChoice.name -eq 'powershell') {
                     # Legacy Windows modules must not inherit PowerShell 7's
                     # module search path from the qualifying harness.
                     $processEnvironment.PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+                }
+                elseif ($hostChoice.name -eq 'pwsh-7.2') {
+                    $processEnvironment.PSModulePath = Join-Path ([IO.Path]::GetDirectoryName($legacyCore)) 'Modules'
                 }
                 # run.ps1 intentionally returns to an interactive caller after setting
                 # LASTEXITCODE. The temporary host translates that script contract into
@@ -532,7 +555,7 @@ exit $childExitCode
             if ([string]::IsNullOrWhiteSpace($selectionFile) -or (Test-Path -LiteralPath $selectionFile)) {
                 throw 'The wrapper did not pass and then remove its temporary selection file.'
             }
-            Assert-ExactHandoff -Observed $observed -ExpectedWorkingDirectory $workingDirectory `
+            Assert-ExactHandoff -Observed $observed -ExpectedWorkingDirectory $expectedWorkingDirectory `
                 -ObservedExitCode $processResult.exitCode -ExpectedExitCode $expectedExitCode
             if ([string]$observed.executable -cne $childBinary) {
                 throw 'Handoff mismatch: executable. The selected literal path resolved to a different program.'
@@ -541,8 +564,8 @@ exit $childExitCode
                 (-not $observed.environment.OS.present -or $observed.environment.OS.value -cne '')) {
                 throw 'The selected child did not retain its explicit empty OS override.'
             }
-            if ($processResult.stdout.Trim() -cne 'HS_HANDOFF_STDOUT_SENTINEL' -or
-                $processResult.stderr.Trim() -cne 'HS_HANDOFF_STDERR_SENTINEL') {
+            if ($processResult.stdout -cne "HS_HANDOFF_STDOUT_SENTINEL`n" -or
+                $processResult.stderr -cne "HS_HANDOFF_STDERR_SENTINEL`n") {
                 throw 'The selected native child did not inherit both bounded output streams.'
             }
 
@@ -553,12 +576,25 @@ exit $childExitCode
                 if (($hostChoice.name -eq 'powershell' -and
                     ($actualVersion.Major -ne 5 -or $actualVersion.Minor -ne 1 -or $hostData.edition -cne 'Desktop')) -or
                     ($hostChoice.name -eq 'pwsh' -and
-                    ($actualVersion.Major -lt 7 -or $hostData.edition -cne 'Core'))) {
+                    ($actualVersion -lt [version]'7.3' -or $hostData.edition -cne 'Core')) -or
+                    ($hostChoice.name -eq 'pwsh-7.2' -and
+                    ($actualVersion -ne [version]'7.2.24' -or $hostData.edition -cne 'Core'))) {
                     throw 'Fixture executed under an unexpected PowerShell host.'
                 }
                 $hostObserved.version = $hostData.version
                 $hostObserved.edition = $hostData.edition
                 $hostObserved.home = $hostData.home
+                $hostObserved.provider = $hostData.provider
+                $hostObserved.argumentMode = $hostData.argumentMode
+                if (-not $hostData.callerLocationRestored) { throw 'Caller provider restoration was not confirmed.' }
+                if ($providerCase -and ($hostData.provider -cne 'Registry' -or
+                    $hostData.currentFileSystemLocation -cne $expectedWorkingDirectory)) {
+                    throw 'The registry fixture did not exercise the expected filesystem fallback.'
+                }
+                if ($hostChoice.name -eq 'pwsh' -and $expectedExitCode -eq 23 -and $hostData.argumentMode -cne 'Legacy') {
+                    throw 'The current PowerShell host did not exercise legacy argument passing.'
+                }
+                $hostObserved.callerLocationRestored = $true
                 if (-not $hostData.callerEnvironmentRestored) { throw 'Caller environment restoration was not confirmed by the actual host.' }
                 $hostObserved.callerEnvironmentRestored = $true
             }
@@ -583,7 +619,8 @@ exit $childExitCode
                 selected = [ordered]@{
                     executable = $selectedChild
                     arguments = @($expectedArguments)
-                    workingDirectory = $workingDirectory
+                    workingDirectory = if ($providerCase) { $null } else { $workingDirectory }
+                    expectedWorkingDirectory = $expectedWorkingDirectory
                     environment = $selectedEnvironment
                 }
                 observed = $observed
