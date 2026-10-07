@@ -30,3 +30,22 @@ finally {
     if ($null -eq $original) { Remove-Item Env:HS_PERFORMANCE_FIXTURE_REGRESSION -ErrorAction SilentlyContinue }
     else { $env:HS_PERFORMANCE_FIXTURE_REGRESSION = $original }
 }
+
+$originalCandidate = $env:PERFORMANCE_PR_HEAD
+try {
+    $evidenceFolder = Join-Path $OutputDirectory 'evidence-write-failure'
+    New-Item -ItemType Directory -Path (Join-Path $evidenceFolder 'summary.json') -Force | Out-Null
+    $env:PERFORMANCE_PR_HEAD = 'invalid-candidate'
+    $failure = $null
+    try { & (Join-Path $PSScriptRoot 'Test-Performance.ps1') -RecordBaseline -OutputDirectory $evidenceFolder }
+    catch { $failure = $_.Exception.Message }
+    if ($failure -ne 'Performance candidate must be a complete Git revision.' -or
+        (Get-Item -LiteralPath (Join-Path $evidenceFolder 'benchmarks.txt')).Length -ne 0) {
+        throw 'Required evidence failure replaced the original error or retained stale benchmark output.'
+    }
+    Write-Host 'Original validation failure survives a real metadata-write failure; raw evidence is empty.'
+}
+finally {
+    if ($null -eq $originalCandidate) { Remove-Item Env:PERFORMANCE_PR_HEAD -ErrorAction SilentlyContinue }
+    else { $env:PERFORMANCE_PR_HEAD = $originalCandidate }
+}

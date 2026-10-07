@@ -69,7 +69,7 @@ catch {
 }
 finally { Pop-Location }
 try {
-    $rawOutput | Set-Content -LiteralPath (Join-Path $outputRoot 'benchmarks.txt') -Encoding utf8
+    [IO.File]::WriteAllLines((Join-Path $outputRoot 'benchmarks.txt'), [string[]]$rawOutput)
     $report | ConvertTo-Json -Depth 15 | Set-Content -LiteralPath (Join-Path $outputRoot 'summary.json') -Encoding utf8
 }
 catch {
