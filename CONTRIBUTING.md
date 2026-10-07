@@ -31,6 +31,23 @@ go install honnef.co/go/tools/cmd/staticcheck@v0.8.1
 go install golang.org/x/tools/cmd/deadcode@v0.49.0
 ```
 
+## Pi retained resources
+
+Use the pinned Node.js version and PowerShell 7.2+ to measure the offline Jev
+and done-sound workloads:
+
+```powershell
+./scripts/Test-PiResources.ps1 -OutputDirectory pi-resource-artifacts/qualified
+./scripts/Test-PiResources.ps1 -NegativeCheck -OutputDirectory pi-resource-artifacts/controlled
+./scripts/Test-PiResourceEvidence.ps1 -PriorEvidenceDirectory pi-resource-artifacts/controlled -OutputDirectory pi-resource-artifacts/stale-rejection
+```
+
+The native Windows, macOS and Linux matrix requires two normal captures and
+actual retained timer, abort-listener and heap regressions. Its aggregate is a
+prerequisite of `verify`. Artifacts retain candidate revisions and complete
+cleanup evidence for 14 days. See [the resource measurement policy](docs/pi-resources.md)
+for sampling, measured heap budgets, noise margins and coverage limits.
+
 ## Formatting and lint
 
 Run the complete non-writing quality policy from the repository root with:

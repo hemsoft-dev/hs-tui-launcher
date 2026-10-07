@@ -265,6 +265,53 @@ jobs:
         shell: pwsh
         run: throw "Native performance matrix result was '${{ needs.performance.result }}'."
 
+  pi-resources:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    env:
+      RESOURCE_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v7.0.0
+        with:
+          node-version-file: .node-version
+      - name: Qualify repeated offline resource captures
+        shell: pwsh
+        run: |
+          ./scripts/Test-PiResources.ps1 -OutputDirectory pi-resource-artifacts/first
+          ./scripts/Test-PiResources.ps1 -OutputDirectory pi-resource-artifacts/second
+      - name: Reject actual retained resources
+        shell: pwsh
+        run: ./scripts/Test-PiResources.ps1 -NegativeCheck -OutputDirectory pi-resource-artifacts/controlled
+      - name: Reject stale evidence after actual Node startup failure
+        shell: pwsh
+        run: ./scripts/Test-PiResourceEvidence.ps1 -PriorEvidenceDirectory pi-resource-artifacts/controlled -OutputDirectory pi-resource-artifacts/stale-rejection
+      - name: Retain bounded resource evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pi-resources-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: pi-resource-artifacts/
+          if-no-files-found: warn
+          overwrite: true
+          retention-days: 14
+
+  pi-resources-gate:
+    needs: pi-resources
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all native resource targets
+        if: ${{ needs.pi-resources.result != 'success' }}
+        shell: pwsh
+        run: throw "Native resource matrix result was '${{ needs.pi-resources.result }}'."
+
   verify:
     needs:
       - lint
@@ -273,15 +320,16 @@ jobs:
       - coverage
       - platform-gate
       - performance-gate
+      - pi-resources-gate
     if: ${{ always() }}
     runs-on: windows-latest
 
     steps:
       - name: Require prerequisite success
-        if: ${{ needs.lint.result != 'success' || needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' || needs.performance-gate.result != 'success' }}
+        if: ${{ needs.lint.result != 'success' || needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' || needs.performance-gate.result != 'success' || needs.pi-resources-gate.result != 'success' }}
         shell: pwsh
         run: |
-          throw "Required job failure: lint=${{ needs.lint.result }}, typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}, performance-gate=${{ needs.performance-gate.result }}."
+          throw "Required job failure: lint=${{ needs.lint.result }}, typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}, performance-gate=${{ needs.performance-gate.result }}, pi-resources-gate=${{ needs.pi-resources-gate.result }}."
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

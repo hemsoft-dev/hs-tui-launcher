@@ -8,5 +8,6 @@ node_modules/
 mutation-artifacts/
 security-artifacts/
 performance-artifacts/
+pi-resource-artifacts/
 .stryker-tmp/
 .env
