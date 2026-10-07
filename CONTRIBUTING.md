@@ -9,7 +9,8 @@ missing, or failed check.
 
 The `verify` job is defined in `.github/workflows/ci.yml`. It depends on the
 `lint`, `typescript`, and `security` jobs and the aggregate results of the Windows,
-macOS, and Linux `coverage` and `platform` matrices. Its explicit failure gate
+macOS, and Linux `coverage`, `platform`, `performance`, `pi-resources`, and
+`typescript-metrics` matrices. Its explicit failure gate
 makes a failed, cancelled, or skipped prerequisite fail the already-required
 `verify` check. None of these jobs has a path filter. After all prerequisites
 pass, `verify` runs these checks:
@@ -396,6 +397,23 @@ changing limits. Hosted worker variation is part of the reviewed baseline;
 `-RecordBaseline` collects evidence without qualifying or changing a budget.
 Performance artifacts are ignored disposable output. Existing correctness,
 coverage, security and mutation thresholds remain required.
+
+## TypeScript branch coverage and function risk
+
+Use the pinned Node.js version and PowerShell 7.2+ to collect complete production
+coverage and per-function complexity/CRAP:
+
+```powershell
+./scripts/Test-TypeScriptMetrics.ps1 -OutputDirectory typescript-metric-artifacts/qualified
+node scripts/Test-TypeScriptMetricFixtures.mjs --output typescript-metric-artifacts/controlled
+```
+
+The native matrix requires two normal captures and actual uncovered-source,
+startup-failure and evidence-write regressions. Its aggregate feeds `verify`.
+Artifacts retain raw V8/Istanbul reports, source/candidate identities, worst
+functions and reviewed policy results for 14 days. See [the TypeScript metric
+policy](docs/typescript-metrics.md) for measurement semantics, complete unloaded
+source coverage, measured baselines and limits.
 
 ## Cyclomatic complexity
 

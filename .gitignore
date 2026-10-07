@@ -11,3 +11,4 @@ performance-artifacts/
 pi-resource-artifacts/
 .stryker-tmp/
 .env
+typescript-metric-artifacts/
