@@ -6,6 +6,7 @@ Run from the repository root with PowerShell 7.2 or newer and the Node.js
 ```powershell
 ./scripts/Test-PiResources.ps1 -OutputDirectory pi-resource-artifacts/qualified
 ./scripts/Test-PiResources.ps1 -NegativeCheck -OutputDirectory pi-resource-artifacts/controlled
+./scripts/Test-PiResourceEvidence.ps1 -PriorEvidenceDirectory pi-resource-artifacts/controlled -OutputDirectory pi-resource-artifacts/stale-rejection
 ```
 
 The wrapper checks five policy tests, then starts a fresh Node process with

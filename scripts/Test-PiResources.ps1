@@ -31,13 +31,23 @@ try {
         if ($RecordBaseline) { throw 'Controlled rejection requires a reviewed heap budget.' }
         foreach ($fixture in @('timer', 'listener', 'heap')) {
             $folder = Join-Path $outputRoot $fixture
+            New-Item -ItemType Directory -Path $folder -Force | Out-Null
+            $summaryPath = Join-Path $folder 'summary.json'
+            if (Test-Path -LiteralPath $summaryPath) {
+                if (-not (Test-Path -LiteralPath $summaryPath -PathType Leaf)) {
+                    throw 'Resource summary path must be a file before replacing prior evidence.'
+                }
+                Remove-Item -LiteralPath $summaryPath -Force -ErrorAction Stop
+            }
             $toolOutput = @(& node @arguments --output $folder --fixture $fixture 2>&1)
             $toolExit = $LASTEXITCODE
-            New-Item -ItemType Directory -Path $folder -Force | Out-Null
             $primaryError = $null
             try {
                 if ($toolExit -eq 0) { throw "Controlled $fixture retention unexpectedly qualified." }
-                $summary = Get-Content -LiteralPath (Join-Path $folder 'summary.json') -Raw | ConvertFrom-Json -AsHashtable
+                if (-not (Test-Path -LiteralPath $summaryPath -PathType Leaf)) {
+                    throw "Controlled $fixture run did not write fresh summary evidence."
+                }
+                $summary = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json -AsHashtable
                 $expected = switch ($fixture) {
                     timer { 'retained resource: settledTimers' }
                     listener { 'retained resource: parentAbortListeners' }

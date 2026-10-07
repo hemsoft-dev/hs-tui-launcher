@@ -289,6 +289,9 @@ jobs:
       - name: Reject actual retained resources
         shell: pwsh
         run: ./scripts/Test-PiResources.ps1 -NegativeCheck -OutputDirectory pi-resource-artifacts/controlled
+      - name: Reject stale evidence after actual Node startup failure
+        shell: pwsh
+        run: ./scripts/Test-PiResourceEvidence.ps1 -PriorEvidenceDirectory pi-resource-artifacts/controlled -OutputDirectory pi-resource-artifacts/stale-rejection
       - name: Retain bounded resource evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

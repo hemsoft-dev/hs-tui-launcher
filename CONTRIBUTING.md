@@ -39,6 +39,7 @@ and done-sound workloads:
 ```powershell
 ./scripts/Test-PiResources.ps1 -OutputDirectory pi-resource-artifacts/qualified
 ./scripts/Test-PiResources.ps1 -NegativeCheck -OutputDirectory pi-resource-artifacts/controlled
+./scripts/Test-PiResourceEvidence.ps1 -PriorEvidenceDirectory pi-resource-artifacts/controlled -OutputDirectory pi-resource-artifacts/stale-rejection
 ```
 
 The native Windows, macOS and Linux matrix requires two normal captures and
