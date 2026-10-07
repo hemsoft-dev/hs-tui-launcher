@@ -41,7 +41,7 @@ try {
     if ($LASTEXITCODE -ne 0 -or $goTarget.Count -ne 2) { throw 'Unable to identify Go platform.' }
     $platform = $goTarget -join '/'
     $report.platform = $platform
-    $arguments = @('test', '-run', '^$', '-bench', 'Benchmark(LauncherView|SelectionInvocation)', '-benchmem', '-benchtime=200ms', '-count=5', '-cpu=1', './...')
+    $arguments = @('test', '-run', '^$', '-bench', 'Benchmark(LauncherView|SelectionInvocation)', '-benchmem', '-benchtime=500ms', '-count=5', '-cpu=1', './...')
     $rawOutput = @(& go @arguments 2>&1)
     $toolExit = $LASTEXITCODE
     $report.command = @('go') + $arguments
