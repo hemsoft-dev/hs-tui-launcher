@@ -7,5 +7,6 @@ bin/
 node_modules/
 mutation-artifacts/
 security-artifacts/
+performance-artifacts/
 .stryker-tmp/
 .env

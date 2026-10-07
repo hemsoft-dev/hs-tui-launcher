@@ -217,6 +217,54 @@ jobs:
         shell: pwsh
         run: throw "Supported-platform matrix result was '${{ needs.platform.result }}'."
 
+  performance:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PERFORMANCE_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Verify benchmark parser and comparison policy
+        shell: pwsh
+        run: ./scripts/Test-PerformancePolicy.Unit.ps1
+      - name: Qualify launcher latency and allocations
+        shell: pwsh
+        run: |
+          ./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/first
+          ./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/second
+      - name: Reject real additional benchmark work
+        shell: pwsh
+        run: ./scripts/Test-PerformanceFixtures.ps1 -OutputDirectory performance-artifacts/controlled
+      - name: Retain raw performance measurements
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: performance-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: performance-artifacts/
+          if-no-files-found: warn
+          overwrite: true
+          retention-days: 14
+
+  performance-gate:
+    needs: performance
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all native performance targets
+        if: ${{ needs.performance.result != 'success' }}
+        shell: pwsh
+        run: throw "Native performance matrix result was '${{ needs.performance.result }}'."
+
   verify:
     needs:
       - lint
@@ -224,15 +272,16 @@ jobs:
       - security
       - coverage
       - platform-gate
+      - performance-gate
     if: ${{ always() }}
     runs-on: windows-latest
 
     steps:
       - name: Require prerequisite success
-        if: ${{ needs.lint.result != 'success' || needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' }}
+        if: ${{ needs.lint.result != 'success' || needs.typescript.result != 'success' || needs.security.result != 'success' || needs.coverage.result != 'success' || needs.platform-gate.result != 'success' || needs.performance-gate.result != 'success' }}
         shell: pwsh
         run: |
-          throw "Required job failure: lint=${{ needs.lint.result }}, typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}."
+          throw "Required job failure: lint=${{ needs.lint.result }}, typescript=${{ needs.typescript.result }}, security=${{ needs.security.result }}, coverage=${{ needs.coverage.result }}, platform-gate=${{ needs.platform-gate.result }}, performance-gate=${{ needs.performance-gate.result }}."
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
