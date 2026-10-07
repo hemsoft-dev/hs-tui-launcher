@@ -469,6 +469,10 @@ exit $childExitCode
             }
             Assert-ExactHandoff -Observed $observed -ExpectedWorkingDirectory $workingDirectory `
                 -ObservedExitCode $processResult.exitCode -ExpectedExitCode $expectedExitCode
+            if ($processResult.stdout.Trim() -cne 'HS_HANDOFF_STDOUT_SENTINEL' -or
+                $processResult.stderr.Trim() -cne 'HS_HANDOFF_STDERR_SENTINEL') {
+                throw 'The selected native child did not inherit both bounded output streams.'
+            }
 
             $hostObserved = [ordered]@{ name = $hostChoice.name; executable = $hostExecutable }
             if ($goos -eq 'windows') {

@@ -71,6 +71,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
+	fmt.Fprintln(os.Stdout, "HS_HANDOFF_STDOUT_SENTINEL")
+	fmt.Fprintln(os.Stderr, "HS_HANDOFF_STDERR_SENTINEL")
 
 	exitCode, err := strconv.Atoi(os.Getenv("HS_HANDOFF_EXIT_CODE"))
 	if err != nil {
