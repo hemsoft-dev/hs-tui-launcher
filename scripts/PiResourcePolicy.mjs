@@ -34,6 +34,8 @@ export function inspectResourceSummary(summary, budget) {
   require(summary.counters?.registeredCallbacks ===
     1, 'expected one extension lifetime registration');
   require(summary.counters?.maximumPlayersInFlight === 1, 'player overlap protection failed');
+  require(summary.resourcePeaks?.inFlightFakeWork ===
+    1, 'pending dependency workload not exercised');
   for (const name of [
     'settledTimers',
     'visibleChildAbortListeners',
@@ -49,6 +51,7 @@ export function inspectResourceSummary(summary, budget) {
     'registeredCallbacks',
     'players',
     'pendingFakeWork',
+    'nativeTimeouts',
   ]) {
     require(summary.teardown?.[name] === 0, 'incomplete teardown: ' + name);
   }

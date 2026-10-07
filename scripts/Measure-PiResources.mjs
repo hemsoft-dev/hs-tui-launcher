@@ -49,6 +49,7 @@ const resourcePeaks = {
   visibleChildAbortListeners: 0,
   parentAbortListeners: 0,
   pendingFakeWork: 0,
+  inFlightFakeWork: 0,
   settledPlayers: 0,
 };
 const report = {
@@ -152,6 +153,7 @@ async function request(mode, measured) {
   let finish;
   const pending = () => {
     pendingFakeWork++;
+    resourcePeaks.inFlightFakeWork = Math.max(resourcePeaks.inFlightFakeWork, pendingFakeWork);
     return new Promise((resolvePromise) => {
       finish = () => {
         pendingFakeWork--;
@@ -336,7 +338,12 @@ try {
     players,
     pendingFakeWork,
   };
-  if (typeof globalThis.gc === 'function') report.afterTeardown = await collectedSample();
+  if (typeof globalThis.gc === 'function') {
+    report.afterTeardown = await collectedSample();
+    report.teardown.nativeTimeouts = report.afterTeardown.activeResourceKinds.filter(
+      (name) => name === 'Timeout',
+    ).length;
+  }
 }
 try {
   if (primaryError) throw primaryError;
