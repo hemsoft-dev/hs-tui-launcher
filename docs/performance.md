@@ -29,6 +29,8 @@ and [the independent repeat](https://github.com/HemSoft/hs-tui-launcher/actions/
 each measured two clean captures on every GitHub-hosted platform. Their source
 revisions are recorded in the budget file. Each of the four captures per platform
 contains five samples per workload. The
+annotated [measurement tag](https://github.com/HemSoft/hs-tui-launcher/tree/performance-baseline-2026-10-06)
+preserves the calibration source after branch cleanup. The
 maintained [budget file](../scripts/performance-budgets.json) records platform,
 processor descriptions, source revision, observed metrics, and limits. Initial
 platforms are Windows/amd64, Linux/amd64, and macOS/arm64.

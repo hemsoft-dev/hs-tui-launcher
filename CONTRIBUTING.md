@@ -359,6 +359,27 @@ lower a floor or add an exclusion merely to pass CI. Kill retained survivors
 with focused tests, remove their identities, and raise floors when repeated
 runs establish an improved baseline.
 
+## Launcher performance
+
+The required `verify` result includes native performance qualification on Windows
+x64, macOS ARM64 and Linux x64. Run with PowerShell 7.5+ and pinned Go 1.26.4:
+
+```powershell
+./scripts/Test-PerformancePolicy.Unit.ps1
+./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/qualified
+./scripts/Test-PerformanceFixtures.ps1 -OutputDirectory performance-artifacts/controlled
+```
+
+The 29 workloads measure actual rendering and invocation parsing with five
+500ms samples, allocation counts and bytes. They call no provider and run no
+selected command. CI retains raw measurements and candidate-bound summaries
+for 14 days. Every native target and the real extra-work rejection must pass.
+Read [the sampling method and measured budgets](docs/performance.md) before
+changing limits. Hosted worker variation is part of the reviewed baseline;
+`-RecordBaseline` collects evidence without qualifying or changing a budget.
+Performance artifacts are ignored disposable output. Existing correctness,
+coverage, security and mutation thresholds remain required.
+
 ## Cyclomatic complexity
 
 The required `verify` job measures every production Go function with
