@@ -19,6 +19,7 @@ $report = [ordered]@{
     schemaVersion = 1; revision = $null; pullRequestHead = $null; workingTreeDirty = $null
     goVersion = $null; platform = $null; processor = @(); benchmarkExitCode = $null; budgetSha256 = $null
     command = @(); samplesPerWorkload = 5; cpu = 1; terminal = @{ NO_COLOR = '1'; TERM = 'dumb' }
+    samplingOrder = 'interleaved-workload-passes'; commandRepetitions = 5
     recordBaseline = [bool]$RecordBaseline; policyPassed = $false; failures = @(); benchmarks = @{}
 }
 
@@ -41,13 +42,18 @@ try {
     if ($LASTEXITCODE -ne 0 -or $goTarget.Count -ne 2) { throw 'Unable to identify Go platform.' }
     $platform = $goTarget -join '/'
     $report.platform = $platform
-    $arguments = @('test', '-run', '^$', '-bench', 'Benchmark(LauncherView|SelectionInvocation)', '-benchmem', '-benchtime=500ms', '-count=5', '-cpu=1', './...')
-    $rawOutput = @(& go @arguments 2>&1)
-    $toolExit = $LASTEXITCODE
+    $arguments = @('test', '-run', '^$', '-bench', 'Benchmark(LauncherView|SelectionInvocation)', '-benchmem', '-benchtime=500ms', '-count=1', '-cpu=1', './...')
     $report.command = @('go') + $arguments
-    $report.benchmarkExitCode = $toolExit
+    for ($pass = 1; $pass -le 5; $pass++) {
+        # Spread one sample per workload across independent full passes, rather
+        # than taking all five samples during the same short contention window.
+        Write-Host "Capturing performance workload pass $pass of 5."
+        $rawOutput += @(& go @arguments 2>&1)
+        $toolExit = $LASTEXITCODE
+        $report.benchmarkExitCode = $toolExit
+        if ($toolExit -ne 0) { throw "Go benchmark process failed (exit $toolExit)." }
+    }
     $report.processor = @($rawOutput | Where-Object { $_ -match '^cpu:' } | ForEach-Object { [string]$_ })
-    if ($toolExit -ne 0) { throw "Go benchmark process failed (exit $toolExit)." }
     $results = ConvertFrom-BenchmarkOutput -Lines @($rawOutput | ForEach-Object { [string]$_ })
     $report.benchmarks = $results
     $failures = @()
@@ -55,7 +61,8 @@ try {
         $policy = Get-Content -LiteralPath $BudgetPath -Raw | ConvertFrom-Json -AsHashtable
         if ($policy.schemaVersion -ne 1 -or -not $policy.platforms.ContainsKey($platform)) { throw "No reviewed performance budget for $platform." }
         if ($policy.goVersion -ne $goVersion) { throw 'Go toolchain changed; reproduce and review the performance baseline.' }
-        if ($policy.benchtime -ne '500ms' -or $policy.samplesPerCapture -ne 5) {
+        if ($policy.benchtime -ne '500ms' -or $policy.samplesPerCapture -ne 5 -or
+            $policy.qualificationSamplingOrder -ne $report.samplingOrder) {
             throw 'Benchmark sampling method changed; reproduce and review the performance baseline.'
         }
         $report.budgetSha256 = (Get-FileHash -LiteralPath $BudgetPath -Algorithm SHA256).Hash.ToLowerInvariant()

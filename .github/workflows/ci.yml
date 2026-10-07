@@ -239,7 +239,9 @@ jobs:
         run: ./scripts/Test-PerformancePolicy.Unit.ps1
       - name: Qualify launcher latency and allocations
         shell: pwsh
-        run: ./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/qualified
+        run: |
+          ./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/first
+          ./scripts/Test-Performance.ps1 -OutputDirectory performance-artifacts/second
       - name: Reject real additional benchmark work
         shell: pwsh
         run: ./scripts/Test-PerformanceFixtures.ps1 -OutputDirectory performance-artifacts/controlled

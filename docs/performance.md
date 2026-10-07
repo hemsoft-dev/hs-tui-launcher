@@ -9,10 +9,11 @@ Run these commands with PowerShell 7.5 or newer and Go 1.26.4. The fixture needs
 ./scripts/Test-PerformanceFixtures.ps1 -OutputDirectory ./performance-artifacts/controlled-regression
 ```
 
-The underlying command is:
+The wrapper runs this command five times, giving each workload one sample per
+independent full-workload pass:
 
 ```shell
-go test -run '^$' -bench 'Benchmark(LauncherView|SelectionInvocation)' -benchmem -benchtime=500ms -count=5 -cpu=1 ./...
+go test -run '^$' -bench 'Benchmark(LauncherView|SelectionInvocation)' -benchmem -benchtime=500ms -count=1 -cpu=1 ./...
 ```
 
 The 29 workloads exercise actual `Model.View` menu and choice rendering with
@@ -44,6 +45,16 @@ Qualification uses the envelope of all four capture medians to account for that
 observed worker variation, then compares a candidate's five-sample median.
 Raw samples, minima, maxima, and median absolute deviation remain available.
 
+The original baseline used five consecutive samples for each workload in one
+process. Candidate qualification spreads those same five 500ms samples across
+five independent full-workload passes. An unchanged-source Windows candidate
+showed localized timing swings of 145-256us and 173-457us in two 32-item choice
+workloads, with unchanged bytes and allocations. Interleaving separates a
+workload's samples in time and resets process state between passes. The numeric
+limits remain those derived from the original captures; this ordering change
+does not raise a limit. Both sampling orders are recorded in the budget, and CI
+requires two independent normal captures plus the real controlled rejection.
+
 Each latency limit is 1.5 times the largest maintained capture median, rounded up
 to a nanosecond. This initial policy catches substantial slowdowns while allowing
 the observed hosted-runner variation. It does not certify small latency changes.
@@ -64,7 +75,8 @@ claiming qualification, use `-RecordBaseline`. Its report always sets
 
 `benchmarks.txt` retains raw Go output. `summary.json` records the checkout and
 PR candidate revisions, dirty source state, Go version, platform, CPU, command,
-all samples, compared metrics, and failures. A nonzero benchmark process,
+all samples, sampling order, command repetition count, compared metrics, and
+failures. A nonzero benchmark process,
 invalid evidence, missing policy, regression, or required evidence-write failure
 fails the command. A secondary evidence-write error preserves an earlier failure.
 

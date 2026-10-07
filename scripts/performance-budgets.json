@@ -3,6 +3,8 @@
   "goVersion": "go1.26.4",
   "benchtime": "500ms",
   "samplesPerCapture": 5,
+  "baselineSamplingOrder": "consecutive-workload-samples",
+  "qualificationSamplingOrder": "interleaved-workload-passes",
   "capturesPerPlatform": 4,
   "baselineSources": [
     {
