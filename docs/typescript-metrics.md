@@ -125,6 +125,8 @@ complexity and CRAP regressions, malformed budgets and incomplete metrics.
 
 Actual blocked summary paths prove that evidence-write failure preserves an
 earlier candidate-validation error and rejects an otherwise successful capture.
+Each controlled capture removes its prior summary first. A real Node preload
+failure proves that stale negative evidence cannot qualify the current attempt.
 Fixtures restore source and remove temporary files in `finally`; required
 cleanup failure fails the fixture, and an earlier failure remains primary.
 

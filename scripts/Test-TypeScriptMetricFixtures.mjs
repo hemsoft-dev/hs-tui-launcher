@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, rmSync, existsSync, unlinkSync } from 'node:fs';
 import { dirname, join, resolve, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
@@ -14,6 +14,9 @@ const measure = join(root, 'scripts/Measure-TypeScriptMetrics.mjs');
 const budgetPath = join(root, 'scripts/typescript-metric-budgets.json');
 function capture(name, extra = [], env = process.env) {
   const folder = join(output, name);
+  mkdirSync(folder, { recursive: true });
+  const summaryPath = join(folder, 'summary.json');
+  if (existsSync(summaryPath)) unlinkSync(summaryPath);
   const result = spawnSync(
     process.execPath,
     [measure, '--output', folder, '--budget', budgetPath, ...extra],
@@ -37,7 +40,7 @@ function capture(name, extra = [], env = process.env) {
     console.error('Fixture log write failed; preserving original error.');
   }
   if (primaryError) throw primaryError;
-  return JSON.parse(readFileSync(join(folder, 'summary.json'), 'utf8'));
+  return JSON.parse(readFileSync(summaryPath, 'utf8'));
 }
 
 const source = join(root, 'pi/jev-decide/jev-core.ts');
@@ -111,6 +114,26 @@ try {
 }
 if (primaryError) throw primaryError;
 console.log('Actual unloaded production file included and rejected; fixture removed.');
+
+const stale = join(output, 'stale-evidence');
+mkdirSync(stale, { recursive: true });
+writeFileSync(
+  join(stale, 'summary.json'),
+  readFileSync(join(output, 'uncalled-function/summary.json')),
+);
+const missingPreload = join(output, 'inert-missing-' + randomUUID() + '.mjs');
+assert.equal(existsSync(missingPreload), false);
+assert.throws(
+  () =>
+    capture('stale-evidence', [], {
+      ...process.env,
+      NODE_OPTIONS: '--import=' + pathToFileURL(missingPreload).href,
+    }),
+  { code: 'ENOENT' },
+);
+assert.equal(existsSync(join(stale, 'summary.json')), false);
+assert.match(readFileSync(join(stale, 'fixture.log'), 'utf8'), /ERR_MODULE_NOT_FOUND/);
+console.log('Actual Node preload failure cannot qualify with prior metric fixture evidence.');
 
 const failure = join(output, 'primary-write-failure');
 mkdirSync(join(failure, 'summary.json'), { recursive: true });
