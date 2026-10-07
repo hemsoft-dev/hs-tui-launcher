@@ -31,6 +31,7 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 & (Join-Path $PSScriptRoot 'Test-LauncherEnvironment.Unit.ps1')
+& (Join-Path $PSScriptRoot 'Test-LauncherNativeArgument.Unit.ps1')
 $expectedArguments = @(
     'plain',
     'value with spaces',
@@ -43,7 +44,7 @@ $expectedArguments = @(
 $expectedStdin = "fixture stdin`nsecond line with spaces & | <> `$`n"
 $expectedSelected = 'selected value with spaces ; $ & | <>'
 $expectedInherited = 'inherited value with spaces'
-$reportSchemaVersion = 2
+$reportSchemaVersion = 3
 $observationSchemaVersion = 2
 
 function Get-NativeOutputName {
@@ -204,6 +205,15 @@ $goos = "$($targetParts[0])".Trim()
 $goarch = "$($targetParts[1])".Trim()
 $goVersion = "$($targetParts[2])".Trim()
 $targetName = "$goos-$goarch"
+if ($goos -eq 'windows') {
+    $hosts = @(
+        [ordered]@{ name = 'pwsh'; executable = (Get-Command pwsh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source },
+        [ordered]@{ name = 'powershell'; executable = (Get-Command powershell.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source }
+    )
+}
+else {
+    $hosts = @([ordered]@{ name = 'sh'; executable = (Get-Command sh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source })
+}
 $reportKind = if ($NegativeCheck) { 'negative' } else { 'results' }
 $reportPath = Join-Path $outputRoot "launcher-handoff-$reportKind-$targetName-$commit.json"
 $wrapperName = if ($goos -eq 'windows') { 'run.ps1' } else { 'run.sh' }
@@ -219,6 +229,7 @@ $report = [ordered]@{
         sha256 = (Get-FileHash -LiteralPath $wrapperSource -Algorithm SHA256).Hash.ToLowerInvariant()
     }
     launcherModes = @('native', 'fallback')
+    hosts = @($hosts | ForEach-Object { $_.name })
     fixtureSelection = [ordered]@{
         executable = 'temporary controlled child fixture (assigned after build)'
         arguments = @($expectedArguments)
@@ -301,6 +312,9 @@ if ($NegativeCheck) {
 }
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-launcher-handoff-$PID-$([guid]::NewGuid().ToString('N'))"
+$ownedTempLeaf = [IO.Path]::GetFileName($tempRoot)
+$ownedCleanupTarget = [IO.Path]::GetFullPath($tempRoot)
+$primaryError = $null
 $previousGoToolchain = $env:GOTOOLCHAIN
 $previousGoProxy = $env:GOPROXY
 $previousGoSumDB = $env:GOSUMDB
@@ -318,6 +332,7 @@ try {
             throw 'Python could not resolve the fixture temporary directory.'
         }
         $tempRoot = "$($physicalTempRoot[0])".Trim()
+        $ownedCleanupTarget = [IO.Path]::GetFullPath($tempRoot)
     }
     $windowsDriver = Join-Path $tempRoot 'invoke-run-ps1.ps1'
     @'
@@ -326,14 +341,24 @@ param(
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$WrapperArguments
 )
 $env:HS_HANDOFF_SELECTED = 'original value'
-if (-not (Test-Path Env:HS_HANDOFF_EMPTY)) { throw 'The fixture host must inherit an empty variable.' }
+$hostMetadata = [ordered]@{
+    version = $PSVersionTable.PSVersion.ToString()
+    edition = $PSVersionTable.PSEdition
+    home = $PSHOME
+}
+[IO.File]::WriteAllText($env:HS_HANDOFF_HOST_METADATA,
+    ($hostMetadata | ConvertTo-Json -Compress), [Text.UTF8Encoding]::new($false))
+$initialEnvironment = [Environment]::GetEnvironmentVariables('Process')
+if (-not $initialEnvironment.Contains('HS_HANDOFF_EMPTY') -or
+    $initialEnvironment['HS_HANDOFF_EMPTY'] -cne '') { throw 'The fixture host must inherit an empty variable.' }
 Remove-Item -LiteralPath Env:HS_HANDOFF_OUTPUT -ErrorAction SilentlyContinue
 & $Wrapper @WrapperArguments
 $childExitCode = $LASTEXITCODE
 if ([Environment]::GetEnvironmentVariable('HS_HANDOFF_SELECTED', 'Process') -cne 'original value') {
     throw 'Repeated override did not restore the original value.'
 }
-if (-not (Test-Path -LiteralPath Env:HS_HANDOFF_EMPTY) -or $env:HS_HANDOFF_EMPTY -cne '') {
+$restoredEnvironment = [Environment]::GetEnvironmentVariables('Process')
+if (-not $restoredEnvironment.Contains('HS_HANDOFF_EMPTY') -or $restoredEnvironment['HS_HANDOFF_EMPTY'] -cne '') {
     throw 'Repeated override did not restore an originally empty variable.'
 }
 if (Test-Path -LiteralPath Env:HS_HANDOFF_OUTPUT) {
@@ -384,8 +409,9 @@ exit $childExitCode
             Copy-Item -LiteralPath (Join-Path $buildRoot 'go.mod') -Destination (Join-Path $sandbox 'go.mod')
         }
 
+        foreach ($hostChoice in $hosts) {
         foreach ($expectedExitCode in @(0, 23)) {
-            $caseRoot = Join-Path $sandbox "case-$expectedExitCode"
+            $caseRoot = Join-Path $sandbox "case-$($hostChoice.name)-$expectedExitCode"
             $workingDirectory = Join-Path $caseRoot 'working directory with spaces'
             New-Item -ItemType Directory -Path $workingDirectory -Force | Out-Null
             $observationPath = Join-Path $caseRoot 'observed.json'
@@ -406,14 +432,21 @@ exit $childExitCode
                 GOSUMDB = 'off'
             }
             if ($goos -eq 'windows') {
-                $hostExecutable = (Get-Command pwsh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+                $hostExecutable = $hostChoice.executable
+                $hostMetadataPath = Join-Path $caseRoot 'host.json'
+                $processEnvironment.HS_HANDOFF_HOST_METADATA = $hostMetadataPath
+                if ($hostChoice.name -eq 'powershell') {
+                    # Legacy Windows modules must not inherit PowerShell 7's
+                    # module search path from the qualifying harness.
+                    $processEnvironment.PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+                }
                 # run.ps1 intentionally returns to an interactive caller after setting
                 # LASTEXITCODE. The temporary host translates that script contract into
                 # the dedicated pwsh process exit code without changing the wrapper.
                 $hostArguments = @('-NoLogo', '-NoProfile', '-File', $windowsDriver, $wrapperUnderTest) + $launcherArguments
             }
             else {
-                $hostExecutable = (Get-Command sh -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+                $hostExecutable = $hostChoice.executable
                 $hostArguments = @($wrapperUnderTest) + $launcherArguments
             }
 
@@ -437,8 +470,24 @@ exit $childExitCode
             Assert-ExactHandoff -Observed $observed -ExpectedWorkingDirectory $workingDirectory `
                 -ObservedExitCode $processResult.exitCode -ExpectedExitCode $expectedExitCode
 
+            $hostObserved = [ordered]@{ name = $hostChoice.name; executable = $hostExecutable }
+            if ($goos -eq 'windows') {
+                $hostData = Get-Content -LiteralPath $hostMetadataPath -Raw -Encoding UTF8 | ConvertFrom-Json
+                $actualVersion = [version] $hostData.version
+                if (($hostChoice.name -eq 'powershell' -and
+                    ($actualVersion.Major -ne 5 -or $actualVersion.Minor -ne 1 -or $hostData.edition -cne 'Desktop')) -or
+                    ($hostChoice.name -eq 'pwsh' -and
+                    ($actualVersion.Major -lt 7 -or $hostData.edition -cne 'Core'))) {
+                    throw 'Fixture executed under an unexpected PowerShell host.'
+                }
+                $hostObserved.version = $hostData.version
+                $hostObserved.edition = $hostData.edition
+                $hostObserved.home = $hostData.home
+            }
+
             $caseReports.Add([ordered]@{
                 launcherMode = $mode
+                host = $hostObserved
                 expectedChildExitCode = $expectedExitCode
                 wrapperExitCode = $processResult.exitCode
                 wrapperPath = $wrapperName
@@ -462,7 +511,8 @@ exit $childExitCode
                 stderr = $processResult.stderr
                 status = 'passed'
             })
-            Write-Host "Passed $wrapperName mode=$mode childExit=$expectedExitCode target=$goos/$goarch"
+            Write-Host "Passed $wrapperName host=$($hostChoice.name) mode=$mode childExit=$expectedExitCode target=$goos/$goarch"
+        }
         }
     }
 
@@ -472,15 +522,34 @@ exit $childExitCode
     Write-Host "Launcher handoff qualification passed. Report: $reportPath"
 }
 catch {
+    $primaryError = $_
     $report.cases = if (Get-Variable caseReports -ErrorAction SilentlyContinue) { @($caseReports) } else { @() }
     $report.status = 'failed'
     $report.error = ConvertTo-BoundedText -Value $_.Exception.Message
-    Write-Report
-    throw
+    try { Write-Report }
+    catch { Write-Warning 'Handoff report write failed; preserving the original qualification error.' }
+    throw $primaryError
 }
 finally {
     $env:GOTOOLCHAIN = $previousGoToolchain
     $env:GOPROXY = $previousGoProxy
     $env:GOSUMDB = $previousGoSumDB
-    Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    try {
+        $cleanupTarget = [IO.Path]::GetFullPath($tempRoot)
+        if ($cleanupTarget -cne $ownedCleanupTarget -or
+            [IO.Path]::GetFileName($cleanupTarget) -cne $ownedTempLeaf -or
+            $ownedTempLeaf -notmatch '^hs-tui-launcher-handoff-\d+-[a-f0-9]{32}$') {
+            throw 'Refusing cleanup outside the owned handoff fixture directory.'
+        }
+        if (Test-Path -LiteralPath $cleanupTarget) {
+            Remove-Item -LiteralPath $cleanupTarget -Recurse -Force -ErrorAction Stop
+        }
+        if (Test-Path -LiteralPath $cleanupTarget) { throw 'Handoff fixture cleanup left its temporary directory.' }
+        $report.temporaryDirectoryRemoved = $true
+        if (-not $primaryError) { Write-Report }
+    }
+    catch {
+        if (-not $primaryError) { throw }
+        Write-Warning 'Handoff cleanup failed; preserving the original qualification error.'
+    }
 }

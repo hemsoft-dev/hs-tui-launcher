@@ -191,6 +191,66 @@ function Assert-SelectionShape {
     }
 }
 
+function ConvertTo-WindowsNativeArgument {
+    param([AllowEmptyString()][string] $Argument)
+
+    # Microsoft CRT argv parsing doubles backslashes before quotes and the
+    # closing delimiter. Quote every argument so empty strings survive too.
+    $quoted = New-Object System.Text.StringBuilder
+    [void] $quoted.Append('"')
+    $slashes = 0
+    foreach ($character in $Argument.ToCharArray()) {
+        if ($character -eq '\') {
+            $slashes++
+            continue
+        }
+        if ($character -eq '"') {
+            [void] $quoted.Append(('\' * (2 * $slashes + 1)))
+        }
+        else {
+            [void] $quoted.Append(('\' * $slashes))
+        }
+        [void] $quoted.Append($character)
+        $slashes = 0
+    }
+    [void] $quoted.Append(('\' * (2 * $slashes)))
+    [void] $quoted.Append('"')
+    return $quoted.ToString()
+}
+
+function Invoke-SelectedCommand {
+    param([string] $Executable, [AllowEmptyCollection()][string[]] $Arguments)
+
+    if ($PSVersionTable.PSVersion.Major -lt 7 -and $env:OS -eq 'Windows_NT') {
+        $command = Get-Command $Executable -ErrorAction Stop | Select-Object -First 1
+        if ($command.CommandType -eq 'Application' -and
+            [IO.Path]::GetExtension($command.Source) -ieq '.exe') {
+            $start = New-Object System.Diagnostics.ProcessStartInfo
+            $start.FileName = $command.Source
+            $start.UseShellExecute = $false
+            $start.WorkingDirectory = (Get-Location).ProviderPath
+            $start.Arguments = (@($Arguments | ForEach-Object {
+                ConvertTo-WindowsNativeArgument -Argument $_
+            }) -join ' ')
+            # Inherit the console/stdio handles. Redirecting would change CLI
+            # interactivity and stdin ownership after the TUI exits.
+            $process = New-Object System.Diagnostics.Process
+            $process.StartInfo = $start
+            try {
+                if (-not $process.Start()) { throw "Could not start '$Executable'." }
+                $process.WaitForExit()
+                $script:exitCode = $process.ExitCode
+            }
+            finally { $process.Dispose() }
+            return
+        }
+    }
+
+    & $Executable @Arguments
+    if ($null -ne $LASTEXITCODE) { $script:exitCode = $LASTEXITCODE }
+    else { $script:exitCode = 0 }
+}
+
 function Invoke-Selection {
     param([pscustomobject] $Selection)
 
@@ -215,13 +275,7 @@ function Invoke-Selection {
             $arguments = @($Selection.args)
         }
 
-        & ([string] $Selection.executable) @arguments
-        if ($null -ne $LASTEXITCODE) {
-            $script:exitCode = $LASTEXITCODE
-        }
-        else {
-            $script:exitCode = 0
-        }
+        Invoke-SelectedCommand -Executable ([string] $Selection.executable) -Arguments $arguments
     }
     finally {
         if ($locationPushed) {
@@ -254,7 +308,7 @@ finally {
 
 try {
     if ($exitCode -eq 0 -and $selectionFile -and (Test-Path -LiteralPath $selectionFile.FullName)) {
-        $selectionJson = Get-Content -LiteralPath $selectionFile.FullName -Raw
+        $selectionJson = Get-Content -LiteralPath $selectionFile.FullName -Raw -Encoding UTF8
         if (-not [string]::IsNullOrWhiteSpace($selectionJson)) {
             $selection = ConvertFrom-SelectionJson -Json $selectionJson
             Invoke-Selection -Selection $selection
