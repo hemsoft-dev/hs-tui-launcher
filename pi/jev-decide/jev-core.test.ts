@@ -45,6 +45,12 @@ test('buildDecisionRequest redacts secret fields and inline bearer tokens withou
     assert.deepEqual(original, snapshot);
   }
   assert.deepEqual(redactSensitive('ordinary text'), { value: 'ordinary text', changed: false });
+  const keyOnly = { credentials: { apiKey: 'INERT-KEY-ONLY' } };
+  assert.deepEqual(redactSensitive(keyOnly), {
+    value: { credentials: '[REDACTED]' },
+    changed: true,
+  });
+  assert.deepEqual(keyOnly, { credentials: { apiKey: 'INERT-KEY-ONLY' } });
 });
 
 test('executeJevDecision sends a redacted request with Pi auth and validates typed answers', async () => {
