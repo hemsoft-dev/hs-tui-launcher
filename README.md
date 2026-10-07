@@ -36,6 +36,29 @@ a repeated name taking effect. On Windows, names are case insensitive.
 `run.ps1` restores the caller's original values and presence after the child
 finishes, including when it exits with an error.
 
+Windows native `.exe` selections preserve empty arguments, embedded quotes,
+spaces, special characters and Unicode under supported PowerShell hosts.
+The wrapper decodes the selection as UTF-8. Windows hosts before PowerShell 7.3,
+and newer hosts configured for legacy argument passing, use Microsoft CRT argument
+quoting with inherited stdin and console handles. Without a selected working
+directory, native children use PowerShell's current filesystem location, including
+when the caller is browsing a registry provider. Applications that implement
+their own command-line parser can have different rules. PowerShell scripts and
+`.cmd`/`.bat` shims retain their interpreter's argument behavior; use the native
+executable directly when exact argv is required, for example `node.exe` with a
+CLI's JavaScript entry point as its first argument.
+
+The handoff CI harness requires PowerShell 7.5+ to orchestrate fixtures. On
+Windows it launches actual Windows PowerShell 5.1, pinned PowerShell 7.2.24,
+and current PowerShell 7 processes,
+isolates their module paths, and checks both native and Go fallback modes with
+child exit codes 0 and 23. Bounded artifacts retain each child host's version,
+exact seven-argument observations, selected empty-variable presence, inherited
+values, caller environment and provider restoration, working directory, stdin,
+exact stdout/stderr and temporary-file cleanup. Cases also cover omitted working
+directories from `HKCU:` and current PowerShell's legacy argument mode.
+The harness's version requirement does not change the wrapper's 5.1 support.
+
 Direct Go execution opens the picker without the PowerShell handoff:
 
 ```powershell

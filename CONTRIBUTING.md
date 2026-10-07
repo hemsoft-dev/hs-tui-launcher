@@ -146,14 +146,20 @@ also requires Python 3. The fallback mode requires Go; use the version in
 From Windows, run:
 
 ```powershell
+pwsh -NoProfile -File ./scripts/Install-HandoffPowerShell.ps1
 pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1
 pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1 -NegativeCheck
 ```
 
 The handoff qualification harness requires PowerShell 7.5 or newer so the
 portable environment-provider assertions can distinguish empty and absent
-variables. On Windows it also starts a real Windows PowerShell 5.1 process to
-check inherited empty values and culture-independent name matching. This test
+variables. On Windows it also starts real Windows PowerShell 5.1 and portable
+PowerShell 7.2.24 processes. The installer checks the official release archive's
+SHA-256 before extracting it into the ignored `bin/handoff-pwsh-7.2.24` directory.
+It does not change installed PowerShell versions or PATH. The twelve Windows cases
+check inherited empty values, literal executable identity, culture-independent
+name matching, `HKCU:` callers without a selected working directory, and current
+PowerShell with legacy argument passing. This test
 prerequisite does not change the shipped Windows wrapper's 5.1 support.
 
 From macOS or Linux, run the same local equivalent in PowerShell 7.5 or newer:
@@ -166,7 +172,9 @@ pwsh -NoProfile -File ./scripts/Test-LauncherHandoff.ps1 -NegativeCheck
 The first command tests native and fallback mode with successful and nonzero
 children. It proves exact arguments (including an empty argument and non-shell
 special data), working directory, selected and inherited environment values,
-stdin, temporary selection-file cleanup, and exit-code propagation. The second
+stdin, exact newline-terminated stdout/stderr, temporary selection-file cleanup,
+and exit-code propagation. Real file locks and report write failures must fail
+qualification while preserving an earlier primary exception. The second
 is a safe synthetic negative route proving that mismatched argv, environment,
 empty-variable presence, working directory, stdin, and nonzero exit expectations
 all fail the harness.
@@ -174,14 +182,15 @@ all fail the harness.
 By default, reports and generated fixture binaries are written under the system
 temporary directory, not the checkout. Pass `-OutputDirectory <path>` to retain
 reports. CI uploads `launcher-handoff-<target>-<architecture>-<commit>` with
-overwrite semantics. Each bounded JSON report uses `schemaVersion: 2` and records
+overwrite semantics. Each bounded JSON report uses `schemaVersion: 5` and records
 the exact commit, native GOOS/GOARCH and Go version, wrapper path and hash,
 launcher mode, selected executable/arguments/working directory/allowlisted
 fixture environment, observed handoff fields, bounded stdout/stderr, and status.
 Observed allowlisted environment entries record both `value` and `present`, so an
 absent variable cannot be mistaken for a present variable with an empty value.
 The report never dumps the full environment. No credentials are read or needed;
-only the controlled `HS_HANDOFF_*` variables are recorded. Fixture builds set
+only the controlled `HS_HANDOFF_*` variables and the Windows child's empty `OS`
+override are recorded. Fixture builds set
 `GOPROXY=off`, `GOSUMDB=off`, and `GOTOOLCHAIN=local`.
 
 ## Security checks

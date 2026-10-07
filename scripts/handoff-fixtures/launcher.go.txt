@@ -14,7 +14,7 @@ type selection struct {
 	Name       string   `json:"name"`
 	Executable string   `json:"executable"`
 	Args       []string `json:"args"`
-	WorkingDir string   `json:"working_dir"`
+	WorkingDir string   `json:"working_dir,omitempty"`
 	Env        []string `json:"env"`
 }
 
@@ -30,6 +30,7 @@ func main() {
 	mode := flag.String("fixture-mode", "", "expected wrapper mode")
 	child := flag.String("fixture-child", "", "controlled child executable")
 	workingDir := flag.String("fixture-working-dir", "", "controlled child working directory")
+	omitWorkingDir := flag.Bool("fixture-omit-working-dir", false, "omit selected working directory")
 	output := flag.String("fixture-output", "", "controlled child observation output")
 	exitCode := flag.String("fixture-exit-code", "", "controlled child exit code")
 	metadata := flag.String("fixture-metadata", "", "launcher invocation output")
@@ -68,7 +69,10 @@ func main() {
 		},
 	}
 	if runtime.GOOS == "windows" {
-		selected.Env = append(selected.Env, "hs_handoff_selected=selected value with spaces ; $ & | <>")
+		selected.Env = append(selected.Env, "hs_handoff_selected=selected value with spaces ; $ & | <>", "OS=")
+	}
+	if *omitWorkingDir {
+		selected.WorkingDir = ""
 	}
 	selectionJSON, err := json.Marshal(selected)
 	if err != nil {

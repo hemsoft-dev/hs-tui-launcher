@@ -187,6 +187,11 @@ jobs:
       - name: Test launcher
         run: go test -count=1 ./...
 
+      - name: Install checksum-pinned PowerShell 7.2 handoff host
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: ./scripts/Install-HandoffPowerShell.ps1
+
       - name: Qualify native and go-run wrapper handoff
         shell: pwsh
         run: ./scripts/Test-LauncherHandoff.ps1 -OutputDirectory '${{ runner.temp }}/launcher-handoff-artifacts'
