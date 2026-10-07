@@ -1,6 +1,7 @@
 # Launcher performance qualification
 
-Run the maintained gate with PowerShell 7.2 or newer and Go 1.26.4:
+Run these commands with PowerShell 7.5 or newer and Go 1.26.4. The fixture needs
+7.5 to preserve originally empty environment values during cleanup:
 
 ```powershell
 ./scripts/Test-Performance.ps1 -OutputDirectory ./performance-artifacts/baseline
@@ -11,7 +12,7 @@ Run the maintained gate with PowerShell 7.2 or newer and Go 1.26.4:
 The underlying command is:
 
 ```shell
-go test -run '^$' -bench 'Benchmark(LauncherView|SelectionInvocation)' -benchmem -benchtime=200ms -count=5 -cpu=1 ./...
+go test -run '^$' -bench 'Benchmark(LauncherView|SelectionInvocation)' -benchmem -benchtime=500ms -count=5 -cpu=1 ./...
 ```
 
 The 29 workloads exercise actual `Model.View` menu and choice rendering with
@@ -23,20 +24,25 @@ terminal interaction, child command execution, or provider calls.
 
 ## Baseline and comparison
 
-[The initial native baseline run](https://github.com/HemSoft/hs-tui-launcher/actions/runs/37563984677)
-measured clean revision `403b8be23439fe9a0f967e912376792a7bcedfc8` twice on each
-GitHub-hosted platform. Each capture contains five samples per workload. The
+[The first maintained native baseline run](https://github.com/HemSoft/hs-tui-launcher/actions/runs/37564542735)
+and [the independent repeat](https://github.com/HemSoft/hs-tui-launcher/actions/runs/37564948499)
+each measured two clean captures on every GitHub-hosted platform. Their source
+revisions are recorded in the budget file. Each of the four captures per platform
+contains five samples per workload. The
 maintained [budget file](../scripts/performance-budgets.json) records platform,
 processor descriptions, source revision, observed metrics, and limits. Initial
 platforms are Windows/amd64, Linux/amd64, and macOS/arm64.
 
-The largest ratio between the two capture medians was 1.142 on Windows, 1.116
-on Linux, and 1.266 on macOS. A Linux individual-sample outlier exceeded twice
-its workload median; qualification therefore compares the five-sample median,
-not the slowest sample. Raw samples, minima, maxima, and median absolute
-deviation remain in the report for inspection.
+Earlier 200ms exploratory windows proved too noisy in hosted qualification.
+The 500ms windows reduced within-job median variation to 5% on Windows and 6%
+on Linux in the first maintained run; macOS varied by 27%. Across both independent
+jobs, the largest ratio between capture medians was 1.255 on Windows, 1.398 on
+macOS, and 1.979 on Linux. Linux jobs used different EPYC processor models.
+Qualification uses the envelope of all four capture medians to account for that
+observed worker variation, then compares a candidate's five-sample median.
+Raw samples, minima, maxima, and median absolute deviation remain available.
 
-Each latency limit is 1.5 times the larger initial capture median, rounded up
+Each latency limit is 1.5 times the largest maintained capture median, rounded up
 to a nanosecond. This initial policy catches substantial slowdowns while allowing
 the observed hosted-runner variation. It does not certify small latency changes.
 Allocated-byte and allocation-count limits use the largest observed value plus

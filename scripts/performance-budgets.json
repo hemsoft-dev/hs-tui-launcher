@@ -1,495 +1,495 @@
 {
   "schemaVersion": 1,
   "goVersion": "go1.26.4",
-  "baselineRun": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37563984677",
-  "baselineRevision": "403b8be23439fe9a0f967e912376792a7bcedfc8",
+  "benchtime": "500ms",
+  "samplesPerCapture": 5,
+  "capturesPerPlatform": 4,
+  "baselineSources": [
+    {
+      "revision": "67790e06c060653adbb3551c6a89d80c242611e3",
+      "run": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37564542735"
+    },
+    {
+      "revision": "09fcb17186f8c5f7612afced4c7c7128aa50e402",
+      "run": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37564948499"
+    }
+  ],
   "comparison": {
-    "minimumAllocationHeadroom": 1,
     "minimumByteHeadroom": 64,
-    "latencyMedianMultiplier": 1.5,
-    "samples": 5,
-    "allocationRelativeHeadroom": 0.05
+    "allocationRelativeHeadroom": 0.05,
+    "minimumAllocationHeadroom": 1,
+    "latencyMedianMultiplier": 1.5
   },
   "platforms": {
     "windows/amd64": {
-      "processors": [
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
-        "cpu: AMD EPYC 7763 64-Core Processor                "
-      ],
+      "processors": ["cpu: AMD EPYC 7763 64-Core Processor                "],
       "benchmarks": {
         "BenchmarkLauncherView/choices/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 278835.0,
+          "baselineMedianNanoseconds": 315812.0,
           "baselineBytes": 64419.0,
           "baselineAllocations": 1348.0,
-          "maximumMedianNanoseconds": 418253.0,
+          "maximumMedianNanoseconds": 473718.0,
           "maximumBytes": 67640.0,
           "maximumAllocations": 1416.0
         },
         "BenchmarkLauncherView/choices/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 336478.0,
+          "baselineMedianNanoseconds": 393202.0,
           "baselineBytes": 89452.0,
           "baselineAllocations": 1380.0,
-          "maximumMedianNanoseconds": 504717.0,
+          "maximumMedianNanoseconds": 589803.0,
           "maximumBytes": 93925.0,
           "maximumAllocations": 1449.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 211867.0,
+          "baselineMedianNanoseconds": 208477.0,
           "baselineBytes": 53946.0,
           "baselineAllocations": 1784.0,
-          "maximumMedianNanoseconds": 317801.0,
+          "maximumMedianNanoseconds": 312716.0,
           "maximumBytes": 56644.0,
           "maximumAllocations": 1874.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 264958.0,
+          "baselineMedianNanoseconds": 247835.0,
           "baselineBytes": 66907.0,
           "baselineAllocations": 1798.0,
-          "maximumMedianNanoseconds": 397437.0,
+          "maximumMedianNanoseconds": 371753.0,
           "maximumBytes": 70253.0,
           "maximumAllocations": 1888.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 195768.0,
+          "baselineMedianNanoseconds": 194558.0,
           "baselineBytes": 42209.0,
           "baselineAllocations": 673.0,
-          "maximumMedianNanoseconds": 293652.0,
+          "maximumMedianNanoseconds": 291837.0,
           "maximumBytes": 44320.0,
           "maximumAllocations": 707.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 254407.0,
+          "baselineMedianNanoseconds": 249856.0,
           "baselineBytes": 61058.0,
           "baselineAllocations": 705.0,
-          "maximumMedianNanoseconds": 381611.0,
+          "maximumMedianNanoseconds": 374784.0,
           "maximumBytes": 64111.0,
           "maximumAllocations": 741.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 116794.0,
+          "baselineMedianNanoseconds": 115610.0,
           "baselineBytes": 28577.0,
           "baselineAllocations": 725.0,
-          "maximumMedianNanoseconds": 175191.0,
+          "maximumMedianNanoseconds": 173415.0,
           "maximumBytes": 30006.0,
           "maximumAllocations": 762.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 162143.0,
+          "baselineMedianNanoseconds": 147292.0,
           "baselineBytes": 36513.0,
           "baselineAllocations": 739.0,
-          "maximumMedianNanoseconds": 243215.0,
+          "maximumMedianNanoseconds": 220938.0,
           "maximumBytes": 38339.0,
           "maximumAllocations": 776.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 99279.0,
+          "baselineMedianNanoseconds": 90572.0,
           "baselineBytes": 17776.0,
           "baselineAllocations": 356.0,
-          "maximumMedianNanoseconds": 148919.0,
+          "maximumMedianNanoseconds": 135858.0,
           "maximumBytes": 18665.0,
           "maximumAllocations": 374.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 126508.0,
+          "baselineMedianNanoseconds": 115071.0,
           "baselineBytes": 21273.0,
           "baselineAllocations": 383.0,
-          "maximumMedianNanoseconds": 189762.0,
+          "maximumMedianNanoseconds": 172607.0,
           "maximumBytes": 22337.0,
           "maximumAllocations": 403.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 52863.0,
+          "baselineMedianNanoseconds": 52328.0,
           "baselineBytes": 10904.0,
           "baselineAllocations": 312.0,
-          "maximumMedianNanoseconds": 79295.0,
+          "maximumMedianNanoseconds": 78492.0,
           "maximumBytes": 11450.0,
           "maximumAllocations": 328.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 68260.0,
+          "baselineMedianNanoseconds": 65943.0,
           "baselineBytes": 13816.0,
           "baselineAllocations": 324.0,
-          "maximumMedianNanoseconds": 102390.0,
+          "maximumMedianNanoseconds": 98915.0,
           "maximumBytes": 14507.0,
           "maximumAllocations": 341.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 263696.0,
+          "baselineMedianNanoseconds": 263166.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 395544.0,
+          "maximumMedianNanoseconds": 394749.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 318934.0,
+          "baselineMedianNanoseconds": 286645.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 478401.0,
+          "maximumMedianNanoseconds": 429968.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 264015.0,
+          "baselineMedianNanoseconds": 264018.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 396023.0,
+          "maximumMedianNanoseconds": 396027.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 311024.0,
+          "baselineMedianNanoseconds": 287832.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 466536.0,
+          "maximumMedianNanoseconds": 431748.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 208677.0,
+          "baselineMedianNanoseconds": 202161.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 313016.0,
+          "maximumMedianNanoseconds": 303242.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 230979.0,
+          "baselineMedianNanoseconds": 225281.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 346469.0,
+          "maximumMedianNanoseconds": 337922.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 214415.0,
+          "baselineMedianNanoseconds": 200309.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 321623.0,
+          "maximumMedianNanoseconds": 300464.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 237002.0,
+          "baselineMedianNanoseconds": 222802.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 355503.0,
+          "maximumMedianNanoseconds": 334203.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 95984.0,
+          "baselineMedianNanoseconds": 87759.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 143976.0,
+          "maximumMedianNanoseconds": 131639.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 95885.0,
+          "baselineMedianNanoseconds": 98874.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 143828.0,
+          "maximumMedianNanoseconds": 148311.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 93458.0,
+          "baselineMedianNanoseconds": 87996.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 140187.0,
+          "maximumMedianNanoseconds": 131994.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 99270.0,
+          "baselineMedianNanoseconds": 96147.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 148905.0,
+          "maximumMedianNanoseconds": 144221.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkSelectionInvocation/long": {
-          "baselineMedianNanoseconds": 3210.0,
+          "baselineMedianNanoseconds": 3112.0,
           "baselineBytes": 896.0,
           "baselineAllocations": 24.0,
-          "maximumMedianNanoseconds": 4815.0,
+          "maximumMedianNanoseconds": 4668.0,
           "maximumBytes": 960.0,
           "maximumAllocations": 26.0
         },
         "BenchmarkSelectionInvocation/plain": {
-          "baselineMedianNanoseconds": 1226.0,
+          "baselineMedianNanoseconds": 1162.0,
           "baselineBytes": 312.0,
           "baselineAllocations": 9.0,
-          "maximumMedianNanoseconds": 1839.0,
+          "maximumMedianNanoseconds": 1743.0,
           "maximumBytes": 376.0,
           "maximumAllocations": 10.0
         },
         "BenchmarkSelectionInvocation/quoted": {
-          "baselineMedianNanoseconds": 1270.0,
+          "baselineMedianNanoseconds": 1232.0,
           "baselineBytes": 456.0,
           "baselineAllocations": 13.0,
-          "maximumMedianNanoseconds": 1905.0,
+          "maximumMedianNanoseconds": 1848.0,
           "maximumBytes": 520.0,
           "maximumAllocations": 14.0
         },
         "BenchmarkSelectionInvocation/repo_root": {
-          "baselineMedianNanoseconds": 1749.0,
-          "baselineBytes": 424.0,
+          "baselineMedianNanoseconds": 1388.0,
+          "baselineBytes": 272.0,
           "baselineAllocations": 13.0,
-          "maximumMedianNanoseconds": 2624.0,
-          "maximumBytes": 488.0,
+          "maximumMedianNanoseconds": 2082.0,
+          "maximumBytes": 336.0,
           "maximumAllocations": 14.0
         },
         "BenchmarkSelectionInvocation/unicode": {
-          "baselineMedianNanoseconds": 739.6,
+          "baselineMedianNanoseconds": 690.5,
           "baselineBytes": 184.0,
           "baselineAllocations": 8.0,
-          "maximumMedianNanoseconds": 1110.0,
+          "maximumMedianNanoseconds": 1036.0,
           "maximumBytes": 248.0,
           "maximumAllocations": 9.0
         }
       }
     },
     "darwin/arm64": {
-      "processors": [
-        "cpu: Apple M2 Pro (Virtual)",
-        "cpu: Apple M2 Pro (Virtual)",
-        "cpu: Apple M2 Pro (Virtual)",
-        "cpu: Apple M2 Pro (Virtual)"
-      ],
+      "processors": ["cpu: Apple M2 Pro (Virtual)"],
       "benchmarks": {
         "BenchmarkLauncherView/choices/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 167893.0,
+          "baselineMedianNanoseconds": 126029.0,
           "baselineBytes": 64419.0,
           "baselineAllocations": 1348.0,
-          "maximumMedianNanoseconds": 251840.0,
+          "maximumMedianNanoseconds": 189044.0,
           "maximumBytes": 67640.0,
           "maximumAllocations": 1416.0
         },
         "BenchmarkLauncherView/choices/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 207195.0,
+          "baselineMedianNanoseconds": 177138.0,
           "baselineBytes": 89452.0,
           "baselineAllocations": 1380.0,
-          "maximumMedianNanoseconds": 310793.0,
+          "maximumMedianNanoseconds": 265707.0,
           "maximumBytes": 93925.0,
           "maximumAllocations": 1449.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 156963.0,
+          "baselineMedianNanoseconds": 129180.0,
           "baselineBytes": 53946.0,
           "baselineAllocations": 1784.0,
-          "maximumMedianNanoseconds": 235445.0,
+          "maximumMedianNanoseconds": 193770.0,
           "maximumBytes": 56644.0,
           "maximumAllocations": 1874.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 173253.0,
+          "baselineMedianNanoseconds": 130303.0,
           "baselineBytes": 66907.0,
           "baselineAllocations": 1798.0,
-          "maximumMedianNanoseconds": 259880.0,
+          "maximumMedianNanoseconds": 195455.0,
           "maximumBytes": 70253.0,
           "maximumAllocations": 1888.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 125443.0,
+          "baselineMedianNanoseconds": 106587.0,
           "baselineBytes": 42210.0,
           "baselineAllocations": 673.0,
-          "maximumMedianNanoseconds": 188165.0,
+          "maximumMedianNanoseconds": 159881.0,
           "maximumBytes": 44321.0,
           "maximumAllocations": 707.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 171137.0,
+          "baselineMedianNanoseconds": 142979.0,
           "baselineBytes": 61058.0,
           "baselineAllocations": 705.0,
-          "maximumMedianNanoseconds": 256706.0,
+          "maximumMedianNanoseconds": 214469.0,
           "maximumBytes": 64111.0,
           "maximumAllocations": 741.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 75509.0,
+          "baselineMedianNanoseconds": 79397.0,
           "baselineBytes": 28577.0,
           "baselineAllocations": 725.0,
-          "maximumMedianNanoseconds": 113264.0,
+          "maximumMedianNanoseconds": 119096.0,
           "maximumBytes": 30006.0,
           "maximumAllocations": 762.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 95543.0,
+          "baselineMedianNanoseconds": 100607.0,
           "baselineBytes": 36513.0,
           "baselineAllocations": 739.0,
-          "maximumMedianNanoseconds": 143315.0,
+          "maximumMedianNanoseconds": 150911.0,
           "maximumBytes": 38339.0,
           "maximumAllocations": 776.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 57895.0,
+          "baselineMedianNanoseconds": 57193.0,
           "baselineBytes": 17776.0,
           "baselineAllocations": 356.0,
-          "maximumMedianNanoseconds": 86843.0,
+          "maximumMedianNanoseconds": 85790.0,
           "maximumBytes": 18665.0,
           "maximumAllocations": 374.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 76078.0,
+          "baselineMedianNanoseconds": 77540.0,
           "baselineBytes": 21273.0,
           "baselineAllocations": 383.0,
-          "maximumMedianNanoseconds": 114117.0,
+          "maximumMedianNanoseconds": 116310.0,
           "maximumBytes": 22337.0,
           "maximumAllocations": 403.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 35313.0,
+          "baselineMedianNanoseconds": 33637.0,
           "baselineBytes": 10904.0,
           "baselineAllocations": 312.0,
-          "maximumMedianNanoseconds": 52970.0,
+          "maximumMedianNanoseconds": 50456.0,
           "maximumBytes": 11450.0,
           "maximumAllocations": 328.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 47335.0,
+          "baselineMedianNanoseconds": 43322.0,
           "baselineBytes": 13816.0,
           "baselineAllocations": 324.0,
-          "maximumMedianNanoseconds": 71003.0,
+          "maximumMedianNanoseconds": 64983.0,
           "maximumBytes": 14507.0,
           "maximumAllocations": 341.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 171614.0,
+          "baselineMedianNanoseconds": 170712.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 257421.0,
+          "maximumMedianNanoseconds": 256068.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 200004.0,
+          "baselineMedianNanoseconds": 186628.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 300006.0,
+          "maximumMedianNanoseconds": 279942.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 176356.0,
+          "baselineMedianNanoseconds": 180963.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 264534.0,
+          "maximumMedianNanoseconds": 271445.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 185190.0,
+          "baselineMedianNanoseconds": 197640.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 277785.0,
+          "maximumMedianNanoseconds": 296460.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 126693.0,
+          "baselineMedianNanoseconds": 117950.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 190040.0,
+          "maximumMedianNanoseconds": 176925.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 142862.0,
+          "baselineMedianNanoseconds": 131546.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 214293.0,
+          "maximumMedianNanoseconds": 197319.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 162801.0,
+          "baselineMedianNanoseconds": 123766.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 244202.0,
+          "maximumMedianNanoseconds": 185649.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 176893.0,
+          "baselineMedianNanoseconds": 141463.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 265340.0,
+          "maximumMedianNanoseconds": 212195.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 64138.0,
+          "baselineMedianNanoseconds": 54496.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 96207.0,
+          "maximumMedianNanoseconds": 81744.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 72423.0,
+          "baselineMedianNanoseconds": 60585.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 108635.0,
+          "maximumMedianNanoseconds": 90878.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 66554.0,
+          "baselineMedianNanoseconds": 57722.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 99831.0,
+          "maximumMedianNanoseconds": 86583.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 74940.0,
+          "baselineMedianNanoseconds": 60886.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 112410.0,
+          "maximumMedianNanoseconds": 91329.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkSelectionInvocation/long": {
-          "baselineMedianNanoseconds": 2579.0,
+          "baselineMedianNanoseconds": 2299.0,
           "baselineBytes": 896.0,
           "baselineAllocations": 24.0,
-          "maximumMedianNanoseconds": 3869.0,
+          "maximumMedianNanoseconds": 3449.0,
           "maximumBytes": 960.0,
           "maximumAllocations": 26.0
         },
         "BenchmarkSelectionInvocation/plain": {
-          "baselineMedianNanoseconds": 891.1,
+          "baselineMedianNanoseconds": 801.0,
           "baselineBytes": 312.0,
           "baselineAllocations": 9.0,
-          "maximumMedianNanoseconds": 1337.0,
+          "maximumMedianNanoseconds": 1202.0,
           "maximumBytes": 376.0,
           "maximumAllocations": 10.0
         },
         "BenchmarkSelectionInvocation/quoted": {
-          "baselineMedianNanoseconds": 929.7,
+          "baselineMedianNanoseconds": 803.5,
           "baselineBytes": 456.0,
           "baselineAllocations": 13.0,
-          "maximumMedianNanoseconds": 1395.0,
+          "maximumMedianNanoseconds": 1206.0,
           "maximumBytes": 520.0,
           "maximumAllocations": 14.0
         },
         "BenchmarkSelectionInvocation/repo_root": {
-          "baselineMedianNanoseconds": 3303.0,
-          "baselineBytes": 784.0,
-          "baselineAllocations": 14.0,
-          "maximumMedianNanoseconds": 4955.0,
-          "maximumBytes": 848.0,
-          "maximumAllocations": 15.0
+          "baselineMedianNanoseconds": 3330.0,
+          "baselineBytes": 712.0,
+          "baselineAllocations": 16.0,
+          "maximumMedianNanoseconds": 4995.0,
+          "maximumBytes": 776.0,
+          "maximumAllocations": 17.0
         },
         "BenchmarkSelectionInvocation/unicode": {
-          "baselineMedianNanoseconds": 557.0,
+          "baselineMedianNanoseconds": 465.0,
           "baselineBytes": 184.0,
           "baselineAllocations": 8.0,
-          "maximumMedianNanoseconds": 836.0,
+          "maximumMedianNanoseconds": 698.0,
           "maximumBytes": 248.0,
           "maximumAllocations": 9.0
         }
@@ -497,241 +497,239 @@
     },
     "linux/amd64": {
       "processors": [
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
-        "cpu: AMD EPYC 7763 64-Core Processor                ",
+        "cpu: AMD EPYC 9V45 96-Core Processor                ",
         "cpu: AMD EPYC 7763 64-Core Processor                "
       ],
       "benchmarks": {
         "BenchmarkLauncherView/choices/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 247844.0,
+          "baselineMedianNanoseconds": 243573.0,
           "baselineBytes": 64419.0,
           "baselineAllocations": 1348.0,
-          "maximumMedianNanoseconds": 371766.0,
+          "maximumMedianNanoseconds": 365360.0,
           "maximumBytes": 67640.0,
           "maximumAllocations": 1416.0
         },
         "BenchmarkLauncherView/choices/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 316048.0,
+          "baselineMedianNanoseconds": 309477.0,
           "baselineBytes": 89452.0,
           "baselineAllocations": 1380.0,
-          "maximumMedianNanoseconds": 474072.0,
+          "maximumMedianNanoseconds": 464216.0,
           "maximumBytes": 93925.0,
           "maximumAllocations": 1449.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 197083.0,
+          "baselineMedianNanoseconds": 195065.0,
           "baselineBytes": 53946.0,
           "baselineAllocations": 1784.0,
-          "maximumMedianNanoseconds": 295625.0,
+          "maximumMedianNanoseconds": 292598.0,
           "maximumBytes": 56644.0,
           "maximumAllocations": 1874.0
         },
         "BenchmarkLauncherView/choices/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 240781.0,
+          "baselineMedianNanoseconds": 237175.0,
           "baselineBytes": 66907.0,
           "baselineAllocations": 1798.0,
-          "maximumMedianNanoseconds": 361172.0,
+          "maximumMedianNanoseconds": 355763.0,
           "maximumBytes": 70253.0,
           "maximumAllocations": 1888.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 183167.0,
+          "baselineMedianNanoseconds": 179970.0,
           "baselineBytes": 42209.0,
           "baselineAllocations": 673.0,
-          "maximumMedianNanoseconds": 274751.0,
+          "maximumMedianNanoseconds": 269955.0,
           "maximumBytes": 44320.0,
           "maximumAllocations": 707.0
         },
         "BenchmarkLauncherView/choices/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 241367.0,
+          "baselineMedianNanoseconds": 236938.0,
           "baselineBytes": 61058.0,
           "baselineAllocations": 705.0,
-          "maximumMedianNanoseconds": 362051.0,
+          "maximumMedianNanoseconds": 355407.0,
           "maximumBytes": 64111.0,
           "maximumAllocations": 741.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 110685.0,
+          "baselineMedianNanoseconds": 109862.0,
           "baselineBytes": 28577.0,
           "baselineAllocations": 725.0,
-          "maximumMedianNanoseconds": 166028.0,
+          "maximumMedianNanoseconds": 164793.0,
           "maximumBytes": 30006.0,
           "maximumAllocations": 762.0
         },
         "BenchmarkLauncherView/choices/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 140908.0,
+          "baselineMedianNanoseconds": 138567.0,
           "baselineBytes": 36513.0,
           "baselineAllocations": 739.0,
-          "maximumMedianNanoseconds": 211362.0,
+          "maximumMedianNanoseconds": 207851.0,
           "maximumBytes": 38339.0,
           "maximumAllocations": 776.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 87206.0,
+          "baselineMedianNanoseconds": 86168.0,
           "baselineBytes": 17776.0,
           "baselineAllocations": 356.0,
-          "maximumMedianNanoseconds": 130809.0,
+          "maximumMedianNanoseconds": 129252.0,
           "maximumBytes": 18665.0,
           "maximumAllocations": 374.0
         },
         "BenchmarkLauncherView/choices/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 123579.0,
+          "baselineMedianNanoseconds": 110049.0,
           "baselineBytes": 21273.0,
           "baselineAllocations": 383.0,
-          "maximumMedianNanoseconds": 185369.0,
+          "maximumMedianNanoseconds": 165074.0,
           "maximumBytes": 22337.0,
           "maximumAllocations": 403.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 49723.0,
+          "baselineMedianNanoseconds": 49368.0,
           "baselineBytes": 10904.0,
           "baselineAllocations": 312.0,
-          "maximumMedianNanoseconds": 74585.0,
+          "maximumMedianNanoseconds": 74052.0,
           "maximumBytes": 11450.0,
           "maximumAllocations": 328.0
         },
         "BenchmarkLauncherView/choices/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 62976.0,
+          "baselineMedianNanoseconds": 62575.0,
           "baselineBytes": 13816.0,
           "baselineAllocations": 324.0,
-          "maximumMedianNanoseconds": 94464.0,
+          "maximumMedianNanoseconds": 93863.0,
           "maximumBytes": 14507.0,
           "maximumAllocations": 341.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/ascii": {
-          "baselineMedianNanoseconds": 252518.0,
+          "baselineMedianNanoseconds": 246007.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 378777.0,
+          "maximumMedianNanoseconds": 369011.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_120/unicode": {
-          "baselineMedianNanoseconds": 273715.0,
+          "baselineMedianNanoseconds": 271546.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 410573.0,
+          "maximumMedianNanoseconds": 407319.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/ascii": {
-          "baselineMedianNanoseconds": 249343.0,
+          "baselineMedianNanoseconds": 247728.0,
           "baselineBytes": 64467.0,
           "baselineAllocations": 1353.0,
-          "maximumMedianNanoseconds": 374015.0,
+          "maximumMedianNanoseconds": 371592.0,
           "maximumBytes": 67691.0,
           "maximumAllocations": 1421.0
         },
         "BenchmarkLauncherView/menu/size_128/width_40/unicode": {
-          "baselineMedianNanoseconds": 273783.0,
+          "baselineMedianNanoseconds": 269015.0,
           "baselineBytes": 81388.0,
           "baselineAllocations": 1364.0,
-          "maximumMedianNanoseconds": 410675.0,
+          "maximumMedianNanoseconds": 403523.0,
           "maximumBytes": 85458.0,
           "maximumAllocations": 1433.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/ascii": {
-          "baselineMedianNanoseconds": 191979.0,
+          "baselineMedianNanoseconds": 190048.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 287969.0,
+          "maximumMedianNanoseconds": 285072.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_120/unicode": {
-          "baselineMedianNanoseconds": 211965.0,
+          "baselineMedianNanoseconds": 211125.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 317948.0,
+          "maximumMedianNanoseconds": 316688.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/ascii": {
-          "baselineMedianNanoseconds": 192057.0,
+          "baselineMedianNanoseconds": 190839.0,
           "baselineBytes": 42762.0,
           "baselineAllocations": 681.0,
-          "maximumMedianNanoseconds": 288086.0,
+          "maximumMedianNanoseconds": 286259.0,
           "maximumBytes": 44901.0,
           "maximumAllocations": 716.0
         },
         "BenchmarkLauncherView/menu/size_32/width_40/unicode": {
-          "baselineMedianNanoseconds": 216013.0,
+          "baselineMedianNanoseconds": 209198.0,
           "baselineBytes": 55962.0,
           "baselineAllocations": 691.0,
-          "maximumMedianNanoseconds": 324020.0,
+          "maximumMedianNanoseconds": 313797.0,
           "maximumBytes": 58761.0,
           "maximumAllocations": 726.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/ascii": {
-          "baselineMedianNanoseconds": 83122.0,
+          "baselineMedianNanoseconds": 81839.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 124683.0,
+          "maximumMedianNanoseconds": 122759.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_120/unicode": {
-          "baselineMedianNanoseconds": 90067.0,
+          "baselineMedianNanoseconds": 89337.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 135101.0,
+          "maximumMedianNanoseconds": 134006.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/ascii": {
-          "baselineMedianNanoseconds": 84326.0,
+          "baselineMedianNanoseconds": 81592.0,
           "baselineBytes": 15880.0,
           "baselineAllocations": 335.0,
-          "maximumMedianNanoseconds": 126489.0,
+          "maximumMedianNanoseconds": 122388.0,
           "maximumBytes": 16674.0,
           "maximumAllocations": 352.0
         },
         "BenchmarkLauncherView/menu/size_8/width_40/unicode": {
-          "baselineMedianNanoseconds": 94563.0,
+          "baselineMedianNanoseconds": 89826.0,
           "baselineBytes": 17752.0,
           "baselineAllocations": 341.0,
-          "maximumMedianNanoseconds": 141845.0,
+          "maximumMedianNanoseconds": 134739.0,
           "maximumBytes": 18640.0,
           "maximumAllocations": 359.0
         },
         "BenchmarkSelectionInvocation/long": {
-          "baselineMedianNanoseconds": 2915.0,
+          "baselineMedianNanoseconds": 2728.0,
           "baselineBytes": 896.0,
           "baselineAllocations": 24.0,
-          "maximumMedianNanoseconds": 4373.0,
+          "maximumMedianNanoseconds": 4092.0,
           "maximumBytes": 960.0,
           "maximumAllocations": 26.0
         },
         "BenchmarkSelectionInvocation/plain": {
-          "baselineMedianNanoseconds": 1953.0,
+          "baselineMedianNanoseconds": 1021.0,
           "baselineBytes": 312.0,
           "baselineAllocations": 9.0,
-          "maximumMedianNanoseconds": 2930.0,
+          "maximumMedianNanoseconds": 1532.0,
           "maximumBytes": 376.0,
           "maximumAllocations": 10.0
         },
         "BenchmarkSelectionInvocation/quoted": {
-          "baselineMedianNanoseconds": 1130.0,
+          "baselineMedianNanoseconds": 1142.0,
           "baselineBytes": 456.0,
           "baselineAllocations": 13.0,
-          "maximumMedianNanoseconds": 1695.0,
+          "maximumMedianNanoseconds": 1713.0,
           "maximumBytes": 520.0,
           "maximumAllocations": 14.0
         },
         "BenchmarkSelectionInvocation/repo_root": {
-          "baselineMedianNanoseconds": 5069.0,
-          "baselineBytes": 784.0,
-          "baselineAllocations": 14.0,
-          "maximumMedianNanoseconds": 7604.0,
-          "maximumBytes": 848.0,
-          "maximumAllocations": 15.0
+          "baselineMedianNanoseconds": 4344.0,
+          "baselineBytes": 712.0,
+          "baselineAllocations": 16.0,
+          "maximumMedianNanoseconds": 6516.0,
+          "maximumBytes": 776.0,
+          "maximumAllocations": 17.0
         },
         "BenchmarkSelectionInvocation/unicode": {
-          "baselineMedianNanoseconds": 625.5,
+          "baselineMedianNanoseconds": 611.6,
           "baselineBytes": 184.0,
           "baselineAllocations": 8.0,
-          "maximumMedianNanoseconds": 939.0,
+          "maximumMedianNanoseconds": 918.0,
           "maximumBytes": 248.0,
           "maximumAllocations": 9.0
         }

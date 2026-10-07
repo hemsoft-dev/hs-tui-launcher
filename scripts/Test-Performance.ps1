@@ -17,7 +17,7 @@ $rawOutput = @()
 $primaryError = $null
 $report = [ordered]@{
     schemaVersion = 1; revision = $null; pullRequestHead = $null; workingTreeDirty = $null
-    goVersion = $null; platform = $null; processor = @(); benchmarkExitCode = $null
+    goVersion = $null; platform = $null; processor = @(); benchmarkExitCode = $null; budgetSha256 = $null
     command = @(); samplesPerWorkload = 5; cpu = 1; terminal = @{ NO_COLOR = '1'; TERM = 'dumb' }
     recordBaseline = [bool]$RecordBaseline; policyPassed = $false; failures = @(); benchmarks = @{}
 }
@@ -55,6 +55,10 @@ try {
         $policy = Get-Content -LiteralPath $BudgetPath -Raw | ConvertFrom-Json -AsHashtable
         if ($policy.schemaVersion -ne 1 -or -not $policy.platforms.ContainsKey($platform)) { throw "No reviewed performance budget for $platform." }
         if ($policy.goVersion -ne $goVersion) { throw 'Go toolchain changed; reproduce and review the performance baseline.' }
+        if ($policy.benchtime -ne '500ms' -or $policy.samplesPerCapture -ne 5) {
+            throw 'Benchmark sampling method changed; reproduce and review the performance baseline.'
+        }
+        $report.budgetSha256 = (Get-FileHash -LiteralPath $BudgetPath -Algorithm SHA256).Hash.ToLowerInvariant()
         $failures = @(Test-PerformanceBudget -Results $results -Budget $policy.platforms[$platform].benchmarks)
     }
     $report.failures = $failures

@@ -1,4 +1,4 @@
-#Requires -Version 7.2
+#Requires -Version 7.5
 [CmdletBinding()]
 param(
     [string] $OutputDirectory = (Join-Path ([IO.Path]::GetTempPath()) "hs-performance-fixture-$([guid]::NewGuid().ToString('N'))"),
