@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -23,6 +24,15 @@ func BenchmarkSelectionInvocation(b *testing.B) {
 	}
 	for _, fixture := range cases {
 		b.Run(fixture.name, func(b *testing.B) {
+			if fixture.name == "repo_root" {
+				cwd, err := os.Getwd()
+				if err != nil {
+					b.Fatal(err)
+				}
+				// Keep path lengths stable across hosted checkouts and local worktrees.
+				// Parsing resolves this path but never executes the fixture command.
+				b.Chdir(filepath.VolumeName(cwd) + string(filepath.Separator))
+			}
 			b.ReportAllocs()
 			for b.Loop() {
 				invocation, err := parseSelectionCommand(fixture.command)
