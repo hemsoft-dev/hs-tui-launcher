@@ -64,6 +64,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -76,11 +78,23 @@ jobs:
 
       - name: Security scans
         shell: pwsh
-        run: ./scripts/Test-Security.ps1
+        env:
+          SECURITY_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: ./scripts/Test-Security.ps1 -OutputDirectory security-artifacts
 
       - name: Prove controlled fixtures are rejected
         shell: pwsh
         run: ./scripts/Test-SecurityFixtures.ps1
+
+      - name: Retain redacted secret-scan evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: secret-scanning-${{ github.event.pull_request.head.sha || github.sha }}
+          path: security-artifacts/
+          if-no-files-found: warn
+          overwrite: true
+          retention-days: 14
 
   coverage:
     strategy:

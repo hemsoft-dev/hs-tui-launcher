@@ -6,5 +6,6 @@ dist/
 bin/
 node_modules/
 mutation-artifacts/
+security-artifacts/
 .stryker-tmp/
 .env

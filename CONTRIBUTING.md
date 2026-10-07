@@ -169,10 +169,11 @@ only the controlled `HS_HANDOFF_*` variables are recorded. Fixture builds set
 ## Security checks
 
 Pull requests and pushes to `main` run the required `security` job before
-`verify`. It uses read-only repository permissions and performs four checks:
+`verify`. It uses read-only repository permissions and runs four scanner families:
 
 - `govulncheck ./...` reports reachable vulnerabilities in Go call paths.
-- Gitleaks scans the working tree for credentials and other secrets.
+- Gitleaks scans the working tree and all locally reachable Git refs plus HEAD
+  for credentials and other secrets, including merge patches.
 - Semgrep applies the repository's `.semgrep.yml` rules to Go and TypeScript.
 - OSV-Scanner checks all recognized dependency manifests in the repository, so
   a pull request that changes a manifest is reviewed against the OSV database.
@@ -182,7 +183,7 @@ controlled failure fixtures:
 
 ```powershell
 .\scripts\Install-SecurityTools.ps1
-.\scripts\Test-Security.ps1
+.\scripts\Test-Security.ps1 -OutputDirectory ./security-artifacts
 .\scripts\Test-SecurityFixtures.ps1
 ```
 
@@ -194,6 +195,26 @@ scanners reject inert examples. The
 secret fixture is a repository-specific sentinel, not a usable credential. The
 dependency fixture is lockfile metadata only; it never downloads or publishes
 the package.
+
+Secret qualification runs `gitleaks dir` and `gitleaks git --log-opts='--all -m'`
+with the maintained configuration and full redaction. It refuses shallow or
+uninitialized repositories and invalid or inconsistent scanner evidence. CI
+fetches complete branch and tag history with `fetch-depth: 0`. Local clones must
+fetch the refs they intend to qualify and remove any shallow boundary first.
+Unreachable objects and remote refs that were never fetched are outside the
+stated local scan scope.
+
+The controlled fixtures add then delete the inert sentinel, introduce it only
+in a merge commit, and test shallow-history refusal. They prove a clean final
+tree can still fail history qualification. A fixture-only rule recognizes the
+sentinel in disposable repositories; production uses the existing default rules
+and narrow configuration exceptions without weakening them.
+
+`security-artifacts` retains fully redacted tree/history findings and a summary
+with the checkout and PR candidate revisions, dirty state, refs, scan scope,
+configuration SHA-256, scanner exits, and finding counts. The CI artifact is
+retained for 14 days, including failures. Required metadata failures fail the
+command; a secondary metadata-write error preserves an earlier scan failure.
 
 Run these commands from the repository root. Never paste a real API key into
 a fixture or command line, and clear credential environment variables if you
