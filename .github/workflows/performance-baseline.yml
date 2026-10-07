@@ -1,0 +1,39 @@
+name: Performance baseline collection
+
+on:
+  push:
+    branches:
+      - chore/issue-60-launcher-benchmarks
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Verify parser fixtures and collect two independent captures
+        shell: pwsh
+        run: |
+          ./scripts/Test-PerformancePolicy.Unit.ps1
+          ./scripts/Test-Performance.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/first"
+          ./scripts/Test-Performance.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/second"
+      - name: Retain measurements
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: performance-baseline-${{ matrix.os }}
+          path: ${{ runner.temp }}/performance-baseline
+          if-no-files-found: warn
+          retention-days: 14
