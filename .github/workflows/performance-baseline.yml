@@ -23,12 +23,13 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
-      - name: Verify parser fixtures and collect two independent captures
+      - name: Verify parser fixtures and qualify repeated captures
         shell: pwsh
         run: |
           ./scripts/Test-PerformancePolicy.Unit.ps1
-          ./scripts/Test-Performance.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/first"
-          ./scripts/Test-Performance.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/second"
+          ./scripts/Test-Performance.ps1 -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/first"
+          ./scripts/Test-Performance.ps1 -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/second"
+          ./scripts/Test-PerformanceFixtures.ps1 -OutputDirectory "$env:RUNNER_TEMP/performance-baseline/controlled-regression"
       - name: Retain measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
