@@ -3,7 +3,7 @@
 Qualifies run.ps1 or run.sh with deterministic native and go-run launcher fixtures.
 
 .DESCRIPTION
-Requires PowerShell 7.2 or newer. Fixture modules and binaries are created below the
+Requires PowerShell 7.5 or newer. Fixture modules and binaries are created below the
 system temporary directory. The controlled child records only its arguments, working
 directory, stdin, target, and four allowlisted HS_HANDOFF_* variables. No provider CLI
 is started, no credential is required, and Go network access is disabled.
@@ -16,7 +16,7 @@ repository. CI supplies an artifact staging directory.
 Runs safe synthetic checks proving that argv, environment, working-directory, stdin,
 and expected-exit mismatches are rejected by the same assertion function.
 #>
-#requires -Version 7.2
+#requires -Version 7.5
 [CmdletBinding()]
 param(
     [string]$OutputDirectory = (Join-Path ([System.IO.Path]::GetTempPath()) "hs-tui-launcher-handoff-$PID"),
@@ -30,6 +30,7 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 }
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $PSScriptRoot 'Test-LauncherEnvironment.Unit.ps1')
 $expectedArguments = @(
     'plain',
     'value with spaces',
@@ -324,8 +325,21 @@ param(
     [Parameter(Mandatory)][string]$Wrapper,
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$WrapperArguments
 )
+$env:HS_HANDOFF_SELECTED = 'original value'
+if (-not (Test-Path Env:HS_HANDOFF_EMPTY)) { throw 'The fixture host must inherit an empty variable.' }
+Remove-Item -LiteralPath Env:HS_HANDOFF_OUTPUT -ErrorAction SilentlyContinue
 & $Wrapper @WrapperArguments
-exit $LASTEXITCODE
+$childExitCode = $LASTEXITCODE
+if ([Environment]::GetEnvironmentVariable('HS_HANDOFF_SELECTED', 'Process') -cne 'original value') {
+    throw 'Repeated override did not restore the original value.'
+}
+if (-not (Test-Path -LiteralPath Env:HS_HANDOFF_EMPTY) -or $env:HS_HANDOFF_EMPTY -cne '') {
+    throw 'Repeated override did not restore an originally empty variable.'
+}
+if (Test-Path -LiteralPath Env:HS_HANDOFF_OUTPUT) {
+    throw 'Repeated override did not restore an originally absent variable.'
+}
+exit $childExitCode
 '@ | Set-Content -LiteralPath $windowsDriver -Encoding utf8NoBOM
 
     $buildRoot = Join-Path $tempRoot 'fixture-build'
@@ -386,6 +400,7 @@ exit $LASTEXITCODE
             )
             $processEnvironment = @{
                 HS_HANDOFF_INHERITED = $expectedInherited
+                HS_HANDOFF_EMPTY = ''
                 GOTOOLCHAIN = 'local'
                 GOPROXY = 'off'
                 GOSUMDB = 'off'

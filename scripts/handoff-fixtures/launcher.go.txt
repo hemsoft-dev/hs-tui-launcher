@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 )
 
 type selection struct {
@@ -57,11 +58,17 @@ func main() {
 		},
 		WorkingDir: *workingDir,
 		Env: []string{
+			"HS_HANDOFF_OUTPUT=unused intermediate output",
 			"HS_HANDOFF_OUTPUT=" + *output,
 			"HS_HANDOFF_EXIT_CODE=" + *exitCode,
+			"HS_HANDOFF_SELECTED=first override",
 			"HS_HANDOFF_SELECTED=selected value with spaces ; $ & | <>",
+			"HS_HANDOFF_EMPTY=first override",
 			"HS_HANDOFF_EMPTY=",
 		},
+	}
+	if runtime.GOOS == "windows" {
+		selected.Env = append(selected.Env, "hs_handoff_selected=selected value with spaces ; $ & | <>")
 	}
 	selectionJSON, err := json.Marshal(selected)
 	if err != nil {

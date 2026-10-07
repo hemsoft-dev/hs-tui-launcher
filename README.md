@@ -31,6 +31,11 @@ launcher's structured selection and start the selected CLI without shell
 evaluation. Building or using the fallback requires the Go version declared in
 `go.mod`.
 
+Selected-command environment entries apply in order, with the last value for
+a repeated name taking effect. On Windows, names are case insensitive.
+`run.ps1` restores the caller's original values and presence after the child
+finishes, including when it exits with an error.
+
 Direct Go execution opens the picker without the PowerShell handoff:
 
 ```powershell
