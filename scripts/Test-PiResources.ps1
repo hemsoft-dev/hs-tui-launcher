@@ -57,6 +57,9 @@ try {
             if ($null -ne $primaryError) { throw $primaryError }
             Write-Host "Actual retained $fixture rejected; teardown complete."
         }
+        # GitHub's pwsh shell propagates the last native exit. Rejections above
+        # were expected and independently verified, so the fixture gate passed.
+        $global:LASTEXITCODE = 0
     }
     else {
         if ($RecordBaseline) { $arguments += '--record-baseline' }
