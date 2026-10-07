@@ -40,6 +40,36 @@ function Test-NonInteractiveRequest {
     return $false
 }
 
+function Set-ProcessEnvironmentValue {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'Sets only a process-local value owned by the temporary environment snapshot.'
+    )]
+    param([string] $Name, [AllowEmptyString()][string] $Value)
+
+    if ($Value -eq '' -and [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+        # Windows PowerShell's provider and .NET Framework erase empty values.
+        # The native API preserves an empty string separately from an absent name.
+        if (-not ('HsTuiLauncherProcessEnvironment' -as [type])) {
+            Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+public static class HsTuiLauncherProcessEnvironment {
+    [DllImport("kernel32.dll", EntryPoint = "SetEnvironmentVariableW", CharSet = CharSet.Unicode, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetValue(string name, string value);
+}
+'@
+        }
+        if (-not [HsTuiLauncherProcessEnvironment]::SetValue($Name, $Value)) {
+            throw [ComponentModel.Win32Exception]::new([Runtime.InteropServices.Marshal]::GetLastWin32Error())
+        }
+    }
+    else {
+        Set-Item -LiteralPath "Env:$Name" -Value $Value
+    }
+}
+
 function Set-TemporaryEnvironment {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
         'PSUseLiteralInitializerForHashtable',
@@ -60,6 +90,10 @@ function Set-TemporaryEnvironment {
         [StringComparer]::Ordinal
     }
     $previousValues = [hashtable]::new($comparer)
+    $initialValues = [hashtable]::new($comparer)
+    foreach ($pair in [Environment]::GetEnvironmentVariables('Process').GetEnumerator()) {
+        $initialValues[$pair.Key] = $pair.Value
+    }
     foreach ($entry in $Entries) {
         $name, $value = $entry -split '=', 2
         if ([string]::IsNullOrWhiteSpace($name)) {
@@ -67,9 +101,11 @@ function Set-TemporaryEnvironment {
         }
 
         if (-not $previousValues.ContainsKey($name)) {
-            $previousValues[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+            # Enumeration preserves empty strings on .NET Framework, whose
+            # single-value getter otherwise returns null for both empty and absent.
+            $previousValues[$name] = $initialValues[$name]
         }
-        Set-Item -LiteralPath "Env:$name" -Value $value
+        Set-ProcessEnvironmentValue -Name $name -Value $value
     }
 
     return $previousValues
@@ -85,7 +121,7 @@ function Restore-Environment {
             continue
         }
 
-        Set-Item -LiteralPath "Env:$name" -Value $value
+        Set-ProcessEnvironmentValue -Name $name -Value $value
     }
 }
 
