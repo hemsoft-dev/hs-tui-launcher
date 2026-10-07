@@ -1,0 +1,11 @@
+{
+  "name": "hs-tui-launcher-coverage-tools",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Pinned report-only TypeScript coverage and AST metric tools",
+  "devDependencies": {
+    "c8": "12.0.0",
+    "typescript": "5.9.3"
+  }
+}
