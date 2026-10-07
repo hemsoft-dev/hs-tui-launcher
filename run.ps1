@@ -55,7 +55,9 @@ function Set-TemporaryEnvironment {
             continue
         }
 
-        $previousValues[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+        if (-not $previousValues.ContainsKey($name)) {
+            $previousValues[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+        }
         Set-Item -LiteralPath "Env:$name" -Value $value
     }
 

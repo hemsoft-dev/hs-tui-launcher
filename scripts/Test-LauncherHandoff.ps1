@@ -324,8 +324,21 @@ param(
     [Parameter(Mandatory)][string]$Wrapper,
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$WrapperArguments
 )
+$env:HS_HANDOFF_SELECTED = 'original value'
+Set-Item -LiteralPath Env:HS_HANDOFF_EMPTY -Value ''
+Remove-Item -LiteralPath Env:HS_HANDOFF_OUTPUT -ErrorAction SilentlyContinue
 & $Wrapper @WrapperArguments
-exit $LASTEXITCODE
+$childExitCode = $LASTEXITCODE
+if ([Environment]::GetEnvironmentVariable('HS_HANDOFF_SELECTED', 'Process') -cne 'original value') {
+    throw 'Repeated override did not restore the original value.'
+}
+if (-not (Test-Path -LiteralPath Env:HS_HANDOFF_EMPTY) -or $env:HS_HANDOFF_EMPTY -cne '') {
+    throw 'Repeated override did not restore an originally empty variable.'
+}
+if (Test-Path -LiteralPath Env:HS_HANDOFF_OUTPUT) {
+    throw 'Repeated override did not restore an originally absent variable.'
+}
+exit $childExitCode
 '@ | Set-Content -LiteralPath $windowsDriver -Encoding utf8NoBOM
 
     $buildRoot = Join-Path $tempRoot 'fixture-build'
