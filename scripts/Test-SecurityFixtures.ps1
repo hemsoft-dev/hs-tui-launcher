@@ -65,6 +65,8 @@ $semgrep = if ($isWindowsPlatform) {
 
 Push-Location $repositoryRoot
 try {
+    & (Join-Path $PSScriptRoot 'Test-SecretScanningFixtures.ps1') -GitleaksPath $gitleaks
+
     Confirm-ExpectedFinding "gitleaks sentinel rule" {
         & $gitleaks dir --config (Join-Path $fixtureRoot "gitleaks.toml") --redact --no-banner (Join-Path $fixtureRoot "secret.txt")
     }

@@ -1,3 +1,6 @@
+[CmdletBinding()]
+param([string] $OutputDirectory = (Join-Path ([IO.Path]::GetTempPath()) "hs-security-$([guid]::NewGuid().ToString('N'))"))
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
@@ -22,11 +25,7 @@ try {
         throw "govulncheck failed (exit $LASTEXITCODE)."
     }
 
-    Write-Host "Checking the working tree for secrets"
-    & $gitleaks dir --config .gitleaks.toml --redact --no-banner .
-    if ($LASTEXITCODE -ne 0) {
-        throw "gitleaks failed (exit $LASTEXITCODE)."
-    }
+    & (Join-Path $PSScriptRoot 'Test-SecretScanning.ps1') -GitleaksPath $gitleaks -OutputDirectory $OutputDirectory
 
     Write-Host "Checking Go and TypeScript security patterns"
     & $semgrep scan --config .semgrep.yml --error --metrics off --exclude .github/security/fixtures .
