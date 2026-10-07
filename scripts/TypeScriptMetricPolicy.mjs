@@ -83,7 +83,11 @@ export function inspectTypeScriptMetrics(report, budget) {
     }
   }
   assert.ok(functions.size > 0, 'Missing production functions.');
-  if (!budget) return failures;
+  if (budget === undefined && report.recordBaseline === true) return failures;
+  assert.ok(
+    budget !== null && typeof budget === 'object' && !Array.isArray(budget),
+    'A reviewed TypeScript metric budget object is required.',
+  );
   assert.equal(budget.schemaVersion, 1, 'Unsupported TypeScript metric budget.');
   assert.deepEqual(budget.tools, metricVersions, 'Unreviewed TypeScript budget tools.');
   assert.equal(budget.comparisonTolerance, tolerance, 'Metric comparison tolerance changed.');
@@ -157,7 +161,7 @@ export function inspectTypeScriptMetrics(report, budget) {
 }
 
 export function baselineForMetrics(report) {
-  inspectTypeScriptMetrics(report);
+  inspectTypeScriptMetrics({ ...report, recordBaseline: true });
   return {
     maximumNewComplexity: Math.max(
       ...report.files.flatMap((file) => file.functions.map((func) => func.complexity)),

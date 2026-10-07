@@ -202,6 +202,12 @@ test('new uncovered functions and unloaded files fail even if existing aggregate
 test('missing metrics, unsupported tools, malformed values and budgets fail closed', () => {
   const report = fixture();
   const budget = budgetFor(report);
+  for (const malformed of [undefined, null, false, 0, '', [], {}]) {
+    assert.throws(() => inspectTypeScriptMetrics(report, malformed));
+  }
+  const baseline = { ...report, recordBaseline: true };
+  assert.deepEqual(inspectTypeScriptMetrics(baseline, undefined), []);
+  assert.throws(() => inspectTypeScriptMetrics(baseline, null));
   for (const modify of [
     (copy) => {
       copy.files = [];
