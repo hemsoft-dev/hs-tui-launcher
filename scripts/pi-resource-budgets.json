@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "node": "v24.12.0",
+  "baselineRun": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37567112340",
+  "baselineRevision": "dc0e89294925f21d502cf2f5453eca9b79648b56",
+  "warmupWaves": 10,
+  "measuredWaves": 5,
+  "iterationsPerWave": 25,
+  "forcedCollectionsPerSample": 3,
+  "noiseMultiplier": 8,
+  "platforms": {
+    "win32/x64": {
+      "processors": ["AMD EPYC 7763 64-Core Processor                "],
+      "captures": 3,
+      "observedMaximumGrowthBytes": 0.0,
+      "observedMaximumSampleSpanBytes": 12800.0,
+      "maximumHeapGrowthBytes": 102400.0
+    },
+    "darwin/arm64": {
+      "processors": ["Apple M2 Pro (Virtual)"],
+      "captures": 3,
+      "observedMaximumGrowthBytes": 0.0,
+      "observedMaximumSampleSpanBytes": 13408.0,
+      "maximumHeapGrowthBytes": 107264.0
+    },
+    "linux/x64": {
+      "processors": ["AMD EPYC 7763 64-Core Processor"],
+      "captures": 3,
+      "observedMaximumGrowthBytes": 0.0,
+      "observedMaximumSampleSpanBytes": 12736.0,
+      "maximumHeapGrowthBytes": 101888.0
+    }
+  }
+}
