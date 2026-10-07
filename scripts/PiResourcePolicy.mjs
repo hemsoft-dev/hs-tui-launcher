@@ -61,7 +61,10 @@ export function inspectResourceSummary(summary, budget) {
     ), 'invalid memory sample');
     require(sample.forcedCollections === 3, 'samples must follow three collection turns');
   }
-  if (budget) {
+  if (budget === undefined && summary.recordBaseline === true) return failures;
+  const validBudget = budget !== null && typeof budget === 'object' && !Array.isArray(budget);
+  require(validBudget, 'a reviewed resource budget object is required');
+  if (validBudget) {
     require(budget.schemaVersion === 1 &&
       budget.node === summary.node, 'resource budget toolchain changed');
     const limit = budget.platforms?.[summary.platform]?.maximumHeapGrowthBytes;

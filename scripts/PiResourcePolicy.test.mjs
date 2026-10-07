@@ -103,9 +103,20 @@ test('observed heap growth fails while RSS growth alone remains diagnostic', () 
 });
 test('unknown platform, toolchain and invalid limits are rejected', () => {
   for (const policy of [
+    undefined,
+    null,
+    false,
+    0,
+    '',
+    [],
+    {},
     { ...budget, node: 'v25.0.0' },
     { ...budget, platforms: {} },
     { ...budget, platforms: { 'linux/x64': { maximumHeapGrowthBytes: -1 } } },
   ])
     assert.ok(inspectResourceSummary(report(), policy).length > 0);
+  const baseline = report();
+  baseline.recordBaseline = true;
+  assert.deepEqual(inspectResourceSummary(baseline, undefined), []);
+  assert.ok(inspectResourceSummary(baseline, null).length > 0);
 });
