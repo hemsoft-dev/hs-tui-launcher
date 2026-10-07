@@ -93,6 +93,7 @@ jobs:
           name: secret-scanning-${{ github.event.pull_request.head.sha || github.sha }}
           path: security-artifacts/
           if-no-files-found: warn
+          overwrite: true
           retention-days: 14
 
   coverage:
