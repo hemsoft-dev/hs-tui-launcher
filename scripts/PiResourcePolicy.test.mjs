@@ -30,6 +30,7 @@ function report() {
       maximumPlayersInFlight: 1,
     },
     resourcePeaks: {
+      inFlightFakeWork: 1,
       settledTimers: 0,
       visibleChildAbortListeners: 0,
       parentAbortListeners: 0,
@@ -37,6 +38,7 @@ function report() {
       settledPlayers: 0,
     },
     teardown: {
+      nativeTimeouts: 0,
       timers: 0,
       parentAbortListeners: 0,
       registeredCallbacks: 0,
@@ -79,7 +81,9 @@ test('missing samples, uncollected baseline and incomplete workload fail closed'
   }
 });
 test('each measured retained resource and incomplete cleanup is rejected', () => {
-  for (const field of Object.keys(report().resourcePeaks)) {
+  for (const field of Object.keys(report().resourcePeaks).filter(
+    (name) => name !== 'inFlightFakeWork',
+  )) {
     const summary = report();
     summary.resourcePeaks[field] = 1;
     assert.ok(inspectResourceSummary(summary, budget).includes('retained resource: ' + field));
