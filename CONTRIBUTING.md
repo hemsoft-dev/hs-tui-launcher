@@ -119,7 +119,7 @@ an AI CLI or makes a paid or network request. `platform-gate` aggregates all thr
 matrix legs, and the existing required `verify` job fails through `always()` if
 that aggregate is failed, cancelled, or skipped.
 
-The test orchestrator requires PowerShell 7.2 or newer on every platform. This is
+The test orchestrator requires PowerShell 7.5 or newer on every platform. This is
 a CI/test-harness requirement, not a change to `run.ps1`, which remains supported
 on Windows PowerShell 5.1 as well as PowerShell 7. On macOS and Linux, `run.sh`
 also requires Python 3. The fallback mode requires Go; use the version in
