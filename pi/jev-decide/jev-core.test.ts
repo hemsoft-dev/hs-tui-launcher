@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDecisionRequest } from './jev-core.ts';
+import { buildDecisionRequest, redactSensitive } from './jev-core.ts';
 
 test('buildDecisionRequest redacts secret fields and inline bearer tokens without mutating state', () => {
   const state = {
@@ -27,6 +27,24 @@ test('buildDecisionRequest redacts secret fields and inline bearer tokens withou
   assert.equal((built.payload.state as { note: string }).note, 'Authorization: Bearer [REDACTED]');
   assert.deepEqual(state.credentials, { apiKey: 'sk-live-do-not-send' });
   assert.equal(built.redacted, true);
+
+  for (const label of [
+    'PRIVATE KEY',
+    'RSA PRIVATE KEY',
+    'EC PRIVATE KEY',
+    'OPENSSH PRIVATE KEY',
+    'ENCRYPTED PRIVATE KEY',
+  ]) {
+    const pem = `-----BEGIN ${label}-----\nINERT-NOT-A-KEY\n-----END ${label}-----`;
+    const original = { note: `before ${pem} after`, ordinary: 'Keep ordinary text.' };
+    const snapshot = structuredClone(original);
+    assert.deepEqual(redactSensitive(original), {
+      value: { note: 'before [REDACTED] after', ordinary: 'Keep ordinary text.' },
+      changed: true,
+    });
+    assert.deepEqual(original, snapshot);
+  }
+  assert.deepEqual(redactSensitive('ordinary text'), { value: 'ordinary text', changed: false });
 });
 
 test('executeJevDecision sends a redacted request with Pi auth and validates typed answers', async () => {
@@ -34,14 +52,21 @@ test('executeJevDecision sends a redacted request with Pi auth and validates typ
   let requestInit:
     { headers: Record<string, string>; body: string; signal: AbortSignal } | undefined;
   let clock = 100;
+  const pem = '-----BEGIN PRIVATE KEY-----\nINERT-NOT-A-KEY\n-----END PRIVATE KEY-----';
+  const state = { task: 'Choose a route', apiKey: 'sk-live-secret', note: pem };
+  const snapshot = structuredClone(state);
   const { executeJevDecision } = await import('./jev-core.ts');
   const execution = await executeJevDecision(
     {
-      state: { task: 'Choose a route', apiKey: 'sk-live-secret' },
+      state,
+      sessionId: pem,
+      user: pem,
+      provider: { note: pem },
+      trace: { note: pem },
       questions: {
         route: {
           type: 'choice',
-          instructions: 'Choose one route.',
+          instructions: `Choose one route. ${pem}`,
           criteria: { safe: 'No side effects', review: 'Ask a human' },
         },
       },
@@ -81,6 +106,16 @@ test('executeJevDecision sends a redacted request with Pi auth and validates typ
   assert.equal(requestUrl, 'https://example.test/decisions');
   assert.equal(requestInit?.headers.Authorization, 'Bearer sk-authenticated');
   assert.equal(JSON.parse(requestInit?.body ?? '{}').state.apiKey, '[REDACTED]');
+  assert.ok(requestInit);
+  const payload = JSON.parse(requestInit.body);
+  assert.equal(payload.state.note, '[REDACTED]');
+  assert.equal(payload.questions.route.instructions, 'Choose one route. [REDACTED]');
+  assert.equal(payload.session_id, '[REDACTED]');
+  assert.equal(payload.user, '[REDACTED]');
+  assert.equal(payload.provider.note, '[REDACTED]');
+  assert.equal(payload.trace.note, '[REDACTED]');
+  assert.equal(requestInit.body.includes('INERT-NOT-A-KEY'), false);
+  assert.deepEqual(state, snapshot);
   assert.equal(execution.response.answers.route.type, 'choice');
   assert.equal(execution.response.answers.route.choice, 'safe');
   assert.equal(execution.latencyMs, 25);
