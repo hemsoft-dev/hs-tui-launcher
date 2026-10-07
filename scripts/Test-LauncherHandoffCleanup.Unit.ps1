@@ -18,6 +18,11 @@ foreach ($name in @('ConvertTo-BoundedText', 'Complete-HandoffReport')) {
 }
 
 function New-CleanupFixture {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseShouldProcessForStateChangingFunctions',
+        '',
+        Justification = 'Creates only owned disposable qualification fixtures; optional execution would invalidate cleanup assertions.'
+    )]
     param([string]$Parent, [string]$Reports)
     $leaf = "hs-tui-launcher-handoff-$PID-$([guid]::NewGuid().ToString('N'))"
     $directory = [IO.Path]::GetFullPath((Join-Path $Parent $leaf))
