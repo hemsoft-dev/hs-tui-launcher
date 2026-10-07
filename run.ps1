@@ -42,13 +42,24 @@ function Test-NonInteractiveRequest {
 
 function Set-TemporaryEnvironment {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSUseLiteralInitializerForHashtable',
+        '',
+        Justification = 'An explicit platform comparer is required to preserve case-sensitive Unix environment names.'
+    )]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
         'PSUseShouldProcessForStateChangingFunctions',
         '',
         Justification = 'This helper changes only process-local variables and always restores them.'
     )]
     param([string[]] $Entries)
 
-    $previousValues = @{}
+    $comparer = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+        [StringComparer]::OrdinalIgnoreCase
+    }
+    else {
+        [StringComparer]::Ordinal
+    }
+    $previousValues = [hashtable]::new($comparer)
     foreach ($entry in $Entries) {
         $name, $value = $entry -split '=', 2
         if ([string]::IsNullOrWhiteSpace($name)) {

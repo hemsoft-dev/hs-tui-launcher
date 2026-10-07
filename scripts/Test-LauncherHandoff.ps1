@@ -30,6 +30,7 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 }
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $PSScriptRoot 'Test-LauncherEnvironment.Unit.ps1')
 $expectedArguments = @(
     'plain',
     'value with spaces',
