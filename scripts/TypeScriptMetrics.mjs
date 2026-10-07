@@ -116,7 +116,17 @@ export function buildMetrics(root, files, reportsDirectory) {
       const path = canonicalPath(fileURLToPath(script.url));
       if (!expected.has(path)) continue;
       const functions = rawFunctions.get(path) ?? [];
-      functions.push(...script.functions);
+      const length = readFileSync(path, 'utf8').length;
+      functions.push(
+        ...script.functions.filter(
+          (item) =>
+            !(
+              item.functionName === '' &&
+              item.ranges?.[0]?.startOffset === 0 &&
+              item.ranges[0].endOffset >= length
+            ),
+        ),
+      );
       rawFunctions.set(path, functions);
     }
   }
@@ -177,9 +187,12 @@ export function buildMetrics(root, files, reportsDirectory) {
         const end = offset(location.end);
         assert.ok(end >= start && end <= text.length, 'Invalid branch span.');
         allBranches.push(counts[index]);
-        const owner = functions
-          .filter((func) => start >= func.start && start < func.end)
-          .sort((a, b) => a.end - a.start - (b.end - b.start))[0];
+        const owner =
+          start === 0 && end >= text.trimEnd().length
+            ? undefined
+            : functions
+                .filter((func) => start >= func.start && start < func.end && end <= func.end)
+                .sort((a, b) => a.end - a.start - (b.end - b.start))[0];
         if (owner) owned.get(owner.id).push(counts[index]);
       }
     }

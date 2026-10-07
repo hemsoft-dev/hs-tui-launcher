@@ -49,6 +49,24 @@ export function inspectTypeScriptMetrics(report, budget) {
         'Unknown per-function coverage basis.',
       );
       assert.equal(typeof func.invoked, 'boolean', 'Missing invocation evidence.');
+      const branch = func.branchCoverage;
+      assert.ok(
+        branch &&
+          Number.isInteger(branch.total) &&
+          branch.total >= 0 &&
+          Number.isInteger(branch.covered) &&
+          branch.covered >= 0 &&
+          branch.covered <= branch.total &&
+          fraction(branch.fraction) &&
+          Math.abs(branch.fraction - (branch.total ? branch.covered / branch.total : 1)) <=
+            tolerance,
+        'Invalid per-function branch metrics.',
+      );
+      assert.equal(
+        func.coverageBasis,
+        branch.total ? 'v8-derived branch ranges' : 'function invocation',
+        'Coverage basis differs from collected function branches.',
+      );
       assert.ok(
         Number.isInteger(func.invocationCount) &&
           func.invocationCount >= 0 &&
@@ -57,12 +75,19 @@ export function inspectTypeScriptMetrics(report, budget) {
       );
       if (!func.invoked)
         assert.equal(func.coverage, 0, 'Uncalled function cannot receive coverage.');
+      else
+        assert.ok(
+          Math.abs(func.coverage - branch.fraction) <= tolerance,
+          'Function coverage differs from collected branches or invocation.',
+        );
     }
   }
   assert.ok(functions.size > 0, 'Missing production functions.');
   if (!budget) return failures;
   assert.equal(budget.schemaVersion, 1, 'Unsupported TypeScript metric budget.');
   assert.deepEqual(budget.tools, metricVersions, 'Unreviewed TypeScript budget tools.');
+  assert.equal(budget.comparisonTolerance, tolerance, 'Metric comparison tolerance changed.');
+  assert.equal(budget.newFunctionMinimumCoverage, 1, 'New-function coverage policy changed.');
   const platform = budget.platforms?.[report.platform];
   assert.ok(
     platform && Array.isArray(platform.files) && platform.files.length > 0,

@@ -1,4 +1,4 @@
-name: TypeScript metrics baseline collection
+name: TypeScript metrics native qualification
 
 on:
   push:
@@ -29,16 +29,18 @@ jobs:
             scripts/coverage-tools/package-lock.json
       - name: Restore locked integration dependencies
         run: npm ci --ignore-scripts
-      - name: Collect repeated native metrics
+      - name: Qualify repeated native metrics
         shell: pwsh
         run: |
-          ./scripts/Test-TypeScriptMetrics.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/typescript-metrics/first"
-          ./scripts/Test-TypeScriptMetrics.ps1 -RecordBaseline -OutputDirectory "$env:RUNNER_TEMP/typescript-metrics/second"
+          ./scripts/Test-TypeScriptMetrics.ps1 -OutputDirectory "$env:RUNNER_TEMP/typescript-metrics/first"
+          ./scripts/Test-TypeScriptMetrics.ps1 -OutputDirectory "$env:RUNNER_TEMP/typescript-metrics/second"
+      - name: Reject actual uncovered sources and evidence failures
+        run: node scripts/Test-TypeScriptMetricFixtures.mjs --output "${{ runner.temp }}/typescript-metrics/controlled"
       - name: Retain raw V8 and per-function evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: typescript-metrics-baseline-${{ matrix.os }}
+          name: typescript-metrics-qualified-${{ matrix.os }}
           path: ${{ runner.temp }}/typescript-metrics
           if-no-files-found: warn
           overwrite: true

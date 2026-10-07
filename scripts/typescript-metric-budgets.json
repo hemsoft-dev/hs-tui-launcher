@@ -1,0 +1,1181 @@
+{
+  "schemaVersion": 1,
+  "tools": {
+    "node": "v24.12.0",
+    "c8": "12.0.0",
+    "typescript": "5.9.3"
+  },
+  "baselineRevision": "66f309b1e27883dcef52d95400ab267a5c16e11f",
+  "baselineRun": "https://github.com/HemSoft/hs-tui-launcher/actions/runs/37569204877",
+  "comparisonTolerance": 1e-12,
+  "newFunctionMinimumCoverage": 1,
+  "platforms": {
+    "win32/x64": {
+      "maximumNewComplexity": 22,
+      "files": [
+        {
+          "file": ".pi/extensions/done-sound.ts",
+          "minimumBranchCoverage": 1,
+          "functions": [
+            {
+              "id": ".pi/extensions/done-sound.ts:belongsToRepository#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 1,
+              "maximumCrap": 6
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 1,
+              "maximumCrap": 8
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/index.ts",
+          "minimumBranchCoverage": 0,
+          "functions": [
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0,
+              "maximumCrap": 42
+            },
+            {
+              "id": "pi/jev-decide/index.ts:resultText#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:errorResult#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0,
+              "maximumCrap": 12
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/resolveAuth#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/fetch#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:jevDecideExtension#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/jev-core.ts",
+          "minimumBranchCoverage": 0.5868263473053892,
+          "functions": [
+            {
+              "id": "pi/jev-decide/jev-core.ts:JevError/constructor#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:fail#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 1,
+              "maximumCrap": 3
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isPlainRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 5.666666666666668
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireId#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireMetadataText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:assertJsonValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 20,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 70
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeCriteriaMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 12,
+              "minimumCoverage": 0.42857142857142855,
+              "maximumCrap": 38.86880466472303
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestions#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.25,
+              "maximumCrap": 15.546875
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:sensitiveKey#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactString#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 22,
+              "minimumCoverage": 0.631578947368421,
+              "maximumCrap": 46.2035282111095
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactSensitive#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0.8571428571428571,
+              "maximumCrap": 6.104956268221574
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:buildDecisionRequest#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 15,
+              "minimumCoverage": 0.6,
+              "maximumCrap": 29.400000000000006
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:responseText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probability#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 8.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:confidence#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probabilityMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 17,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 53.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseUsage#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 9,
+              "minimumCoverage": 0.625,
+              "maximumCrap": 13.271484375
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 16
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 4.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/onAbort#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/timedOut#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/cleanup#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:authHeaders#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 11,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 46.85185185185186
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 18,
+              "minimumCoverage": 0.6111111111111112,
+              "maximumCrap": 37.05555555555555
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#3",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            }
+          ]
+        }
+      ],
+      "captures": 2,
+      "processors": ["AMD EPYC 7763 64-Core Processor                "]
+    },
+    "darwin/arm64": {
+      "maximumNewComplexity": 22,
+      "files": [
+        {
+          "file": ".pi/extensions/done-sound.ts",
+          "minimumBranchCoverage": 1,
+          "functions": [
+            {
+              "id": ".pi/extensions/done-sound.ts:belongsToRepository#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 1,
+              "maximumCrap": 6
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 1,
+              "maximumCrap": 8
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/index.ts",
+          "minimumBranchCoverage": 0,
+          "functions": [
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0,
+              "maximumCrap": 42
+            },
+            {
+              "id": "pi/jev-decide/index.ts:resultText#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:errorResult#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0,
+              "maximumCrap": 12
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/resolveAuth#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/fetch#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:jevDecideExtension#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/jev-core.ts",
+          "minimumBranchCoverage": 0.5868263473053892,
+          "functions": [
+            {
+              "id": "pi/jev-decide/jev-core.ts:JevError/constructor#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:fail#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 1,
+              "maximumCrap": 3
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isPlainRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 5.666666666666668
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireId#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireMetadataText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:assertJsonValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 20,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 70
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeCriteriaMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 12,
+              "minimumCoverage": 0.42857142857142855,
+              "maximumCrap": 38.86880466472303
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestions#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.25,
+              "maximumCrap": 15.546875
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:sensitiveKey#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactString#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 22,
+              "minimumCoverage": 0.631578947368421,
+              "maximumCrap": 46.2035282111095
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactSensitive#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0.8571428571428571,
+              "maximumCrap": 6.104956268221574
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:buildDecisionRequest#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 15,
+              "minimumCoverage": 0.6,
+              "maximumCrap": 29.400000000000006
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:responseText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probability#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 8.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:confidence#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probabilityMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 17,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 53.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseUsage#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 9,
+              "minimumCoverage": 0.625,
+              "maximumCrap": 13.271484375
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 16
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 4.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/onAbort#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/timedOut#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/cleanup#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:authHeaders#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 11,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 46.85185185185186
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 18,
+              "minimumCoverage": 0.6111111111111112,
+              "maximumCrap": 37.05555555555555
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#3",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            }
+          ]
+        }
+      ],
+      "captures": 2,
+      "processors": ["Apple M2 Pro (Virtual)"]
+    },
+    "linux/x64": {
+      "maximumNewComplexity": 22,
+      "files": [
+        {
+          "file": ".pi/extensions/done-sound.ts",
+          "minimumBranchCoverage": 1,
+          "functions": [
+            {
+              "id": ".pi/extensions/done-sound.ts:belongsToRepository#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 1,
+              "maximumCrap": 6
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": ".pi/extensions/done-sound.ts:doneSound#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 1,
+              "maximumCrap": 8
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/index.ts",
+          "minimumBranchCoverage": 0,
+          "functions": [
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:authMaterial#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0,
+              "maximumCrap": 42
+            },
+            {
+              "id": "pi/jev-decide/index.ts:resultText#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:errorResult#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0,
+              "maximumCrap": 12
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/resolveAuth#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:execute#1/fetch#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/index.ts:jevDecideExtension#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            }
+          ]
+        },
+        {
+          "file": "pi/jev-decide/jev-core.ts",
+          "minimumBranchCoverage": 0.5868263473053892,
+          "functions": [
+            {
+              "id": "pi/jev-decide/jev-core.ts:JevError/constructor#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:fail#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 1,
+              "maximumCrap": 3
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:isPlainRecord#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 5.666666666666668
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireId#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:requireMetadataText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:assertJsonValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 20,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 70
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeCriteriaMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 12,
+              "minimumCoverage": 0.42857142857142855,
+              "maximumCrap": 38.86880466472303
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestion#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeQuestions#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.25,
+              "maximumCrap": 15.546875
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:sensitiveKey#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactString#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactValue#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 22,
+              "minimumCoverage": 0.631578947368421,
+              "maximumCrap": 46.2035282111095
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:redactSensitive#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:normalizeTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 6,
+              "minimumCoverage": 0.8571428571428571,
+              "maximumCrap": 6.104956268221574
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:buildDecisionRequest#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 15,
+              "minimumCoverage": 0.6,
+              "maximumCrap": 29.400000000000006
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:responseText#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 12.40740740740741
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probability#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 8.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:confidence#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:probabilityMap#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 5,
+              "minimumCoverage": 0.4,
+              "maximumCrap": 10.399999999999999
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 17,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 53.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseAnswer#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseUsage#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 9,
+              "minimumCoverage": 0.625,
+              "maximumCrap": 13.271484375
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 8,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 16
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:parseDecisionResponse#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 3,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 4.125
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/onAbort#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:abortable#1/callback#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 1,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/timedOut#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 1,
+              "minimumCoverage": 0,
+              "maximumCrap": 2
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:withTimeout#1/cleanup#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 1,
+              "minimumCoverage": 1,
+              "maximumCrap": 1
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:authHeaders#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 11,
+              "minimumCoverage": 0.3333333333333333,
+              "maximumCrap": 46.85185185185186
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 18,
+              "minimumCoverage": 0.6111111111111112,
+              "maximumCrap": 37.05555555555555
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#1",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#2",
+              "coverageBasis": "v8-derived branch ranges",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0.5,
+              "maximumCrap": 2.5
+            },
+            {
+              "id": "pi/jev-decide/jev-core.ts:executeJevDecision#1/callback#3",
+              "coverageBasis": "function invocation",
+              "maximumComplexity": 2,
+              "minimumCoverage": 0,
+              "maximumCrap": 6
+            }
+          ]
+        }
+      ],
+      "captures": 2,
+      "processors": ["AMD EPYC 9V74 80-Core Processor"]
+    }
+  }
+}

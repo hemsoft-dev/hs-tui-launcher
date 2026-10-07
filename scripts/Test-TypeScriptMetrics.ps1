@@ -16,10 +16,10 @@ try {
     $code = $LASTEXITCODE
     $unit | ForEach-Object { Write-Host ([string]$_) }
     $plain = @($unit | ForEach-Object { ([string]$_) -replace '\x1b\[[0-9;]*m', '' })
-    if ($code -ne 0 -or @($plain | Where-Object { $_ -match 'tests\s+6\s*$' }).Count -ne 1 -or
-        @($plain | Where-Object { $_ -match 'pass\s+6\s*$' }).Count -ne 1 -or
+    if ($code -ne 0 -or @($plain | Where-Object { $_ -match 'tests\s+7\s*$' }).Count -ne 1 -or
+        @($plain | Where-Object { $_ -match 'pass\s+7\s*$' }).Count -ne 1 -or
         @($plain | Where-Object { $_ -match '(fail|cancelled|skipped|todo)\s+0\s*$' }).Count -ne 4) {
-        throw 'TypeScript metric policy must pass all six tests without failures, cancellations, skips, or todos.'
+        throw 'TypeScript metric policy must pass all seven tests without failures, cancellations, skips, or todos.'
     }
     $arguments = @('scripts/Measure-TypeScriptMetrics.mjs', '--output', $OutputDirectory, '--budget', $BudgetPath)
     if ($RecordBaseline) { $arguments += '--record-baseline' }
