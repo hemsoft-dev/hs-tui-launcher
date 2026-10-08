@@ -492,6 +492,6 @@ failing the completed task. Test the extension without playback with
 
 SFL installs its signed reviewer output through a pull request. Keep the generated workflow and deployment manifest in their original serialization. The formatting ignore applies only to those two generated paths; actionlint still checks the workflow.
 
-The lint contract binds the rc22 workflow digest to its source pin. actionlint 1.7.12 has a known gap for GitHub concurrency queues, so the lint policy permits only the exact queue diagnostic in that verified workflow. Every other diagnostic fails. Production-policy controls prove that an altered generated workflow and an unrelated workflow error are rejected. An SFL upgrade must refresh the independently verified lint contract before it can pass CI.
+The lint contract binds the installed signed workflow digest to its source pin. actionlint 1.7.12 has a known gap for GitHub concurrency queues, so the lint policy permits only the exact queue diagnostic in that verified workflow. Every other diagnostic fails. Production-policy controls prove that an altered generated workflow and an unrelated workflow error are rejected. An SFL upgrade must refresh the independently verified lint contract before it can pass CI.
 
 Request review with `gh sfl review --repo hemsoft-dev/hs-tui-launcher --pr NUMBER` and inspect the deployment with `gh sfl status --repo hemsoft-dev/hs-tui-launcher`. Preserve the existing CI requirements alongside the strict reviewer gate.
