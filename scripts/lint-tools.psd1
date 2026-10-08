@@ -17,14 +17,14 @@
         }
     }
     Actionlint = @{
-        Version = '1.7.7'
+        Version = '1.7.12'
         Assets = @{
-            'windows-x64' = @{ Name = 'actionlint_1.7.7_windows_amd64.zip'; Sha256 = '7f12f1801bca3d480d67aaf7774f4c2a6359a3ca8eebe382c95c10c9704aa731' }
-            'windows-arm64' = @{ Name = 'actionlint_1.7.7_windows_arm64.zip'; Sha256 = '76e9514cfac18e5677aa04f3a89873c981f16a2f2353bb97372a86cd09b1f5a8' }
-            'linux-x64' = @{ Name = 'actionlint_1.7.7_linux_amd64.tar.gz'; Sha256 = '023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757' }
-            'linux-arm64' = @{ Name = 'actionlint_1.7.7_linux_arm64.tar.gz'; Sha256 = '401942f9c24ed71e4fe71b76c7d638f66d8633575c4016efd2977ce7c28317d0' }
-            'macos-x64' = @{ Name = 'actionlint_1.7.7_darwin_amd64.tar.gz'; Sha256 = '28e5de5a05fc558474f638323d736d822fff183d2d492f0aecb2b73cc44584f5' }
-            'macos-arm64' = @{ Name = 'actionlint_1.7.7_darwin_arm64.tar.gz'; Sha256 = '2693315b9093aeacb4ebd91a993fea54fc215057bf0da2659056b4bc033873db' }
+            'windows-x64' = @{ Name = 'actionlint_1.7.12_windows_amd64.zip'; Sha256 = '6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9' }
+            'windows-arm64' = @{ Name = 'actionlint_1.7.12_windows_arm64.zip'; Sha256 = 'cadcf7ea4efe3a68728893813643cebe1185e5b1d4be5b96245f65c9a4d5ea41' }
+            'linux-x64' = @{ Name = 'actionlint_1.7.12_linux_amd64.tar.gz'; Sha256 = '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' }
+            'linux-arm64' = @{ Name = 'actionlint_1.7.12_linux_arm64.tar.gz'; Sha256 = '325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6' }
+            'macos-x64' = @{ Name = 'actionlint_1.7.12_darwin_amd64.tar.gz'; Sha256 = '5b44c3bc2255115c9b69e30efc0fecdf498fdb63c5d58e17084fd5f16324c644' }
+            'macos-arm64' = @{ Name = 'actionlint_1.7.12_darwin_arm64.tar.gz'; Sha256 = 'aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f' }
         }
     }
 }

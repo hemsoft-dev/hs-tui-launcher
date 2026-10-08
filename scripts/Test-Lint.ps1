@@ -106,8 +106,36 @@ try {
 
     Invoke-LintCheck 'GitHub Actions (actionlint)' {
         if (-not $setup.ToolSucceeded) { throw 'actionlint cannot run because pinned lint-tool setup failed.' }
-        & $setup.Actionlint -config-file (Join-Path $root '.github/actionlint.yaml') -shellcheck $setup.ShellCheck
-        if ($LASTEXITCODE -ne 0) { throw "actionlint failed (exit $LASTEXITCODE)." }
+        # actionlint 1.7.12 has not implemented GitHub's concurrency.queue field.
+        # Bind the exception to the exact signed deployment, not arbitrary YAML.
+        $contract = Get-Content -LiteralPath (Join-Path $root '.sfl/lint-contract.json') -Raw | ConvertFrom-Json
+        $deployment = Get-Content -LiteralPath (Join-Path $root '.sfl/sfl.json') -Raw | ConvertFrom-Json
+        $workflow = Join-Path $root '.github/workflows/sfl-pr-review-auto.yml'
+        if ($deployment.source -ne $contract.source -or $deployment.version -ne $contract.version -or
+            $deployment.sourceSha -ne $contract.sourceSha -or $deployment.tier -ne 'reviewer' -or
+            (Get-FileHash -LiteralPath $workflow -Algorithm SHA256).Hash.ToLowerInvariant() -ne $contract.workflowSha256) {
+            throw 'SFL generated deployment differs from its independently verified lint contract.'
+        }
+        $output = @(& $setup.Actionlint -format '{{json .}}' -config-file (Join-Path $root '.github/actionlint.yaml') -shellcheck $setup.ShellCheck)
+        $exitCode = $LASTEXITCODE
+        if ($exitCode -notin @(0, 1)) { throw "actionlint could not complete (exit $exitCode)." }
+        $diagnostics = @($output -join "`n" | ConvertFrom-Json)
+        $queueDiagnostic = 'unexpected key "queue" for "concurrency" section. expected one of "cancel-in-progress", "group"'
+        $findings = @($diagnostics | Where-Object {
+            -not ($_.filepath.Replace('\', '/') -eq '.github/workflows/sfl-pr-review-auto.yml' -and
+                $_.kind -eq 'syntax-check' -and $_.message -eq $queueDiagnostic -and
+                $_.line -eq 243 -and $_.column -eq 7)
+        })
+        if ($findings.Count -gt 0) {
+            $findings | ConvertTo-Json -Depth 5 | Write-Host
+            throw "actionlint found $($findings.Count) enforced diagnostic(s)."
+        }
+        if ($exitCode -eq 1 -and $diagnostics.Count -eq 0) { throw 'actionlint failed without diagnostic evidence.' }
+    }
+
+    Invoke-LintCheck 'SFL actionlint compatibility negative controls' {
+        if (-not $setup.ToolSucceeded) { throw 'Controls cannot run because pinned lint-tool setup failed.' }
+        & (Join-Path $PSScriptRoot 'Test-SflActionlintContract.ps1') -Actionlint $setup.Actionlint -ShellCheck $setup.ShellCheck
     }
 
     Invoke-LintCheck 'Markdown (markdownlint-cli2)' {
