@@ -43,6 +43,21 @@ try {
     }
     if (-not $rejected) { throw 'Modified generated workflow was accepted.' }
     [System.IO.File]::WriteAllText($workflow, $original)
+    $contractPath = Join-Path $root '.sfl/lint-contract.json'
+    $originalContract = [System.IO.File]::ReadAllText($contractPath)
+    [System.IO.File]::WriteAllText($workflow, $original + "`n      queue: max`n")
+    $modifiedContract = $originalContract | ConvertFrom-Json
+    $modifiedContract.workflowSha256 = (Get-FileHash -LiteralPath $workflow -Algorithm SHA256).Hash.ToLowerInvariant()
+    [System.IO.File]::WriteAllText($contractPath, ($modifiedContract | ConvertTo-Json -Depth 5))
+    $rejected = $false
+    try { & $productionCheck }
+    catch {
+        if ($_.Exception.Message -notmatch 'exactly one observer queue setting') { throw }
+        $rejected = $true
+    }
+    if (-not $rejected) { throw 'Duplicate queue settings were accepted after updating the fixture hash.' }
+    [System.IO.File]::WriteAllText($workflow, $original)
+    [System.IO.File]::WriteAllText($contractPath, $originalContract)
     $invalid = "name: Negative control`non: push`njobs:`n  bad:`n    runs-on: ubuntu-latest`n    steps:`n      - uses: not-a-valid-action`n"
     [System.IO.File]::WriteAllText((Join-Path $root '.github/workflows/negative-control.yml'), $invalid)
     $rejected = $false

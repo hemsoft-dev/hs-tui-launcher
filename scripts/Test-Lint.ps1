@@ -116,6 +116,11 @@ try {
             (Get-FileHash -LiteralPath $workflow -Algorithm SHA256).Hash.ToLowerInvariant() -ne $contract.workflowSha256) {
             throw 'SFL generated deployment differs from its independently verified lint contract.'
         }
+        $workflowLines = @(Get-Content -LiteralPath $workflow)
+        $queueLines = @(for ($index = 0; $index -lt $workflowLines.Count; $index++) {
+            if ($workflowLines[$index] -ceq '      queue: max') { $index + 1 }
+        })
+        if ($queueLines.Count -ne 1) { throw 'Reviewed workflow must contain exactly one observer queue setting.' }
         $output = @(& $setup.Actionlint -format '{{json .}}' -config-file (Join-Path $root '.github/actionlint.yaml') -shellcheck $setup.ShellCheck)
         $exitCode = $LASTEXITCODE
         if ($exitCode -notin @(0, 1)) { throw "actionlint could not complete (exit $exitCode)." }
@@ -124,12 +129,13 @@ try {
         $findings = @($diagnostics | Where-Object {
             -not ($_.filepath.Replace('\', '/') -eq '.github/workflows/sfl-pr-review-auto.yml' -and
                 $_.kind -eq 'syntax-check' -and $_.message -eq $queueDiagnostic -and
-                $_.line -eq 243 -and $_.column -eq 7)
+                $_.line -eq $queueLines[0] -and $_.column -eq 7)
         })
         if ($findings.Count -gt 0) {
             $findings | ConvertTo-Json -Depth 5 | Write-Host
             throw "actionlint found $($findings.Count) enforced diagnostic(s)."
         }
+        if ($diagnostics.Count -gt 1) { throw 'actionlint returned duplicate queue compatibility diagnostics.' }
         if ($exitCode -eq 1 -and $diagnostics.Count -eq 0) { throw 'actionlint failed without diagnostic evidence.' }
     }
 
