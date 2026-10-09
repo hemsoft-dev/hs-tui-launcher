@@ -1,6 +1,6 @@
 # hs-tui-launcher
 
-[![CI](https://github.com/HemSoft/hs-tui-launcher/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HemSoft/hs-tui-launcher/actions/workflows/ci.yml)
+[![CI](https://github.com/hemsoft-dev/hs-tui-launcher/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hemsoft-dev/hs-tui-launcher/actions/workflows/ci.yml)
 
 Terminal launcher overlay for local AI command-line tools.
 
